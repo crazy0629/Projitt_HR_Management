@@ -1,0 +1,13 @@
+{
+  "recommendations": [
+    "esbenp.prettier-vscode",
+    "dbaeumer.vscode-eslint",
+    "formulahendry.auto-import",
+    "VisualStudioExptTeam.vscodeintellicode",
+    "eamodio.gitlens",
+    "stylelint.vscode-stylelint",
+    "bradlc.vscode-tailwindcss",
+    "dsznajder.es7-react-js-snippets",
+    "xabikos.ReactSnippets"
+  ]
+}
