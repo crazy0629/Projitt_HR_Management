@@ -418,6 +418,91 @@ Complete talent management ecosystem for career advancement, succession planning
 - `poor_work_life_balance` - Work-life balance issues
 - `team_dynamics_issues` - Team relationship problems
 - `role_mismatch` - Skills-role mismatch
+
+### 👨‍💼 Manager Performance Reviews (`/api/v1/manager`)
+
+Comprehensive manager dashboard for team performance management, promotion recommendations, succession planning, and career development.
+
+#### 📋 Team Review Management (`/api/v1/manager/team-reviews`)
+
+| Method | Endpoint | Auth | Description |
+|--------|----------|------|-------------|
+| `GET` | `/cycles` | ✅ | Get review cycles with team completion stats |
+| `GET` | `/cycles/{cycle_id}/reviewees` | ✅ | Get reviewees with performance data and badges |
+| `POST` | `/cycles/{cycle_id}/reminders` | ✅ | Send targeted reminders (rate limited) |
+| `GET` | `/team-summary` | ✅ | Get team performance analytics summary |
+| `GET` | `/team-members` | ✅ | Get team members with performance data |
+
+**Team Review Features:**
+- **Cycle Management**: Track review cycles with completion percentages and team headcount
+- **Reviewee Oversight**: View detailed performance data with AI-powered badges
+- **Reminder System**: Send targeted reminders to self, peer, or all reviewers (4-hour rate limit)
+- **Performance Analytics**: Team completion rates, average scores, high performer percentages
+- **Badge Classification**: Automatic categorization as "Ready", "High Potential", "Developing", or "Solid"
+
+#### 🚀 Promotion Recommendations (`/api/v1/manager/promotions`)
+
+| Method | Endpoint | Auth | Description |
+|--------|----------|------|-------------|
+| `POST` | `/` | ✅ | Create promotion recommendation |
+| `GET` | `/` | ✅ | Get manager's promotion recommendations |
+| `PATCH` | `/{promotion_id}/withdraw` | ✅ | Withdraw pending recommendation |
+
+**Promotion Management Features:**
+- **Recommendation Creation**: Create detailed promotion proposals with justification and compensation adjustments
+- **Approval Workflow**: Track promotion status through pending, approved, rejected, withdrawn states
+- **Compensation Planning**: Define minimum and maximum compensation adjustment ranges
+- **Role Hierarchy**: Automatic detection of promotion levels (standard, double, lateral, demotion)
+- **Access Control**: Managers can only recommend their direct and indirect reports
+
+#### 🔄 Succession Planning (`/api/v1/manager/succession`)
+
+| Method | Endpoint | Auth | Description |
+|--------|----------|------|-------------|
+| `POST` | `/` | ✅ | Add employee to succession pool |
+
+**Succession Planning Features:**
+- **Pool Management**: Create and manage role-based succession pools
+- **Readiness Tracking**: Track candidate readiness with timeframes (ready_now, 3-6m, 6-12m, 12-24m)
+- **Development Plans**: Assign learning paths and mentors to succession candidates
+- **Risk Assessment**: Calculate succession readiness scores with color-coded risk levels
+- **Priority Management**: Manage succession pools by priority (high, medium, low) and business impact
+
+#### 🛤️ Career Path Assignments (`/api/v1/manager/career-paths`)
+
+| Method | Endpoint | Auth | Description |
+|--------|----------|------|-------------|
+| `POST` | `/assign` | ✅ | Assign career development path to employee |
+
+**Career Development Features:**
+- **Path Assignment**: Assign learning paths targeting specific roles
+- **Progress Tracking**: Monitor completion progress with milestone management
+- **Timeline Management**: Set target completion dates with automatic progress calculation
+- **Learning Integration**: Seamless integration with Learning Management System
+- **Milestone System**: Track key development milestones with completion status
+
+#### 📚 Reference Data (`/api/v1/manager/reference`)
+
+| Method | Endpoint | Auth | Description |
+|--------|----------|------|-------------|
+| `GET` | `/roles` | ✅ | Get available roles for promotion/succession |
+| `GET` | `/learning-paths` | ✅ | Get available learning paths (optionally filtered by role) |
+
+### Database Schema - Manager Reviews
+
+**Core Tables:**
+- `teams` - Team hierarchy and organizational structure
+- `team_members` - Manager-employee relationships with reporting structure
+- `promotion_recommendations` - Promotion workflow with approval tracking
+- `succession_pool` - Role-based succession planning pools
+- `manager_succession_candidates` - Succession candidate management with readiness tracking
+- `career_paths_assigned` - Career development path assignments with progress tracking
+
+**Key Relationships:**
+- Teams have hierarchical structure with managers and members
+- Promotion recommendations link employees to target roles with approval workflow
+- Succession pools contain candidates with readiness assessment and development plans
+- Career path assignments track learning progress toward target roles
 - `lack_of_recognition` - Insufficient recognition
 - `manager_relationship` - Manager relationship issues
 
