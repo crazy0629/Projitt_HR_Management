@@ -31,7 +31,7 @@ return new class extends Migration
             $table->decimal('salary_to', 10, 2)->nullable();
 
             $table->date('deadline')->nullable();
-            $table->boolean('is_set_default_template')->default(false); 
+            $table->boolean('is_set_default_template')->default(false);
 
             $table->foreignId('created_by')->nullable()->constrained('users')->onUpdate('restrict')->onDelete('cascade');
             $table->foreignId('updated_by')->nullable()->constrained('users')->onUpdate('restrict')->onDelete('cascade');

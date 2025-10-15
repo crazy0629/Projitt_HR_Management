@@ -14,21 +14,21 @@ class InterviewController extends Controller
     public function add(AddInterviewRequest $request): JsonResponse
     {
         try {
-            $object = new Interview();
+            $object = new Interview;
 
-            $object->schedule_type    = $request->input('schedule_type');
-            $object->mode             = $request->input('mode');
+            $object->schedule_type = $request->input('schedule_type');
+            $object->mode = $request->input('mode');
             $object->interviewers_ids = $request->input('interviewers_ids');
-            $object->job_id           = (int) $request->input('job_id');
-            $object->applicant_id     = (int) $request->input('applicant_id');
-            $object->message          = $request->filled('message') ? $request->input('message') : null;
+            $object->job_id = (int) $request->input('job_id');
+            $object->applicant_id = (int) $request->input('applicant_id');
+            $object->message = $request->filled('message') ? $request->input('message') : null;
 
             if ($request->input('schedule_type') === 'propose_time') {
                 $object->date = $request->input('date');
                 $object->time = $request->input('time');
             }
 
-            $object->status     = $request->filled('status') ? $request->input('status') : 'review';
+            $object->status = $request->filled('status') ? $request->input('status') : 'review';
             $object->created_by = Auth::id();
             $object->save();
 
@@ -38,14 +38,15 @@ class InterviewController extends Controller
         }
     }
 
-        /**
+    /**
      * List jobs with filters and optional pagination.
      */
-    public function listAllWithFilters(ListWithFiltersRequest $request): JsonResponse {
+    public function listAllWithFilters(ListWithFiltersRequest $request): JsonResponse
+    {
 
         $query = Interview::filterData($request);
         $result = $this->getData($query, $request->input('pagination'), $request->input('per_page'), $request->input('page'));
+
         return $this->sendSuccess($result, config('messages.success'));
     }
-    
 }

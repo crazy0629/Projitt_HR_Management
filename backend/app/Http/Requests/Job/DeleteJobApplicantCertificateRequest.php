@@ -26,7 +26,7 @@ class DeleteJobApplicantCertificateRequest extends FormRequest
             'ids' => ['required', 'array'],
             'ids.*' => [
                 'required',
-                Rule::exists('job_applicant_certificates', 'id')->whereNull('deleted_at')
+                Rule::exists('job_applicant_certificates', 'id')->whereNull('deleted_at'),
             ],
         ];
     }

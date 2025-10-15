@@ -26,7 +26,7 @@ class DeleteAssessmentRequest extends FormRequest
             'ids' => ['required', 'array'],
             'ids.*' => [
                 'required',
-                Rule::exists('assessments', 'id')->whereNull('deleted_at')
+                Rule::exists('assessments', 'id')->whereNull('deleted_at'),
             ],
         ];
     }

@@ -8,7 +8,7 @@ use App\Http\Controllers\Job\JobApplicationQuestionAnswerController;
 use App\Http\Controllers\Job\JobController;
 use Illuminate\Support\Facades\Route;
 
-Route::group(['middleware' => 'auth:sanctum'], function() {
+Route::group(['middleware' => 'auth:sanctum'], function () {
 
     // Add and Edit job detail
     Route::post('add', [JobController::class, 'add']);
@@ -23,16 +23,12 @@ Route::group(['middleware' => 'auth:sanctum'], function() {
     Route::get('single/{id}', [JobController::class, 'single']);
     Route::get('list-with-filters', [JobController::class, 'listAllWithFilters']);
     Route::get('intellisense-search', [JobController::class, 'intellisenseSearch']);
-    
+
     Route::post('publish', [JobController::class, 'publishJob']);
 
     Route::post('change-status', [JobController::class, 'changeStatus']);
 
-
-    
-    
 });
-
 
 Route::middleware('applicant.onboarded')->group(function () {
 

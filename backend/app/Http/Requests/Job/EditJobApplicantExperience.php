@@ -25,15 +25,15 @@ class EditJobApplicantExperience extends FormRequest
         return [
             'id' => [
                 'required',
-                Rule::exists('job_applicant_experiences', 'id')->whereNull('deleted_at')
+                Rule::exists('job_applicant_experiences', 'id')->whereNull('deleted_at'),
             ],
             'job_id' => [
                 'required',
-                Rule::exists('jobs', 'id')->whereNull('deleted_at')
+                Rule::exists('jobs', 'id')->whereNull('deleted_at'),
             ],
             'applicant_id' => [
                 'required',
-                Rule::exists('users', 'id')->whereNull('deleted_at')
+                Rule::exists('users', 'id')->whereNull('deleted_at'),
             ],
             'job_title' => ['required', 'string', 'max:150'],
             'company' => ['required', 'string', 'max:150'],

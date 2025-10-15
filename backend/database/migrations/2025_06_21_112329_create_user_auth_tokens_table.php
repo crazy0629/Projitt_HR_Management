@@ -3,7 +3,6 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
-use Illuminate\Support\Facades\DB;
 
 return new class extends Migration
 {
@@ -37,8 +36,7 @@ return new class extends Migration
             $table->biginteger('deleted_by')->unsigned()->nullable();
             $table->foreign('deleted_by')->references('id')->on('users')->onupdate('restrict')->ondelete('cascade');
 
-            $table->timestamp('created_at')->default(db::raw('current_timestamp'));
-            $table->timestamp('updated_at')->default(db::raw('current_timestamp on update current_timestamp'));
+            $table->timestamps();
             $table->softdeletes()->index();
 
         });

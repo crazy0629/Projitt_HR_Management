@@ -28,14 +28,14 @@ class CodingQuestion extends Model
         'time_limit' => 'integer',
     ];
 
-
-    public static function filterData($request){
+    public static function filterData($request)
+    {
 
         $filteredData = self::query();
-        if (!empty($request->input('name'))) {
-            $filteredData = $filteredData->Where('name', 'LIKE', '%' . $request->input('name') . '%');
+        if (! empty($request->input('name'))) {
+            $filteredData = $filteredData->Where('name', 'LIKE', '%'.$request->input('name').'%');
         }
+
         return $filteredData;
     }
-
 }

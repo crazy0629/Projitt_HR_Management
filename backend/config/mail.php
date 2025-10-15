@@ -47,7 +47,7 @@ return [
             'timeout' => null,
             'local_domain' => env('MAIL_EHLO_DOMAIN'),
         ],
-        
+
         'mailgun' => [
             'transport' => 'mailgun',
         ],

@@ -44,7 +44,7 @@ class AddAssessmentRequest extends FormRequest
             'questions' => 'nullable|array|min:1',
             'questions.*.question_id' => [
                 'required_with:questions',
-                Rule::exists($questionTable, 'id')
+                Rule::exists($questionTable, 'id'),
             ],
             'questions.*.point' => 'required_with:questions|numeric|min:0',
         ];

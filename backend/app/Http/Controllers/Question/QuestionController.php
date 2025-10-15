@@ -4,14 +4,13 @@ namespace App\Http\Controllers\Question;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Question\AddQuestionRequest;
-use App\Http\Requests\Question\EditQuestionRequest;
 use App\Http\Requests\Question\DeleteQuestionRequest;
+use App\Http\Requests\Question\EditQuestionRequest;
 use App\Http\Requests\Question\ListWithFiltersQuestionRequest;
 use App\Models\Question\Question;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Str;
 
 class QuestionController extends Controller
 {
@@ -20,7 +19,7 @@ class QuestionController extends Controller
      */
     public function add(AddQuestionRequest $request): JsonResponse
     {
-        $question = new Question();
+        $question = new Question;
 
         $question->question_name = $request->input('question_name');
         $question->answer_type = $request->input('answer_type');
@@ -76,6 +75,7 @@ class QuestionController extends Controller
     public function single($id): JsonResponse
     {
         $question = Question::singleObject($id);
+
         return $this->sendSuccess($question, config('messages.success'));
     }
 
@@ -101,6 +101,7 @@ class QuestionController extends Controller
     public function intellisenseSearch(Request $request): JsonResponse
     {
         $results = Question::intellisenseSearch($request);
+
         return $this->sendSuccess($results, config('messages.success'));
     }
 }

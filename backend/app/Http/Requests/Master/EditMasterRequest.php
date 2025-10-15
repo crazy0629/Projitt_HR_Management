@@ -34,10 +34,10 @@ class EditMasterRequest extends FormRequest
                 Rule::unique('masters')
                     ->where(function ($query) {
                         return $query->where('type_id', $this->type_id)
-                                     ->whereNull('deleted_at');
+                            ->whereNull('deleted_at');
                     })
                     ->ignore($id),
-            ]
+            ],
         ];
     }
 }

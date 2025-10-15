@@ -59,8 +59,8 @@ class QuestionSeeder extends Seeder
 
             Question::create([
                 'question_name' => $text,
-                'answer_type'   => $type,
-                'is_required'   => fake()->boolean(),
+                'answer_type' => $type,
+                'is_required' => fake()->boolean(),
 
                 'options' => in_array($type, ['dropdown', 'checkbox'])
                     ? fake()->randomElements(
@@ -82,8 +82,8 @@ class QuestionSeeder extends Seeder
 
             Question::create([
                 'question_name' => Str::title(fake()->sentence(rand(3, 6), true)),
-                'answer_type'   => $type,
-                'is_required'   => fake()->boolean(),
+                'answer_type' => $type,
+                'is_required' => fake()->boolean(),
 
                 'options' => in_array($type, ['dropdown', 'checkbox'])
                     ? fake()->randomElements(

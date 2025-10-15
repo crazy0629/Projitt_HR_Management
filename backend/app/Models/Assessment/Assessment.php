@@ -5,8 +5,8 @@ namespace App\Models\Assessment;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Assessment extends Model {
-
+class Assessment extends Model
+{
     use SoftDeletes;
 
     protected $table = 'assessments';
@@ -27,14 +27,15 @@ class Assessment extends Model {
         'time_duration' => 'integer',
         'points' => 'integer',
     ];
-    
-    public static function filterData($request){
+
+    public static function filterData($request)
+    {
 
         $filteredData = self::query();
-        if (!empty($request->input('name'))) {
-            $filteredData = $filteredData->Where('name', 'LIKE', '%' . $request->input('name') . '%');
+        if (! empty($request->input('name'))) {
+            $filteredData = $filteredData->Where('name', 'LIKE', '%'.$request->input('name').'%');
         }
+
         return $filteredData;
     }
-
 }

@@ -3,11 +3,11 @@
 namespace App\Http\Controllers\Job;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\JsonResponse;
-use App\Models\Job\JobApplicantExperience;
 use App\Http\Requests\Job\AddJobApplicantExperience;
-use App\Http\Requests\Job\EditJobApplicantExperience;
 use App\Http\Requests\Job\DeleteJobApplicantExperience;
+use App\Http\Requests\Job\EditJobApplicantExperience;
+use App\Models\Job\JobApplicantExperience;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class JobApplicantExperienceController extends Controller
@@ -19,19 +19,18 @@ class JobApplicantExperienceController extends Controller
     {
         try {
             $data = $request->validated();
-    
-            $experience = new JobApplicantExperience();
+
+            $experience = new JobApplicantExperience;
             $experience->fill($data);
             $experience->created_by = auth()->id();
             $experience->updated_by = auth()->id();
             $experience->save();
-    
+
             return $this->sendSuccess($experience, 'Experience added successfully.');
         } catch (\Exception $exception) {
             return $this->sendError(config('messages.error'), $exception->getMessage());
         }
     }
-    
 
     /**
      * Edit an existing experience.
@@ -54,6 +53,7 @@ class JobApplicantExperienceController extends Controller
     public function single($id): JsonResponse
     {
         $object = JobApplicantExperience::where('id', $id)->first();
+
         return successResponse(config('messages.success'), $object, 200);
     }
 
@@ -63,6 +63,7 @@ class JobApplicantExperienceController extends Controller
     public function listByApplicant(Request $request): JsonResponse
     {
         $experiences = JobApplicantExperience::getByJobAndApplicant($request->input('job_id'), $request->input('applicant_id'));
+
         return successResponse(config('messages.success'), $experiences, 200);
     }
 
