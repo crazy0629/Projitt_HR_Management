@@ -125,6 +125,11 @@ class LearningPath extends Model
         return $query->where('status', 'draft');
     }
 
+    public function scopeArchived($query)
+    {
+        return $query->where('status', 'archived');
+    }
+
     public function scopeByRole($query, $roleId)
     {
         return $query->whereHas('roles', function ($q) use ($roleId) {
