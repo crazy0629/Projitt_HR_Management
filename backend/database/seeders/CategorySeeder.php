@@ -2,7 +2,6 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class CategorySeeder extends Seeder
@@ -14,7 +13,7 @@ class CategorySeeder extends Seeder
     {
         // Skip foreign key checks for seeding
         \DB::statement('PRAGMA foreign_keys=OFF');
-        
+
         $categories = [
             [
                 'name' => 'Leadership',
@@ -70,7 +69,7 @@ class CategorySeeder extends Seeder
         foreach ($categories as $category) {
             \App\Models\Category::create($category);
         }
-        
+
         // Re-enable foreign key checks
         \DB::statement('PRAGMA foreign_keys=ON');
     }

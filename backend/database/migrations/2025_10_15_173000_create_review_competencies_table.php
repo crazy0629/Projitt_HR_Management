@@ -11,18 +11,17 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('categories', function (Blueprint $table) {
+        Schema::create('review_competencies', function (Blueprint $table) {
             $table->id();
-            $table->string('name')->unique();
-            $table->string('slug')->unique();
+            $table->foreignId('cycle_id')->constrained('performance_review_cycles')->onDelete('cascade');
+            $table->string('name'); // e.g. "Leadership", "Communication"
             $table->text('description')->nullable();
-            $table->string('color')->default('#6366f1'); // Default indigo color
-            $table->boolean('is_active')->default(true);
             $table->integer('sort_order')->default(0);
-            $table->foreignId('created_by')->constrained('users');
+            $table->boolean('is_active')->default(true);
             $table->timestamps();
 
-            $table->index(['is_active', 'sort_order']);
+            $table->index(['cycle_id', 'is_active']);
+            $table->index('sort_order');
         });
     }
 
@@ -31,6 +30,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('categories');
+        Schema::dropIfExists('review_competencies');
     }
 };
