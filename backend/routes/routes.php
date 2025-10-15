@@ -12,5 +12,6 @@ return function () {
     Route::prefix('job')->group(base_path('routes/job.php'));
     Route::prefix('assessment')->group(base_path('routes/assessment.php'));
     Route::prefix('interview')->group(base_path('routes/interview.php'));
+    Route::prefix('learning')->group(base_path('routes/learning-paths.php'));
 
 };
