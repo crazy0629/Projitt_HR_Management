@@ -34,7 +34,8 @@ Route::middleware(['auth:sanctum'])->group(function () {
         Route::post('/{id}/eligibility', [LearningPathController::class, 'setEligibility']);
         Route::patch('/{id}/publish', [LearningPathController::class, 'publish']);
 
-        // Assignment management (could be separate controller if needed)
+        // Management operations
+        Route::patch('/{id}/status', [LearningPathController::class, 'updateStatus']);
         Route::get('/{id}/assignments', [LearningPathController::class, 'getAssignments']);
         Route::post('/{id}/assign', [LearningPathController::class, 'assignToEmployees']);
         Route::patch('/{id}/assignments/{assignmentId}/progress', [LearningPathController::class, 'updateProgress']);
