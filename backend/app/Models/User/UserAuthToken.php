@@ -24,7 +24,7 @@ class UserAuthToken extends PersonalAccessToken
     ];
 
     protected $hidden = [
-        'token', 
+        'token',
         'actual_token',
     ];
 

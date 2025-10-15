@@ -2,8 +2,8 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
@@ -16,7 +16,7 @@ return new class extends Migration
 
             $table->bigIncrements('id')->index();
             $table->string('name', 250)->nullable();
-            $table->string('slug',250)->nullable();
+            $table->string('slug', 250)->nullable();
             $table->text('description')->nullable();
             $table->unsignedTinyInteger('type_id')->nullable()->comment('1=department');
 

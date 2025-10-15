@@ -2,11 +2,11 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\User\UserAuthToken;
 use Closure;
 use Illuminate\Http\Request;
-use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Support\Facades\Auth;
-use App\Models\User\UserAuthToken;
+use Symfony\Component\HttpFoundation\Response;
 
 class EitherAuthOrOnboarded
 {
@@ -15,6 +15,7 @@ class EitherAuthOrOnboarded
         if (Auth::guard('sanctum')->check()) {
             $user = Auth::guard('sanctum')->user();
             $request->setUserResolver(fn () => $user);
+
             return $next($request);
         }
 
@@ -25,6 +26,7 @@ class EitherAuthOrOnboarded
 
             if ($token && $token->name === 'applicant-onboarding' && $token->tokenable) {
                 $request->setUserResolver(fn () => $token->tokenable);
+
                 return $next($request);
             }
         }

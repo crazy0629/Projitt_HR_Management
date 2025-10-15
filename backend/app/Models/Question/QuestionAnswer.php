@@ -5,8 +5,8 @@ namespace App\Models\Question;
 use App\Models\Job\Job;
 use App\Models\User\User;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class QuestionAnswer extends Model
 {
@@ -81,13 +81,9 @@ class QuestionAnswer extends Model
 
     /**
      * Retrieve a single question answer with related models.
-     *
-     * @param int $id
-     * @return self|null
      */
     public static function singleObject(int $id): ?self
     {
         return self::with(['question', 'job', 'user'])->find($id);
     }
-    
 }

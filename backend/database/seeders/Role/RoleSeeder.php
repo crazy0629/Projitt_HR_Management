@@ -2,10 +2,9 @@
 
 namespace Database\Seeders\Role;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Seeder;
 
 class RoleSeeder extends Seeder
 {
@@ -26,7 +25,7 @@ class RoleSeeder extends Seeder
                 'slug' => 'super-admin',
                 'guard_name' => 'api',
                 'created_by' => 1,
-                'created_at' => $timestamp
+                'created_at' => $timestamp,
             ],
             [
                 'name' => 'HR Manager',
@@ -34,7 +33,7 @@ class RoleSeeder extends Seeder
                 'slug' => 'hr-manager',
                 'guard_name' => 'api',
                 'created_by' => 1,
-                'created_at' => $timestamp
+                'created_at' => $timestamp,
             ],
             [
                 'name' => 'HR Officer',
@@ -42,7 +41,7 @@ class RoleSeeder extends Seeder
                 'slug' => 'hr-officer',
                 'guard_name' => 'api',
                 'created_by' => 1,
-                'created_at' => $timestamp
+                'created_at' => $timestamp,
             ],
             [
                 'name' => 'Recruiter',
@@ -50,7 +49,7 @@ class RoleSeeder extends Seeder
                 'slug' => 'recruiter',
                 'guard_name' => 'api',
                 'created_by' => 1,
-                'created_at' => $timestamp
+                'created_at' => $timestamp,
             ],
             [
                 'name' => 'Payroll Officer',
@@ -58,7 +57,7 @@ class RoleSeeder extends Seeder
                 'slug' => 'payroll-officer',
                 'guard_name' => 'api',
                 'created_by' => 1,
-                'created_at' => $timestamp
+                'created_at' => $timestamp,
             ],
             [
                 'name' => 'Employee',
@@ -66,7 +65,7 @@ class RoleSeeder extends Seeder
                 'slug' => 'employee',
                 'guard_name' => 'api',
                 'created_by' => 1,
-                'created_at' => $timestamp
+                'created_at' => $timestamp,
             ],
             [
                 'name' => 'Department Head',
@@ -74,7 +73,7 @@ class RoleSeeder extends Seeder
                 'slug' => 'department-head',
                 'guard_name' => 'api',
                 'created_by' => 1,
-                'created_at' => $timestamp
+                'created_at' => $timestamp,
             ],
             [
                 'name' => 'IT Support',
@@ -82,7 +81,7 @@ class RoleSeeder extends Seeder
                 'slug' => 'it-support',
                 'guard_name' => 'api',
                 'created_by' => 1,
-                'created_at' => $timestamp
+                'created_at' => $timestamp,
             ],
         ];
 

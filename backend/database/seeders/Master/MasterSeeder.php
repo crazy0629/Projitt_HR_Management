@@ -2,10 +2,10 @@
 
 namespace Database\Seeders\Master;
 
+use Carbon\Carbon;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
-use Carbon\Carbon;
 
 class MasterSeeder extends Seeder
 {
@@ -24,20 +24,20 @@ class MasterSeeder extends Seeder
             'R&D', 'Product Management', 'Business Development', 'Logistics', 'Quality Assurance',
             'Compliance', 'Public Relations', 'Security', 'Engineering', 'Training',
             'Payroll', 'Inventory', 'Facility Management', 'Data Analytics', 'Production',
-            'Content Writing', 'Digital Marketing', 'Event Management', 'Internal Audit', 'Medical Services'
+            'Content Writing', 'Digital Marketing', 'Event Management', 'Internal Audit', 'Medical Services',
         ];
 
         // Real Designations
         $designations = [
             'Software Engineer', 'HR Manager', 'Accountant', 'Marketing Executive', 'Sales Representative',
             'Project Manager', 'Team Lead', 'QA Analyst', 'UI/UX Designer', 'Business Analyst',
-            'DevOps Engineer', 'Network Administrator', 'Operations Manager', 'Legal Advisor', 'Receptionist'
+            'DevOps Engineer', 'Network Administrator', 'Operations Manager', 'Legal Advisor', 'Receptionist',
         ];
 
         // Real Employment Types
         $employmentTypes = [
             'Full-Time', 'Part-Time', 'Contract', 'Internship', 'Freelance',
-            'Temporary', 'Remote', 'On-Site', 'Consultant', 'Probation'
+            'Temporary', 'Remote', 'On-Site', 'Consultant', 'Probation',
         ];
 
         // Real Skills
@@ -48,12 +48,12 @@ class MasterSeeder extends Seeder
             'Scrum', 'JIRA', 'CI/CD', 'Unit Testing', 'SEO', 'Digital Marketing', 'Google Ads', 'Copywriting',
             'Public Speaking', 'Team Management', 'Problem Solving', 'Leadership', 'Communication',
             'Time Management', 'Critical Thinking', 'Machine Learning', 'Data Analysis', 'Excel',
-            'Power BI', 'Technical Writing'
+            'Power BI', 'Technical Writing',
         ];
 
         // locations
         $locations = [
-            'Onsite', 'Hybrid', 'Remote'
+            'Onsite', 'Hybrid', 'Remote',
         ];
 
         foreach ($departments as $name) {

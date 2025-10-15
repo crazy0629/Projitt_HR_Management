@@ -3,13 +3,13 @@
 namespace App\Http\Controllers\Question;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Question\AddCodingQuestionRequest;
+use App\Http\Requests\Question\DeleteCodingQuestionRequest;
+use App\Http\Requests\Question\EditCodingQuestionRequest;
+use App\Http\Requests\Question\ListWithFiltersCodingQuestionRequest;
+use App\Models\Question\CodingQuestion;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
-use App\Models\Question\CodingQuestion;
-use App\Http\Requests\Question\AddCodingQuestionRequest;
-use App\Http\Requests\Question\EditCodingQuestionRequest;
-use App\Http\Requests\Question\DeleteCodingQuestionRequest;
-use App\Http\Requests\Question\ListWithFiltersCodingQuestionRequest;
 
 class CodingQuestionController extends Controller
 {
@@ -18,7 +18,7 @@ class CodingQuestionController extends Controller
      */
     public function add(AddCodingQuestionRequest $request): JsonResponse
     {
-        $object = new CodingQuestion();
+        $object = new CodingQuestion;
         $object->title = $request->input('title');
         $object->description = $request->input('description');
         $object->language = $request->input('language', []);
@@ -28,6 +28,7 @@ class CodingQuestionController extends Controller
         $object->save();
 
         $object = CodingQuestion::find($object->id);
+
         return $this->sendSuccess(config('messages.success'), $object, 200);
     }
 
@@ -46,6 +47,7 @@ class CodingQuestionController extends Controller
         $object->save();
 
         $object = CodingQuestion::find($request->input('id'));
+
         return successResponse(config('messages.success'), $object, 200);
     }
 

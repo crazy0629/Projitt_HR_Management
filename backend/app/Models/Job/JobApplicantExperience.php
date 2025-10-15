@@ -47,7 +47,7 @@ class JobApplicantExperience extends Model
     public static function getByJobAndApplicant($jobId, $applicantId)
     {
         return self::where('job_id', $jobId)
-                   ->where('applicant_id', $applicantId)
-                   ->get();
+            ->where('applicant_id', $applicantId)
+            ->get();
     }
 }

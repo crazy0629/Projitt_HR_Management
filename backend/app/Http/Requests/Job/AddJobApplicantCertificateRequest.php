@@ -25,11 +25,11 @@ class AddJobApplicantCertificateRequest extends FormRequest
         return [
             'job_id' => [
                 'required',
-                Rule::exists('jobs', 'id')->whereNull('deleted_at')
+                Rule::exists('jobs', 'id')->whereNull('deleted_at'),
             ],
             'applicant_id' => [
                 'required',
-                Rule::exists('users', 'id')->whereNull('deleted_at')
+                Rule::exists('users', 'id')->whereNull('deleted_at'),
             ],
             'title' => ['required', 'string', 'max:200'],
             'number' => ['nullable', 'string', 'max:100'],

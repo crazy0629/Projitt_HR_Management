@@ -2,8 +2,8 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
@@ -16,8 +16,8 @@ return new class extends Migration
 
             $table->bigIncrements('id')->index();
             $table->string('name', 250)->nullable();
-            $table->string('slug',300)->nullable();
-            $table->string('description',500)->nullable();
+            $table->string('slug', 300)->nullable();
+            $table->string('description', 500)->nullable();
             $table->string('guard_name')->nullable();
 
             $table->bigInteger('created_by')->unsigned()->nullable();

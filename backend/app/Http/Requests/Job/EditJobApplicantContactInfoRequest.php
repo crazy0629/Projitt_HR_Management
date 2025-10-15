@@ -23,31 +23,29 @@ class EditJobApplicantContactInfoRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'first_name'    => 'required|string|max:100',
-            'last_name'     => 'required|string|max:100',
-            'middle_name'   => 'nullable|string|max:100',
+            'first_name' => 'required|string|max:100',
+            'last_name' => 'required|string|max:100',
+            'middle_name' => 'nullable|string|max:100',
 
-            'address'       => 'required|string|max:200',
-            'city'          => 'required|string|max:100',
-            'state'         => 'required|string|max:100',
-            'zip_code'      => 'required|string|max:20',
-            'country'       => 'required|string|max:100',
+            'address' => 'required|string|max:200',
+            'city' => 'required|string|max:100',
+            'state' => 'required|string|max:100',
+            'zip_code' => 'required|string|max:20',
+            'country' => 'required|string|max:100',
 
-            'contact_code'  => 'required|string|max:10',
-            'contact_no'    => 'required|string|max:20',
+            'contact_code' => 'required|string|max:10',
+            'contact_no' => 'required|string|max:20',
 
             'job_id' => [
                 'required',
-                Rule::exists('jobs', 'id')->where(fn($query) =>
-                    $query->whereNull('deleted_at')
-                          ->where('status', 'open')
+                Rule::exists('jobs', 'id')->where(fn ($query) => $query->whereNull('deleted_at')
+                    ->where('status', 'open')
                 ),
             ],
 
             'applicant_id' => [
                 'required',
-                Rule::exists('users', 'id')->where(fn($query) =>
-                    $query->whereNull('deleted_at')
+                Rule::exists('users', 'id')->where(fn ($query) => $query->whereNull('deleted_at')
                 ),
             ],
         ];

@@ -5,8 +5,8 @@ namespace App\Models\Job;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class JobApplicantCertificat extends Model {
-
+class JobApplicantCertificat extends Model
+{
     use SoftDeletes;
 
     protected $table = 'job_applicant_certificates';
@@ -40,8 +40,7 @@ class JobApplicantCertificat extends Model {
     public static function getByJobAndApplicant($jobId, $applicantId)
     {
         return self::where('job_id', $jobId)
-                   ->where('applicant_id', $applicantId)
-                   ->get();
+            ->where('applicant_id', $applicantId)
+            ->get();
     }
-    
 }

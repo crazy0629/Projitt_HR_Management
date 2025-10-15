@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('job_applicants', function (Blueprint $table) {
 
             $table->bigIncrements('id')->index();
-            
+
             $table->foreignId('applicant_id')->nullable()->constrained('users')->onUpdate('restrict')->onDelete('cascade');
             $table->foreignId('job_id')->nullable()->constrained('jobs')->onUpdate('restrict')->onDelete('cascade');
 

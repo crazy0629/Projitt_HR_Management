@@ -1,13 +1,10 @@
 <?php
 
-if (!function_exists('jsonResponse')) {
+if (! function_exists('jsonResponse')) {
     /**
      * Generate a JSON response.
      *
-     * @param bool $status
-     * @param string $message
-     * @param mixed $data
-     * @param int $statusCode
+     * @param  mixed  $data
      * @return \Illuminate\Http\JsonResponse
      */
     function jsonResponse(bool $status, string $message, $data, int $statusCode)
@@ -20,14 +17,11 @@ if (!function_exists('jsonResponse')) {
     }
 }
 
-if (!function_exists('jsonResponseWithCounter')) {
+if (! function_exists('jsonResponseWithCounter')) {
     /**
      * Generate a JSON response.
      *
-     * @param bool $status
-     * @param string $message
-     * @param mixed $data
-     * @param int $statusCode
+     * @param  mixed  $data
      * @return \Illuminate\Http\JsonResponse
      */
     function jsonResponseWithCounter(bool $status, string $message, $data, $counter, int $statusCode)
@@ -40,13 +34,10 @@ if (!function_exists('jsonResponseWithCounter')) {
     }
 }
 
-if (!function_exists('errorResponse')) {
+if (! function_exists('errorResponse')) {
     /**
      * Generate an error JSON response.
      *
-     * @param string $message
-     * @param \Exception $exception
-     * @param int $statusCode
      * @return \Illuminate\Http\JsonResponse
      */
     function errorResponse(string $message, \Exception $exception, int $statusCode)
@@ -55,13 +46,11 @@ if (!function_exists('errorResponse')) {
     }
 }
 
-if (!function_exists('validationResponse')) {
+if (! function_exists('validationResponse')) {
     /**
      * Generate a validation error JSON response.
      *
-     * @param string $message
-     * @param \Illuminate\Contracts\Validation\Validator $validator
-     * @param int $statusCode
+     * @param  \Illuminate\Contracts\Validation\Validator  $validator
      * @return \Illuminate\Http\JsonResponse
      */
     function validationResponse(string $message, $validator, int $statusCode)
@@ -74,13 +63,11 @@ if (!function_exists('validationResponse')) {
     }
 }
 
-if (!function_exists('validationResponseSingle')) {
+if (! function_exists('validationResponseSingle')) {
     /**
      * Generate a validation error JSON response.
      *
-     * @param string $message
-     * @param \Illuminate\Contracts\Validation\Validator $validator
-     * @param int $statusCode
+     * @param  \Illuminate\Contracts\Validation\Validator  $validator
      * @return \Illuminate\Http\JsonResponse
      */
     function validationResponseSingle(string $message, int $statusCode)
@@ -92,13 +79,11 @@ if (!function_exists('validationResponseSingle')) {
     }
 }
 
-if (!function_exists('successResponse')) {
+if (! function_exists('successResponse')) {
     /**
      * Generate a success JSON response.
      *
-     * @param string $message
-     * @param mixed $data
-     * @param int $statusCode
+     * @param  mixed  $data
      * @return \Illuminate\Http\JsonResponse
      */
     function successResponse(string $message, $data, int $statusCode)
@@ -107,14 +92,12 @@ if (!function_exists('successResponse')) {
     }
 }
 
-
-if (!function_exists('successResponseWithCounter')) {
+if (! function_exists('successResponseWithCounter')) {
     /**
      * Generate a success JSON response.
      *
-     * @param string $message
-     * @param mixed $data
-     * @param int $statusCode
+     * @param  mixed  $data
+     * @param  int  $statusCode
      * @return \Illuminate\Http\JsonResponse
      */
     function successResponseWithCounter(string $message, $data, $counter, $statusCode)
@@ -123,13 +106,11 @@ if (!function_exists('successResponseWithCounter')) {
     }
 }
 
-if (!function_exists('invalidCredentials')) {
+if (! function_exists('invalidCredentials')) {
     /**
      * Generate an invalid credentials JSON response.
      *
-     * @param string $message
-     * @param mixed $data
-     * @param int $statusCode
+     * @param  mixed  $data
      * @return \Illuminate\Http\JsonResponse
      */
     function invalidCredentials(string $message, $data, int $statusCode)
@@ -138,15 +119,11 @@ if (!function_exists('invalidCredentials')) {
     }
 }
 
-
-
-if (!function_exists('AlreadyVerified')) {
+if (! function_exists('AlreadyVerified')) {
     /**
      * Generate an invalid credentials JSON response.
      *
-     * @param string $message
-     * @param mixed $data
-     * @param int $statusCode
+     * @param  mixed  $data
      * @return \Illuminate\Http\JsonResponse
      */
     function AlreadyVerified(string $message, $data, int $statusCode)
@@ -155,14 +132,11 @@ if (!function_exists('AlreadyVerified')) {
     }
 }
 
-
-if (!function_exists('InvalidInfo')) {
+if (! function_exists('InvalidInfo')) {
     /**
      * Generate an invalid credentials JSON response.
      *
-     * @param string $message
-     * @param mixed $data
-     * @param int $statusCode
+     * @param  mixed  $data
      * @return \Illuminate\Http\JsonResponse
      */
     function InvalidInfo(string $message, $data, int $statusCode)
@@ -171,20 +145,21 @@ if (!function_exists('InvalidInfo')) {
     }
 }
 
-if (!function_exists('getData')) {
+if (! function_exists('getData')) {
     /**
      * Generate an invalid credentials JSON response.
      *
-     * @param int $pagination
-     * @param int $perPage
-     * @param int $page
-     * @param mixed $object
+     * @param  int  $pagination
+     * @param  int  $perPage
+     * @param  int  $page
+     * @param  mixed  $object
      * @return \Illuminate\Http\JsonResponse
      */
-    function getData($object = null, $pagination = null, $perPage = null, $page = null) {
-        if ($pagination){
+    function getData($object = null, $pagination = null, $perPage = null, $page = null)
+    {
+        if ($pagination) {
             return $object->paginate($perPage);
-        }else{
+        } else {
             return $object->get();
         }
 

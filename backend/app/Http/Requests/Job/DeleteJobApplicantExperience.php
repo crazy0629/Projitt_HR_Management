@@ -26,7 +26,7 @@ class DeleteJobApplicantExperience extends FormRequest
             'ids' => ['required', 'array'],
             'ids.*' => [
                 'required',
-                Rule::exists('job_applicant_experiences', 'id')->whereNull('deleted_at')
+                Rule::exists('job_applicant_experiences', 'id')->whereNull('deleted_at'),
             ],
         ];
     }

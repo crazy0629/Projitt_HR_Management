@@ -13,8 +13,8 @@ use App\Http\Requests\Job\ListWithFiltersJobRequest;
 use App\Http\Requests\Job\PublishJobRequest;
 use App\Models\Job\Job;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class JobController extends Controller
 {
@@ -23,60 +23,61 @@ class JobController extends Controller
      */
     public function add(AddJobDetailRequest $request): JsonResponse
     {
-        $job = new Job();
+        $job = new Job;
 
-        $job->title              = $request->input('title');
-        $job->description        = $request->input('description');
-        $job->no_of_job_opening  = $request->input('no_of_job_opening', 1);
-        $job->department_id      = $request->input('department_id');
+        $job->title = $request->input('title');
+        $job->description = $request->input('description');
+        $job->no_of_job_opening = $request->input('no_of_job_opening', 1);
+        $job->department_id = $request->input('department_id');
         $job->employment_type_id = $request->input('employment_type_id');
-        $job->location_type_id   = $request->input('location_type_id');
-        $job->country_id         = $request->input('country_id');
-        $job->state              = $request->input('state');
-        $job->salary_from        = $request->input('salary_from');
-        $job->salary_to          = $request->input('salary_to');
-        $job->deadline           = $request->input('deadline');
-        $job->skill_ids          = $request->input('skill_ids', []);
+        $job->location_type_id = $request->input('location_type_id');
+        $job->country_id = $request->input('country_id');
+        $job->state = $request->input('state');
+        $job->salary_from = $request->input('salary_from');
+        $job->salary_to = $request->input('salary_to');
+        $job->deadline = $request->input('deadline');
+        $job->skill_ids = $request->input('skill_ids', []);
 
         $job->created_by = Auth::id();
         $job->save();
 
         $job = Job::singleObject($job->id);
+
         return $this->sendSuccess($job, config('messages.success'));
     }
-
 
     /**
      * Edit a new job.
      */
-    public function edit(EditJobDetailRequest $request): JsonResponse {
+    public function edit(EditJobDetailRequest $request): JsonResponse
+    {
 
         $job = Job::findOrFail($request->input('id'));
 
-        if (!$job) {
+        if (! $job) {
             return $this->sendError('Job not found', 404);
         }
 
-        $job->title              = $request->input('title');
-        $job->description        = $request->input('description');
-        $job->no_of_job_opening  = $request->input('no_of_job_opening', 1);
-        $job->department_id      = $request->input('department_id');
+        $job->title = $request->input('title');
+        $job->description = $request->input('description');
+        $job->no_of_job_opening = $request->input('no_of_job_opening', 1);
+        $job->department_id = $request->input('department_id');
         $job->employment_type_id = $request->input('employment_type_id');
-        $job->location_type_id   = $request->input('location_type_id');
-        $job->country_id         = $request->input('country_id');
-        $job->state              = $request->input('state');
-        $job->salary_from        = $request->input('salary_from');
-        $job->salary_to          = $request->input('salary_to');
-        $job->deadline           = $request->input('deadline');
-        $job->skill_ids          = $request->input('skill_ids', []);
+        $job->location_type_id = $request->input('location_type_id');
+        $job->country_id = $request->input('country_id');
+        $job->state = $request->input('state');
+        $job->salary_from = $request->input('salary_from');
+        $job->salary_to = $request->input('salary_to');
+        $job->deadline = $request->input('deadline');
+        $job->skill_ids = $request->input('skill_ids', []);
 
         $job->updated_by = Auth::id();
         $job->save();
 
         $job = Job::singleObject($job->id);
+
         return $this->sendSuccess($job, config('messages.success'));
     }
-
 
     /**
      * Update job description.
@@ -86,10 +87,11 @@ class JobController extends Controller
         $job = Job::findOrFail($request->input('id'));
 
         $job->description = $request->input('description');
-        $job->updated_by  = Auth::id();
+        $job->updated_by = Auth::id();
         $job->save();
 
         $job = Job::singleObject($job->id);
+
         return $this->sendSuccess($job, config('messages.success'));
     }
 
@@ -101,10 +103,11 @@ class JobController extends Controller
         $job = Job::findOrFail($request->input('id'));
 
         $job->description = $request->input('description');
-        $job->status  = 'open';
+        $job->status = 'open';
         $job->save();
 
         $job = Job::singleObject($job->id);
+
         return $this->sendSuccess($job, config('messages.success'));
     }
 
@@ -115,11 +118,12 @@ class JobController extends Controller
     {
         $job = Job::findOrFail($request->input('id'));
 
-        $job->media_ids   = $request->input('media_ids', []);
-        $job->updated_by  = Auth::id();
+        $job->media_ids = $request->input('media_ids', []);
+        $job->updated_by = Auth::id();
         $job->save();
 
         $job = Job::singleObject($job->id);
+
         return $this->sendSuccess($job, config('messages.success'));
     }
 
@@ -131,10 +135,11 @@ class JobController extends Controller
         $job = Job::findOrFail($request->input('id'));
 
         $job->question_ids = $request->input('question_ids', []);
-        $job->updated_by   = Auth::id();
+        $job->updated_by = Auth::id();
         $job->save();
 
         $job = Job::singleObject($job->id);
+
         return $this->sendSuccess($job, config('messages.success'));
     }
 
@@ -144,6 +149,7 @@ class JobController extends Controller
     public function single($id): JsonResponse
     {
         $job = Job::singleObject($id);
+
         return $this->sendSuccess($job, config('messages.success'));
     }
 
@@ -170,10 +176,12 @@ class JobController extends Controller
     public function intellisenseSearch(Request $request): JsonResponse
     {
         $results = Job::intellisenseSearch($request);
+
         return $this->sendSuccess($results, config('messages.success'));
     }
 
-    public function changeStatus(ChangeStatusRequest $request){
+    public function changeStatus(ChangeStatusRequest $request)
+    {
 
         $job = Job::findOrFail($request->input('id'));
         $job->status = $request->input('status');
@@ -181,6 +189,7 @@ class JobController extends Controller
         $job->save();
 
         $job = Job::singleObject($job->id);
+
         return $this->sendSuccess($job, config('messages.success'));
 
     }

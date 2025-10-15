@@ -25,16 +25,16 @@ class AddJobApplicantEducationRequest extends FormRequest
         return [
             'job_id' => [
                 'required',
-                Rule::exists('jobs', 'id')->whereNull('deleted_at')
+                Rule::exists('jobs', 'id')->whereNull('deleted_at'),
             ],
             'applicant_id' => [
                 'required',
-                Rule::exists('users', 'id')->whereNull('deleted_at')
+                Rule::exists('users', 'id')->whereNull('deleted_at'),
             ],
             'school' => ['required', 'string', 'max:200'],
             'degree_id' => [
                 'required',
-                Rule::exists('masters', 'id')->whereNull('deleted_at')
+                Rule::exists('masters', 'id')->whereNull('deleted_at'),
             ],
             'field_of_study' => ['nullable', 'string', 'max:200'],
         ];

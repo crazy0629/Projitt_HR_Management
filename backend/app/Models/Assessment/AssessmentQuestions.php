@@ -16,25 +16,24 @@ class AssessmentQuestions extends Model
         'point',
     ];
 
-
-    public static function getAssessmentQuestions($assessmentId = null, $typeId = null){
-
+    public static function getAssessmentQuestions($assessmentId = null, $typeId = null)
+    {
 
         $assessmentQuestions = AssessmentQuestions::where('assessment_id', $assessmentId)->get();
 
-        if($typeId == 1){
-            foreach($assessmentQuestions as $assessment){
+        if ($typeId == 1) {
+            foreach ($assessmentQuestions as $assessment) {
                 $assessment->question = Question::find($assessment->question_id);
             }
-        }else{
-            foreach($assessmentQuestions as $assessment){
+        } else {
+            foreach ($assessmentQuestions as $assessment) {
                 $assessment->question = CodingQuestion::find($assessment->question_id);
             }
         }
 
         $assessmentQuestions->question = $assessmentQuestions;
+
         return $assessmentQuestions;
 
     }
-    
 }

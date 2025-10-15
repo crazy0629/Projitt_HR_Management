@@ -21,8 +21,11 @@ class UserListWithFilterRequest extends FormRequest
      */
     public function rules(): array
     {
-        $validationRules = array();
-        if ($this->query('pagination')){ $validationRules['per_page'] = 'required'; $validationRules['page'] = 'required'; }
+        $validationRules = [];
+        if ($this->query('pagination')) {
+            $validationRules['per_page'] = 'required';
+            $validationRules['page'] = 'required';
+        }
 
         $validationRules['name'] = 'nullable|max:20';
 

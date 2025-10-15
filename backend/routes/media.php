@@ -3,10 +3,10 @@
 use App\Http\Controllers\Media\MediaController;
 use Illuminate\Support\Facades\Route;
 
-Route::group(['middleware' => 'either.auth.or.onboarded'], function() {
+Route::group(['middleware' => 'either.auth.or.onboarded'], function () {
 
-     Route::post('add', [MediaController::class, 'add']);
-     Route::get('single/{id}', [MediaController::class, 'single']);
-     Route::delete('delete', [MediaController::class, 'delete']);
-    
+    Route::post('add', [MediaController::class, 'add']);
+    Route::get('single/{id}', [MediaController::class, 'single']);
+    Route::delete('delete', [MediaController::class, 'delete']);
+
 });

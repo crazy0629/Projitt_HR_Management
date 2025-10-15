@@ -26,23 +26,21 @@ class EditJobApplicantInfoRequest extends FormRequest
 
             'job_id' => [
                 'required',
-                Rule::exists('jobs', 'id')->where(fn ($query) =>
-                    $query->whereNull('deleted_at')
-                          ->where('status', 'open')
+                Rule::exists('jobs', 'id')->where(fn ($query) => $query->whereNull('deleted_at')
+                    ->where('status', 'open')
                 ),
             ],
 
             'applicant_id' => [
                 'required',
-                Rule::exists('users', 'id')->where(fn ($query) =>
-                    $query->whereNull('deleted_at')
+                Rule::exists('users', 'id')->where(fn ($query) => $query->whereNull('deleted_at')
                 ),
             ],
-            
+
             'skill_ids' => ['required', 'array'],
             'skill_ids.*' => [
                 'required',
-                Rule::exists('masters', 'id')->whereNull('deleted_at')
+                Rule::exists('masters', 'id')->whereNull('deleted_at'),
             ],
 
             'linkedin_link' => ['required', 'url'],

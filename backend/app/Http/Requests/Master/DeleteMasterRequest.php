@@ -23,7 +23,7 @@ class DeleteMasterRequest extends FormRequest
     {
         return [
             'ids' => 'required|array',
-            'ids.*' => 'required|exists:masters,id,deleted_at,NULL'
+            'ids.*' => 'required|exists:masters,id,deleted_at,NULL',
         ];
     }
 }
