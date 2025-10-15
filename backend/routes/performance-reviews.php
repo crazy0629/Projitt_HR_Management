@@ -29,6 +29,27 @@ Route::middleware(['auth:sanctum'])->prefix('performance-reviews')->group(functi
         Route::post('/{id}/activate', [PerformanceCycleController::class, 'activate']); // Activate cycle
         Route::post('/{id}/complete', [PerformanceCycleController::class, 'complete']); // Complete cycle
 
+        // Setup Wizard Routes
+        Route::get('/{id}/setup/status', [PerformanceCycleController::class, 'getSetupStatus']); // Get setup wizard status
+        Route::post('/{id}/setup/default-competencies', [PerformanceCycleController::class, 'createDefaultCompetencies']); // Create default competencies
+        Route::get('/{id}/competencies', [PerformanceCycleController::class, 'getCompetencies']); // Get cycle competencies
+        Route::post('/{cycleId}/competencies', [PerformanceCycleController::class, 'storeCompetency']); // Create competency
+        Route::put('/{cycleId}/competencies/{competencyId}', [PerformanceCycleController::class, 'updateCompetency']); // Update competency
+        Route::post('/{cycleId}/competencies/{competencyId}/criteria', [PerformanceCycleController::class, 'storeCriteria']); // Create criteria
+
+        // CSV Import Routes
+        Route::post('/{id}/import/csv', [PerformanceCycleController::class, 'uploadCsv']); // Upload CSV file
+        Route::post('/{cycleId}/import/{importId}/process', [PerformanceCycleController::class, 'processCsvImport']); // Process import
+        Route::get('/import/sample-csv', [PerformanceCycleController::class, 'downloadSampleCsv']); // Download sample CSV
+
+        // User Guide Routes
+        Route::post('/{id}/user-guide', [PerformanceCycleController::class, 'uploadUserGuide']); // Upload user guide
+
+        // Eligibility and Launch Routes
+        Route::post('/{id}/eligibility-criteria', [PerformanceCycleController::class, 'setEligibilityCriteria']); // Set eligibility criteria
+        Route::post('/{id}/mark-ready', [PerformanceCycleController::class, 'markReadyToLaunch']); // Mark ready to launch
+        Route::post('/{id}/launch', [PerformanceCycleController::class, 'launchCycle']); // Launch cycle with assignments
+
         // Employee Management
         Route::post('/{id}/employees', [PerformanceCycleController::class, 'addEmployees']); // Add employees to cycle
 

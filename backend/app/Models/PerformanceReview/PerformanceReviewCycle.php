@@ -20,6 +20,15 @@ class PerformanceReviewCycle extends Model
         'frequency',
         'competencies',
         'assignments',
+        'anonymous_peer_reviews',
+        'allow_optional_text_feedback',
+        'eligibility_criteria',
+        'user_guide_path',
+        'user_guide_name',
+        'setup_status',
+        'launched_at',
+        'total_employees',
+        'eligible_employees',
         'status',
         'employee_count',
         'completed_count',
@@ -32,6 +41,10 @@ class PerformanceReviewCycle extends Model
         'period_end' => 'date',
         'competencies' => 'array',
         'assignments' => 'array',
+        'anonymous_peer_reviews' => 'boolean',
+        'allow_optional_text_feedback' => 'boolean',
+        'eligibility_criteria' => 'array',
+        'launched_at' => 'datetime',
         'completion_rate' => 'decimal:2',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
@@ -71,6 +84,21 @@ class PerformanceReviewCycle extends Model
     public function reviews()
     {
         return $this->hasMany(PerformanceReview::class, 'cycle_id');
+    }
+
+    public function reviewCompetencies()
+    {
+        return $this->hasMany(ReviewCompetency::class, 'cycle_id')->ordered();
+    }
+
+    public function activeCompetencies()
+    {
+        return $this->hasMany(ReviewCompetency::class, 'cycle_id')->active()->ordered();
+    }
+
+    public function questionImports()
+    {
+        return $this->hasMany(ReviewQuestionImport::class, 'cycle_id')->orderBy('created_at', 'desc');
     }
 
     // Scopes
@@ -162,5 +190,163 @@ class PerformanceReviewCycle extends Model
         return collect($this->assignments ?? [])
             ->map(fn ($assignment) => $types[$assignment] ?? ucfirst(str_replace('_', ' ', $assignment)))
             ->implode(', ');
+    }
+
+    // Setup wizard helper methods
+    public function isSetupIncomplete()
+    {
+        return $this->setup_status === 'incomplete';
+    }
+
+    public function hasCompetenciesAdded()
+    {
+        return in_array($this->setup_status, ['competencies_added', 'criteria_added', 'ready_to_launch']);
+    }
+
+    public function hasCriteriaAdded()
+    {
+        return in_array($this->setup_status, ['criteria_added', 'ready_to_launch']);
+    }
+
+    public function isReadyToLaunch()
+    {
+        return $this->setup_status === 'ready_to_launch';
+    }
+
+    public function isLaunched()
+    {
+        return $this->launched_at !== null;
+    }
+
+    public function updateSetupStatus($status)
+    {
+        $validStatuses = ['incomplete', 'competencies_added', 'criteria_added', 'ready_to_launch'];
+
+        if (in_array($status, $validStatuses)) {
+            $this->setup_status = $status;
+            $this->save();
+        }
+
+        return $this;
+    }
+
+    public function markAsLaunched()
+    {
+        $this->launched_at = now();
+        $this->status = 'active';
+        $this->save();
+
+        return $this;
+    }
+
+    public function getSetupProgress()
+    {
+        $steps = [
+            'incomplete' => 0,
+            'competencies_added' => 25,
+            'criteria_added' => 75,
+            'ready_to_launch' => 100,
+        ];
+
+        return $steps[$this->setup_status] ?? 0;
+    }
+
+    public function getCompetenciesCount()
+    {
+        return $this->reviewCompetencies()->count();
+    }
+
+    public function getActiveCriteriaCount()
+    {
+        return $this->activeCompetencies()
+            ->with(['activeCriteria'])
+            ->get()
+            ->sum(function ($competency) {
+                return $competency->activeCriteria->count();
+            });
+    }
+
+    public function hasUserGuide()
+    {
+        return ! empty($this->user_guide_path);
+    }
+
+    public function getUserGuideUrl()
+    {
+        if ($this->hasUserGuide()) {
+            return asset('storage/'.$this->user_guide_path);
+        }
+
+        return null;
+    }
+
+    public function deleteUserGuide()
+    {
+        if ($this->hasUserGuide()) {
+            \Storage::delete($this->user_guide_path);
+            $this->user_guide_path = null;
+            $this->user_guide_name = null;
+            $this->save();
+        }
+
+        return $this;
+    }
+
+    public function uploadUserGuide($file)
+    {
+        if ($this->hasUserGuide()) {
+            $this->deleteUserGuide();
+        }
+
+        $fileName = $file->getClientOriginalName();
+        $filePath = $file->store('user_guides');
+
+        $this->user_guide_path = $filePath;
+        $this->user_guide_name = $fileName;
+        $this->save();
+
+        return $this;
+    }
+
+    public function createDefaultCompetencies()
+    {
+        if ($this->reviewCompetencies()->count() === 0) {
+            $competencies = ReviewCompetency::createDefault($this->id);
+
+            foreach ($competencies as $competency) {
+                ReviewCriteria::createDefaultForCompetency($competency->id, $competency->name);
+            }
+
+            $this->updateSetupStatus('criteria_added');
+
+            return $competencies;
+        }
+
+        return [];
+    }
+
+    public function calculateEligibleEmployees($criteria = null)
+    {
+        $eligibilityCriteria = $criteria ?? $this->eligibility_criteria;
+
+        if (empty($eligibilityCriteria)) {
+            $this->eligible_employees = $this->total_employees;
+            $this->save();
+
+            return $this->total_employees;
+        }
+
+        // This would need to be implemented based on your user model structure
+        // For now, return total employees as placeholder
+        $this->eligible_employees = $this->total_employees;
+        $this->save();
+
+        return $this->eligible_employees;
+    }
+
+    public function generateReviewAssignments()
+    {
+        // This will be implemented in the service layer
+        return [];
     }
 }

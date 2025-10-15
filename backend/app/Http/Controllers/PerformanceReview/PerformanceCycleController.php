@@ -5,7 +5,12 @@ namespace App\Http\Controllers\PerformanceReview;
 use App\Http\Controllers\Controller;
 use App\Models\PerformanceReview\PerformanceReview;
 use App\Models\PerformanceReview\PerformanceReviewCycle;
+use App\Models\PerformanceReview\ReviewCompetency;
+use App\Models\PerformanceReview\ReviewCriteria;
+use App\Models\PerformanceReview\ReviewQuestionImport;
 use App\Models\User\User;
+use App\Services\PerformanceReview\CsvImportService;
+use App\Services\PerformanceReview\ReviewAssignmentService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -584,6 +589,600 @@ class PerformanceCycleController extends Controller
             return response()->json([
                 'status' => 'error',
                 'message' => 'Failed to delete performance cycle',
+            ], 500);
+        }
+    }
+
+    // SETUP WIZARD METHODS
+
+    /**
+     * Get setup wizard status and progress for a cycle
+     */
+    public function getSetupStatus($id)
+    {
+        try {
+            $cycle = PerformanceReviewCycle::with([
+                'reviewCompetencies',
+                'activeCompetencies.activeCriteria',
+                'questionImports',
+            ])->findOrFail($id);
+
+            return response()->json([
+                'status' => 'success',
+                'data' => [
+                    'cycle' => [
+                        'id' => $cycle->id,
+                        'name' => $cycle->name,
+                        'setup_status' => $cycle->setup_status,
+                        'setup_progress' => $cycle->getSetupProgress(),
+                        'is_launched' => $cycle->isLaunched(),
+                        'launched_at' => $cycle->launched_at,
+                    ],
+                    'competencies_count' => $cycle->getCompetenciesCount(),
+                    'criteria_count' => $cycle->getActiveCriteriaCount(),
+                    'has_user_guide' => $cycle->hasUserGuide(),
+                    'user_guide_name' => $cycle->user_guide_name,
+                    'total_employees' => $cycle->total_employees,
+                    'eligible_employees' => $cycle->eligible_employees,
+                    'recent_imports' => $cycle->questionImports()->limit(5)->get(),
+                ],
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('Error retrieving setup status: '.$e->getMessage());
+
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Failed to retrieve setup status',
+            ], 500);
+        }
+    }
+
+    /**
+     * Create default competencies for a cycle
+     */
+    public function createDefaultCompetencies($id)
+    {
+        try {
+            $cycle = PerformanceReviewCycle::findOrFail($id);
+
+            if ($cycle->isLaunched()) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Cannot modify competencies for launched cycles',
+                ], 422);
+            }
+
+            DB::beginTransaction();
+
+            $competencies = $cycle->createDefaultCompetencies();
+
+            DB::commit();
+
+            return response()->json([
+                'status' => 'success',
+                'data' => [
+                    'competencies' => $competencies->load('activeCriteria'),
+                    'setup_status' => $cycle->fresh()->setup_status,
+                    'setup_progress' => $cycle->getSetupProgress(),
+                ],
+                'message' => 'Default competencies created successfully',
+            ]);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Error creating default competencies: '.$e->getMessage());
+
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Failed to create default competencies',
+            ], 500);
+        }
+    }
+
+    /**
+     * Get competencies for a cycle
+     */
+    public function getCompetencies($id)
+    {
+        try {
+            $cycle = PerformanceReviewCycle::findOrFail($id);
+
+            $competencies = $cycle->reviewCompetencies()
+                ->with(['activeCriteria'])
+                ->get();
+
+            return response()->json([
+                'status' => 'success',
+                'data' => $competencies,
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('Error retrieving competencies: '.$e->getMessage());
+
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Failed to retrieve competencies',
+            ], 500);
+        }
+    }
+
+    /**
+     * Create or update a competency
+     */
+    public function storeCompetency(Request $request, $cycleId)
+    {
+        try {
+            $cycle = PerformanceReviewCycle::findOrFail($cycleId);
+
+            if ($cycle->isLaunched()) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Cannot modify competencies for launched cycles',
+                ], 422);
+            }
+
+            $validator = Validator::make($request->all(), [
+                'name' => 'required|string|max:255',
+                'description' => 'nullable|string',
+                'sort_order' => 'nullable|integer',
+                'is_active' => 'boolean',
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Validation failed',
+                    'errors' => $validator->errors(),
+                ], 422);
+            }
+
+            $sortOrder = $request->sort_order ?? (ReviewCompetency::where('cycle_id', $cycleId)->max('sort_order') + 10);
+
+            $competency = ReviewCompetency::create([
+                'cycle_id' => $cycleId,
+                'name' => $request->name,
+                'description' => $request->description,
+                'sort_order' => $sortOrder,
+                'is_active' => $request->get('is_active', true),
+            ]);
+
+            // Update cycle setup status
+            $cycle->updateSetupStatus('competencies_added');
+
+            return response()->json([
+                'status' => 'success',
+                'data' => $competency->load('activeCriteria'),
+                'message' => 'Competency created successfully',
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('Error creating competency: '.$e->getMessage());
+
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Failed to create competency',
+            ], 500);
+        }
+    }
+
+    /**
+     * Update a competency
+     */
+    public function updateCompetency(Request $request, $cycleId, $competencyId)
+    {
+        try {
+            $cycle = PerformanceReviewCycle::findOrFail($cycleId);
+            $competency = ReviewCompetency::where('cycle_id', $cycleId)->findOrFail($competencyId);
+
+            if ($cycle->isLaunched()) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Cannot modify competencies for launched cycles',
+                ], 422);
+            }
+
+            $validator = Validator::make($request->all(), [
+                'name' => 'sometimes|string|max:255',
+                'description' => 'nullable|string',
+                'sort_order' => 'nullable|integer',
+                'is_active' => 'boolean',
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Validation failed',
+                    'errors' => $validator->errors(),
+                ], 422);
+            }
+
+            $competency->update($request->only(['name', 'description', 'sort_order', 'is_active']));
+
+            return response()->json([
+                'status' => 'success',
+                'data' => $competency->load('activeCriteria'),
+                'message' => 'Competency updated successfully',
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('Error updating competency: '.$e->getMessage());
+
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Failed to update competency',
+            ], 500);
+        }
+    }
+
+    /**
+     * Create criteria for a competency
+     */
+    public function storeCriteria(Request $request, $cycleId, $competencyId)
+    {
+        try {
+            $cycle = PerformanceReviewCycle::findOrFail($cycleId);
+            $competency = ReviewCompetency::where('cycle_id', $cycleId)->findOrFail($competencyId);
+
+            if ($cycle->isLaunched()) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Cannot modify criteria for launched cycles',
+                ], 422);
+            }
+
+            $validator = Validator::make($request->all(), [
+                'text' => 'required|string',
+                'weight' => 'nullable|numeric|min:0|max:100',
+                'sort_order' => 'nullable|integer',
+                'is_required' => 'boolean',
+                'is_active' => 'boolean',
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Validation failed',
+                    'errors' => $validator->errors(),
+                ], 422);
+            }
+
+            $sortOrder = $request->sort_order ?? (ReviewCriteria::where('competency_id', $competencyId)->max('sort_order') + 10);
+
+            $criteria = ReviewCriteria::create([
+                'competency_id' => $competencyId,
+                'text' => $request->text,
+                'weight' => $request->get('weight', 0),
+                'sort_order' => $sortOrder,
+                'is_required' => $request->get('is_required', true),
+                'is_active' => $request->get('is_active', true),
+            ]);
+
+            // Update cycle setup status
+            $cycle->updateSetupStatus('criteria_added');
+
+            return response()->json([
+                'status' => 'success',
+                'data' => $criteria,
+                'message' => 'Criteria created successfully',
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('Error creating criteria: '.$e->getMessage());
+
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Failed to create criteria',
+            ], 500);
+        }
+    }
+
+    /**
+     * Upload CSV file for bulk import
+     */
+    public function uploadCsv(Request $request, $cycleId)
+    {
+        try {
+            $cycle = PerformanceReviewCycle::findOrFail($cycleId);
+
+            if ($cycle->isLaunched()) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Cannot import to launched cycles',
+                ], 422);
+            }
+
+            $validator = Validator::make($request->all(), [
+                'file' => 'required|file|mimes:csv,txt|max:2048',
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Validation failed',
+                    'errors' => $validator->errors(),
+                ], 422);
+            }
+
+            $file = $request->file('file');
+            $import = ReviewQuestionImport::createForUpload($cycleId, $file, Auth::id());
+
+            return response()->json([
+                'status' => 'success',
+                'data' => $import,
+                'message' => 'CSV file uploaded successfully',
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('Error uploading CSV: '.$e->getMessage());
+
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Failed to upload CSV file',
+            ], 500);
+        }
+    }
+
+    /**
+     * Process CSV import
+     */
+    public function processCsvImport($cycleId, $importId)
+    {
+        try {
+            $cycle = PerformanceReviewCycle::findOrFail($cycleId);
+            $import = ReviewQuestionImport::where('cycle_id', $cycleId)->findOrFail($importId);
+
+            if ($import->status !== 'pending') {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Import has already been processed',
+                ], 422);
+            }
+
+            $service = new CsvImportService;
+            $result = $service->processImport($import);
+
+            return response()->json([
+                'status' => $result['success'] ? 'success' : 'error',
+                'data' => $result,
+                'message' => $result['success'] ? 'CSV import completed successfully' : 'CSV import failed',
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('Error processing CSV import: '.$e->getMessage());
+
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Failed to process CSV import',
+            ], 500);
+        }
+    }
+
+    /**
+     * Download sample CSV template
+     */
+    public function downloadSampleCsv()
+    {
+        try {
+            $csv = CsvImportService::generateSampleCsv();
+
+            return response($csv, 200, [
+                'Content-Type' => 'text/csv',
+                'Content-Disposition' => 'attachment; filename="performance_review_criteria_sample.csv"',
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('Error generating sample CSV: '.$e->getMessage());
+
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Failed to generate sample CSV',
+            ], 500);
+        }
+    }
+
+    /**
+     * Upload user guide for a cycle
+     */
+    public function uploadUserGuide(Request $request, $cycleId)
+    {
+        try {
+            $cycle = PerformanceReviewCycle::findOrFail($cycleId);
+
+            $validator = Validator::make($request->all(), [
+                'file' => 'required|file|mimes:pdf,doc,docx|max:10240', // 10MB max
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Validation failed',
+                    'errors' => $validator->errors(),
+                ], 422);
+            }
+
+            $file = $request->file('file');
+            $cycle->uploadUserGuide($file);
+
+            return response()->json([
+                'status' => 'success',
+                'data' => [
+                    'user_guide_name' => $cycle->user_guide_name,
+                    'user_guide_url' => $cycle->getUserGuideUrl(),
+                ],
+                'message' => 'User guide uploaded successfully',
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('Error uploading user guide: '.$e->getMessage());
+
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Failed to upload user guide',
+            ], 500);
+        }
+    }
+
+    /**
+     * Set eligibility criteria for a cycle
+     */
+    public function setEligibilityCriteria(Request $request, $cycleId)
+    {
+        try {
+            $cycle = PerformanceReviewCycle::findOrFail($cycleId);
+
+            if ($cycle->isLaunched()) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Cannot modify eligibility criteria for launched cycles',
+                ], 422);
+            }
+
+            $validator = Validator::make($request->all(), [
+                'departments' => 'nullable|array',
+                'departments.*' => 'integer',
+                'roles' => 'nullable|array',
+                'roles.*' => 'integer',
+                'employment_types' => 'nullable|array',
+                'employment_types.*' => 'string',
+                'min_tenure_months' => 'nullable|integer|min:0',
+                'status' => 'nullable|array',
+                'status.*' => 'string',
+                'excluded_users' => 'nullable|array',
+                'excluded_users.*' => 'integer',
+                'included_users' => 'nullable|array',
+                'included_users.*' => 'integer',
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Validation failed',
+                    'errors' => $validator->errors(),
+                ], 422);
+            }
+
+            $criteria = $request->only([
+                'departments', 'roles', 'employment_types', 'min_tenure_months',
+                'status', 'excluded_users', 'included_users',
+            ]);
+
+            $cycle->update(['eligibility_criteria' => $criteria]);
+
+            // Calculate eligible employees count
+            $eligibleCount = $cycle->calculateEligibleEmployees($criteria);
+
+            return response()->json([
+                'status' => 'success',
+                'data' => [
+                    'eligibility_criteria' => $criteria,
+                    'eligible_employees_count' => $eligibleCount,
+                ],
+                'message' => 'Eligibility criteria updated successfully',
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('Error setting eligibility criteria: '.$e->getMessage());
+
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Failed to set eligibility criteria',
+            ], 500);
+        }
+    }
+
+    /**
+     * Mark cycle as ready to launch
+     */
+    public function markReadyToLaunch($cycleId)
+    {
+        try {
+            $cycle = PerformanceReviewCycle::findOrFail($cycleId);
+
+            if ($cycle->isLaunched()) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Cycle is already launched',
+                ], 422);
+            }
+
+            // Validate cycle is ready
+            $service = new ReviewAssignmentService;
+            $validation = $service->validateCycleForAssignment($cycle);
+
+            if (! $validation['valid']) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Cycle is not ready to launch',
+                    'errors' => $validation['errors'],
+                ], 422);
+            }
+
+            $cycle->updateSetupStatus('ready_to_launch');
+
+            return response()->json([
+                'status' => 'success',
+                'data' => [
+                    'setup_status' => $cycle->setup_status,
+                    'setup_progress' => $cycle->getSetupProgress(),
+                ],
+                'message' => 'Cycle marked as ready to launch',
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('Error marking cycle ready: '.$e->getMessage());
+
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Failed to mark cycle as ready',
+            ], 500);
+        }
+    }
+
+    /**
+     * Launch cycle and generate assignments
+     */
+    public function launchCycle($cycleId)
+    {
+        try {
+            $cycle = PerformanceReviewCycle::findOrFail($cycleId);
+
+            if ($cycle->isLaunched()) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Cycle is already launched',
+                ], 422);
+            }
+
+            if (! $cycle->isReadyToLaunch()) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Cycle is not ready to launch. Please complete the setup wizard first.',
+                ], 422);
+            }
+
+            $service = new ReviewAssignmentService;
+            $result = $service->generateAssignments($cycle);
+
+            if (! $result['success']) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => $result['error'],
+                ], 500);
+            }
+
+            return response()->json([
+                'status' => 'success',
+                'data' => $result,
+                'message' => 'Cycle launched successfully',
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('Error launching cycle: '.$e->getMessage());
+
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Failed to launch cycle',
             ], 500);
         }
     }

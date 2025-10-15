@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('slug', 300)->unique()->nullable();
             $table->text('description')->nullable();
             $table->text('learning_objectives')->nullable();
-            
+
             // Course Library enhancements
             $table->foreignId('category_id')->nullable()->constrained('categories')->onDelete('set null');
             $table->enum('type', ['video', 'text', 'external_link', 'file_upload'])->default('external_link');
@@ -25,7 +25,7 @@ return new class extends Migration
             $table->string('file_path')->nullable(); // For uploaded files
             $table->string('file_type')->nullable(); // mp4, pdf, etc.
             $table->bigInteger('file_size')->nullable(); // In bytes
-            
+
             $table->enum('difficulty_level', ['beginner', 'intermediate', 'advanced'])->default('beginner');
             $table->integer('duration_minutes')->nullable(); // Changed from hours to minutes for precision
             $table->decimal('price', 10, 2)->default(0.00);
@@ -36,7 +36,7 @@ return new class extends Migration
             $table->enum('status', ['active', 'archived'])->default('active')->index(); // Simplified status
             $table->decimal('rating', 3, 2)->default(0.00); // Average rating
             $table->integer('enrollments_count')->default(0);
-            
+
             // Usage statistics
             $table->integer('learning_paths_count')->default(0);
             $table->integer('assigned_users_count')->default(0);
@@ -51,7 +51,7 @@ return new class extends Migration
 
             $table->timestamps();
             $table->softDeletes()->index();
-            
+
             // Indexes for better performance
             $table->index(['type', 'status']);
             $table->index(['category_id', 'status']);

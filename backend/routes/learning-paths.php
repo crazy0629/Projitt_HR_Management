@@ -48,7 +48,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
         Route::post('/external', [CourseController::class, 'storeExternal']);
         Route::post('/upload', [CourseController::class, 'storeUpload']);
         Route::patch('/{id}/status', [CourseController::class, 'updateStatus']);
-        
+
         // Basic CRUD operations
         Route::get('/', [CourseController::class, 'index']);
         Route::post('/', [CourseController::class, 'store']); // Legacy
