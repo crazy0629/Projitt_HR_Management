@@ -15,5 +15,6 @@ return function () {
     Route::prefix('learning')->group(base_path('routes/learning-paths.php'));
     require base_path('routes/performance-reviews.php');
     require base_path('routes/promotions-succession.php');
+    Route::prefix('talent')->group(base_path('routes/talent-management.php'));
 
 };
