@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Talent;
 use App\Http\Controllers\Controller;
 use App\Models\Talent\PromotionCandidate;
 use App\Models\Talent\PromotionWorkflow;
-use App\Services\Talent\PromotionService;
+use App\Services\Talent\PromotionWorkflowService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
@@ -14,7 +14,7 @@ class PromotionController extends Controller
 {
     protected $promotionService;
 
-    public function __construct(PromotionService $promotionService)
+    public function __construct(PromotionWorkflowService $promotionService)
     {
         $this->promotionService = $promotionService;
     }
@@ -167,7 +167,7 @@ class PromotionController extends Controller
     public function submit($id)
     {
         try {
-            $promotion = $this->promotionService->submitPromotion($id);
+            $promotion = $this->promotionService->submitForApproval($id);
 
             return response()->json([
                 'success' => true,
@@ -234,7 +234,10 @@ class PromotionController extends Controller
         }
 
         try {
+            // We need to find the promotion ID from the approval
+            $approval = \App\Models\Talent\PromotionApproval::findOrFail($approvalId);
             $promotion = $this->promotionService->processApproval(
+                $approval->promotion_id,
                 $approvalId,
                 $request->decision,
                 $request->note
@@ -259,7 +262,7 @@ class PromotionController extends Controller
      */
     public function pendingApprovals()
     {
-        $pendingApprovals = $this->promotionService->getPendingApprovals(Auth::id());
+        $pendingApprovals = $this->promotionService->getPromotionsForApprover(Auth::id(), 'pending');
 
         return response()->json([
             'success' => true,
@@ -272,8 +275,10 @@ class PromotionController extends Controller
      */
     public function stats(Request $request)
     {
-        $filters = $request->only(['department', 'status', 'date_range']);
-        $stats = $this->promotionService->getPromotionStats($filters);
+        $startDate = $request->date_from ? \Carbon\Carbon::parse($request->date_from) : null;
+        $endDate = $request->date_to ? \Carbon\Carbon::parse($request->date_to) : null;
+
+        $stats = $this->promotionService->getPromotionMetrics($startDate, $endDate);
 
         return response()->json([
             'success' => true,

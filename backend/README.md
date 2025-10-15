@@ -289,6 +289,196 @@ The API uses **Laravel Sanctum** for token-based authentication with custom midd
 - `master` - Master data/lookup tables
 - `media` - File uploads and media
 - `countries` - Country/location data
+- `learning_paths` - Employee learning and development paths
+- `courses` - Training courses and resources
+- `performance_review_cycles` - Performance review periods
+- `performance_reviews` - Individual performance reviews
+- `promotion_candidates` - Employee promotion requests
+- `promotion_workflows` - Configurable approval workflows
+- `succession_roles` - Critical roles for succession planning
+- `succession_candidates` - Succession plan candidates
+- `pips` - Performance Improvement Plans
+- `pip_checkins` - PIP progress check-ins
+- `notes` - Employee notes and observations
+- `retention_risk_snapshots` - Employee retention risk tracking
+- `audit_logs` - Complete audit trail for talent management
+
+### 🎓 Learning Paths (`/api/learning`)
+
+Complete learning and development management system with course assignments and progress tracking.
+
+| Method | Endpoint | Auth | Description |
+|--------|----------|------|-------------|
+| `GET` | `/learning-paths` | ✅ | List all learning paths |
+| `POST` | `/learning-paths` | ✅ | Create learning path |
+| `GET` | `/learning-paths/{id}` | ✅ | Get learning path details |
+| `PUT` | `/learning-paths/{id}` | ✅ | Update learning path |
+| `POST` | `/learning-paths/{id}/assign` | ✅ | Assign to employees |
+| `GET` | `/learning-paths/{id}/progress` | ✅ | Get completion progress |
+| `GET` | `/courses` | ✅ | List available courses |
+| `POST` | `/courses` | ✅ | Create new course |
+| `GET` | `/courses/{id}` | ✅ | Get course details |
+
+### ⭐ Performance Reviews (`/api/performance-reviews`)
+
+Comprehensive performance review system with cycles, competencies, and feedback management.
+
+| Method | Endpoint | Auth | Description |
+|--------|----------|------|-------------|
+| `GET` | `/cycles` | ✅ | List review cycles |
+| `POST` | `/cycles` | ✅ | Create review cycle |
+| `GET` | `/cycles/{id}` | ✅ | Get cycle details |
+| `GET` | `/cycles/{id}/reviews` | ✅ | Get cycle reviews |
+| `POST` | `/reviews` | ✅ | Create review |
+| `GET` | `/reviews/{id}` | ✅ | Get review details |
+| `PUT` | `/reviews/{id}/submit` | ✅ | Submit review |
+| `GET` | `/reviews/{id}/feedback` | ✅ | Get review feedback |
+
+### 🚀 Talent Management (`/api/talent`)
+
+Complete talent management ecosystem for career advancement, succession planning, and employee development.
+
+#### 📈 Promotions (`/api/talent/promotions`)
+
+| Method | Endpoint | Auth | Description |
+|--------|----------|------|-------------|
+| `GET` | `/` | ✅ | List promotion requests |
+| `POST` | `/` | ✅ | Create promotion request |
+| `GET` | `/{id}` | ✅ | Get promotion details |
+| `PUT` | `/{id}` | ✅ | Update promotion |
+| `POST` | `/{id}/submit` | ✅ | Submit for approval |
+| `POST` | `/{id}/withdraw` | ✅ | Withdraw request |
+| `GET` | `/{id}/timeline` | ✅ | Get approval timeline |
+| `GET` | `/workflows` | ✅ | List available workflows |
+| `GET` | `/pending-approvals` | ✅ | Get pending approvals |
+| `POST` | `/approvals/{approvalId}` | ✅ | Process approval |
+| `GET` | `/stats` | ✅ | Get promotion statistics |
+
+#### 🔄 Succession Planning (`/api/talent/succession`)
+
+| Method | Endpoint | Auth | Description |
+|--------|----------|------|-------------|
+| `GET` | `/` | ✅ | Get succession plan overview |
+| `GET` | `/metrics` | ✅ | Get succession metrics |
+| `GET` | `/critical-gaps` | ✅ | Get critical role gaps |
+| `GET` | `/readiness-benchmark` | ✅ | Get readiness benchmark |
+| `POST` | `/roles` | ✅ | Create succession role |
+| `GET` | `/roles/{id}` | ✅ | Get succession role details |
+| `POST` | `/candidates` | ✅ | Add succession candidate |
+| `GET` | `/candidates/{id}` | ✅ | Get candidate details |
+| `PUT` | `/candidates/{id}/readiness` | ✅ | Update readiness status |
+| `POST` | `/candidates/{id}/learning-path` | ✅ | Assign learning path |
+| `POST` | `/candidates/{id}/promote` | ✅ | Promote candidate |
+| `GET` | `/employees/{employeeId}/opportunities` | ✅ | Get employee opportunities |
+
+#### 📊 Performance Improvement Plans (`/api/talent/pips`)
+
+| Method | Endpoint | Auth | Description |
+|--------|----------|------|-------------|
+| `GET` | `/` | ✅ | List PIPs with filters |
+| `POST` | `/` | ✅ | Create new PIP |
+| `GET` | `/{id}` | ✅ | Get PIP details |
+| `PUT` | `/{id}/status` | ✅ | Update PIP status |
+| `POST` | `/{id}/checkins` | ✅ | Add check-in |
+| `GET` | `/{id}/report` | ✅ | Generate PIP report |
+| `GET` | `/due-for-checkin` | ✅ | Get PIPs due for check-in |
+| `GET` | `/overdue` | ✅ | Get overdue PIPs |
+| `GET` | `/metrics` | ✅ | Get PIP metrics |
+| `GET` | `/employees/{employeeId}/history` | ✅ | Get employee PIP history |
+
+#### 📝 Employee Notes (`/api/talent/notes`)
+
+| Method | Endpoint | Auth | Description |
+|--------|----------|------|-------------|
+| `GET` | `/` | ✅ | List employee notes |
+| `POST` | `/` | ✅ | Create note |
+| `GET` | `/{id}` | ✅ | Get note details |
+| `DELETE` | `/{id}` | ✅ | Delete note |
+
+**Note Visibility Levels:**
+- `hr_only`: Visible only to HR team
+- `manager_chain`: Visible to employee's management chain
+- `employee_visible`: Visible to the employee
+
+#### 🎯 Retention Risk Tracking (`/api/talent/retention-risk`)
+
+| Method | Endpoint | Auth | Description |
+|--------|----------|------|-------------|
+| `GET` | `/` | ✅ | List retention risk snapshots |
+| `POST` | `/` | ✅ | Create risk snapshot |
+| `GET` | `/employees/{employeeId}/current` | ✅ | Get current risk level |
+| `GET` | `/high-risk` | ✅ | Get high-risk employees |
+
+**Risk Levels:** `low`, `medium`, `high`
+
+**Common Risk Factors:**
+- `workload_high` - Excessive workload
+- `compensation_below_market` - Below-market compensation
+- `limited_growth_opportunities` - Limited career growth
+- `poor_work_life_balance` - Work-life balance issues
+- `team_dynamics_issues` - Team relationship problems
+- `role_mismatch` - Skills-role mismatch
+- `lack_of_recognition` - Insufficient recognition
+- `manager_relationship` - Manager relationship issues
+
+#### 📋 Audit Logs (`/api/talent/audit-logs`)
+
+| Method | Endpoint | Auth | Description |
+|--------|----------|------|-------------|
+| `GET` | `/` | ✅ | List audit logs |
+| `GET` | `/{entityType}/{entityId}` | ✅ | Get entity-specific logs |
+
+**Tracked Actions:** `created`, `updated`, `deleted`, `status_changed`, `approved`, `rejected`, `submitted`, `withdrawn`
+
+## 🎯 Talent Management Features
+
+### Core Capabilities
+
+1. **Promotion Workflows**
+   - Configurable approval processes
+   - Role-based approval routing
+   - Salary change management
+   - Skills and achievements tracking
+   - Timeline and status tracking
+
+2. **Succession Planning**
+   - Critical role identification
+   - Successor readiness assessment
+   - Development plan integration
+   - Gap analysis and reporting
+   - Bench strength analytics
+
+3. **Performance Improvement Plans**
+   - Goal setting and tracking
+   - Regular check-in management
+   - Mentor assignment
+   - Progress rating system
+   - Learning path integration
+
+4. **Employee Development**
+   - Learning path assignments
+   - Skill development tracking
+   - Career progression planning
+   - Mentorship programs
+
+5. **Retention Management**
+   - Risk factor assessment
+   - Monthly snapshots
+   - Trend analysis
+   - Early warning system
+
+6. **Comprehensive Auditing**
+   - Full activity tracking
+   - Compliance reporting
+   - Change history
+   - Access logging
+
+### Integration Points
+
+- **Learning Paths**: PIPs and succession planning integrate with learning management
+- **Performance Reviews**: Connects with promotion and succession decisions
+- **User Management**: Role-based access and employee hierarchy
+- **Audit Logs**: Complete traceability across all talent activities
 
 ## 🧪 Testing
 
