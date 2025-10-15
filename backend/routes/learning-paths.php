@@ -41,10 +41,17 @@ Route::middleware(['auth:sanctum'])->group(function () {
         Route::patch('/{id}/assignments/{assignmentId}/progress', [LearningPathController::class, 'updateProgress']);
     });
 
-    // Course Routes
+    // Course Routes (Course Library)
     Route::prefix('courses')->group(function () {
+        // Course Library specific endpoints
+        Route::get('/categories', [CourseController::class, 'getCategories']);
+        Route::post('/external', [CourseController::class, 'storeExternal']);
+        Route::post('/upload', [CourseController::class, 'storeUpload']);
+        Route::patch('/{id}/status', [CourseController::class, 'updateStatus']);
+        
+        // Basic CRUD operations
         Route::get('/', [CourseController::class, 'index']);
-        Route::post('/', [CourseController::class, 'store']);
+        Route::post('/', [CourseController::class, 'store']); // Legacy
         Route::get('/{id}', [CourseController::class, 'show']);
         Route::put('/{id}', [CourseController::class, 'update']);
         Route::delete('/{id}', [CourseController::class, 'destroy']);
