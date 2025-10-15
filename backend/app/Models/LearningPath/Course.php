@@ -107,6 +107,22 @@ class Course extends Model
             ->withTimestamps();
     }
 
+    public function lessons()
+    {
+        return $this->hasMany(\App\Models\LMS\CourseLesson::class, 'course_id')
+            ->orderBy('order_index');
+    }
+
+    public function enrollments()
+    {
+        return $this->hasMany(\App\Models\LMS\Enrollment::class, 'course_id');
+    }
+
+    public function lmsEvents()
+    {
+        return $this->hasMany(\App\Models\LMS\LMSEvent::class, 'course_id');
+    }
+
     // Scopes
     public function scopeActive($query)
     {
