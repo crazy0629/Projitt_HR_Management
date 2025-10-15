@@ -3,12 +3,12 @@
 namespace App\Http\Controllers\Job;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Job\AddJobApplicantCertificateRequest;
+use App\Http\Requests\Job\DeleteJobApplicantCertificateRequest;
+use App\Http\Requests\Job\EditJobApplicantCertificateRequest;
+use App\Models\Job\JobApplicantCertificat;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use App\Http\Requests\Job\AddJobApplicantCertificateRequest;
-use App\Http\Requests\Job\EditJobApplicantCertificateRequest;
-use App\Http\Requests\Job\DeleteJobApplicantCertificateRequest;
-use App\Models\Job\JobApplicantCertificat;
 
 class JobApplicantCertificateController extends Controller
 {
@@ -20,7 +20,7 @@ class JobApplicantCertificateController extends Controller
         try {
             $data = $request->validated();
 
-            $certificate = new JobApplicantCertificat();
+            $certificate = new JobApplicantCertificat;
             $certificate->fill($data);
             $certificate->created_by = auth()->id();
             $certificate->updated_by = auth()->id();
@@ -53,6 +53,7 @@ class JobApplicantCertificateController extends Controller
     public function single($id): JsonResponse
     {
         $object = JobApplicantCertificat::where('id', $id)->first();
+
         return successResponse(config('messages.success'), $object, 200);
     }
 

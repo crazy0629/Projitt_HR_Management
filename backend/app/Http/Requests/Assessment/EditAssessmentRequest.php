@@ -38,7 +38,7 @@ class EditAssessmentRequest extends FormRequest
         return [
             'id' => [
                 'required',
-                Rule::exists('assessments', 'id')->whereNull('deleted_at')
+                Rule::exists('assessments', 'id')->whereNull('deleted_at'),
             ],
 
             'name' => 'sometimes|required|string|max:255',
@@ -50,7 +50,7 @@ class EditAssessmentRequest extends FormRequest
             'questions' => 'sometimes|array|min:1',
             'questions.*.question_id' => [
                 'required_with:questions',
-                Rule::exists($questionTable, 'id')
+                Rule::exists($questionTable, 'id'),
             ],
             'questions.*.point' => 'required_with:questions|numeric|min:0',
         ];

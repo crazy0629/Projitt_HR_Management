@@ -25,30 +25,26 @@ class EditJobApplicantCvAndCoverRequest extends FormRequest
         return [
             'job_id' => [
                 'required',
-                Rule::exists('jobs', 'id')->where(fn ($query) =>
-                    $query->whereNull('deleted_at')
-                          ->where('status', 'open')
+                Rule::exists('jobs', 'id')->where(fn ($query) => $query->whereNull('deleted_at')
+                    ->where('status', 'open')
                 ),
             ],
 
             'applicant_id' => [
                 'required',
-                Rule::exists('users', 'id')->where(fn ($query) =>
-                    $query->whereNull('deleted_at')
+                Rule::exists('users', 'id')->where(fn ($query) => $query->whereNull('deleted_at')
                 ),
             ],
 
             'cv_media_id' => [
                 'required',
-                Rule::exists('media', 'id')->where(fn ($query) =>
-                    $query->whereNull('deleted_at')
+                Rule::exists('media', 'id')->where(fn ($query) => $query->whereNull('deleted_at')
                 ),
             ],
 
             'cover_media_id' => [
                 'required',
-                Rule::exists('media', 'id')->where(fn ($query) =>
-                    $query->whereNull('deleted_at')
+                Rule::exists('media', 'id')->where(fn ($query) => $query->whereNull('deleted_at')
                 ),
             ],
         ];

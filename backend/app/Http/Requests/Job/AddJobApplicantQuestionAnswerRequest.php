@@ -2,9 +2,9 @@
 
 namespace App\Http\Requests\Job;
 
+use App\Models\Job\Job;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
-use App\Models\Job\Job;
 
 class AddJobApplicantQuestionAnswerRequest extends FormRequest
 {
@@ -40,8 +40,9 @@ class AddJobApplicantQuestionAnswerRequest extends FormRequest
 
             $job = Job::select('question_ids')->find($jobId);
 
-            if (!$job) {
+            if (! $job) {
                 $validator->errors()->add('job_id', 'Invalid job ID.');
+
                 return;
             }
 
@@ -49,7 +50,7 @@ class AddJobApplicantQuestionAnswerRequest extends FormRequest
                 ? $job->question_ids
                 : json_decode($job->question_ids, true);
 
-            if (!is_array($questionIds) || !in_array($questionId, $questionIds)) {
+            if (! is_array($questionIds) || ! in_array($questionId, $questionIds)) {
                 $validator->errors()->add('question_id', 'The selected question does not belong to the specified job.');
             }
         });

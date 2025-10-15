@@ -25,30 +25,30 @@ class RegisterUserRequest extends FormRequest
                 'required',
                 'string',
                 'max:100',
-                'regex:/^[A-Za-z0-9\',\-\s]+$/'
+                'regex:/^[A-Za-z0-9\',\-\s]+$/',
             ],
             'middle_name' => [
                 'nullable',
                 'string',
                 'max:100',
-                'regex:/^[A-Za-z0-9\',\-\s]+$/'
+                'regex:/^[A-Za-z0-9\',\-\s]+$/',
             ],
             'last_name' => [
                 'nullable',
                 'string',
                 'max:100',
-                'regex:/^[A-Za-z0-9\',\-\s]+$/'
+                'regex:/^[A-Za-z0-9\',\-\s]+$/',
             ],
             'email' => [
                 'required',
                 'email',
-                Rule::unique('users', 'email')->whereNull('deleted_at')
+                Rule::unique('users', 'email')->whereNull('deleted_at'),
             ],
             'password' => 'required|string|min:8|confirmed',
             'role_id' => [
                 'required',
                 'integer',
-                Rule::exists('roles', 'id')->whereNull('deleted_at')
+                Rule::exists('roles', 'id')->whereNull('deleted_at'),
             ],
         ];
     }

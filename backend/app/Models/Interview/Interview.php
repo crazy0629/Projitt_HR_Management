@@ -29,8 +29,8 @@ class Interview extends Model
 
     protected $casts = [
         'interviewers_ids' => 'array',
-        'date_time'        => 'datetime',
-        'date'             => 'date',
+        'date_time' => 'datetime',
+        'date' => 'date',
         // keep 'time' as string; cast to datetime with a format if you prefer
     ];
 
@@ -71,5 +71,4 @@ class Interview extends Model
 
         return $filtered;
     }
-
 }

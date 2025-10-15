@@ -2,15 +2,14 @@
 
 namespace App\Models\Job;
 
-use App\Http\Controllers\Job\JobApplicationQuestionAnswerController;
 use App\Models\Master\Master;
 use App\Models\Media\Media;
 use App\Models\User\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class JobApplicant extends Model {
-
+class JobApplicant extends Model
+{
     use SoftDeletes;
 
     protected $table = 'job_applicants';
@@ -54,11 +53,10 @@ class JobApplicant extends Model {
     protected $appends = [
         'skills',
         'questions',
-        'work_experience', 
+        'work_experience',
         'education',
-        'certificate'
+        'certificate',
     ];
-
 
     public function getSkillsAttribute()
     {
@@ -111,24 +109,23 @@ class JobApplicant extends Model {
         return $this->belongsTo(Media::class, 'cover_media_id');
     }
 
-
-
-    public static function singleObject($jobId, $applicantId){
+    public static function singleObject($jobId, $applicantId)
+    {
 
         $object = self::with([
             'applicant',
             'job',
             'cvMedia',
-            'coverMedia'
+            'coverMedia',
         ])->where([
             'job_id' => $jobId,
-            'applicant_id' => $applicantId
+            'applicant_id' => $applicantId,
         ])->first();
-    
+
         if (empty($object)) {
             return null;
         }
-    
+
         // dd(JobApplicantExperience::getByJobAndApplicant($jobId, $applicantId));
 
         // $object->work_experience = JobApplicantExperience::getByJobAndApplicant($jobId, $applicantId);
@@ -138,5 +135,4 @@ class JobApplicant extends Model {
         return $object;
 
     }
-    
 }

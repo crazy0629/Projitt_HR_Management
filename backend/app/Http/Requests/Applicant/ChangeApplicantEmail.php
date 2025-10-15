@@ -20,20 +20,19 @@ class ChangeApplicantEmail extends FormRequest
      * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
      */
     public function rules(): array
-{
-    return [
-        'existing_email' => [
-            'required',
-            'email',
-            'exists:users,email,deleted_at,NULL',
-        ],
-        'new_email' => [
-            'required',
-            'email',
-            'different:existing_email',
-            'unique:users,email,NULL,id,deleted_at,NULL',
-        ],
-    ];
-}
-
+    {
+        return [
+            'existing_email' => [
+                'required',
+                'email',
+                'exists:users,email,deleted_at,NULL',
+            ],
+            'new_email' => [
+                'required',
+                'email',
+                'different:existing_email',
+                'unique:users,email,NULL,id,deleted_at,NULL',
+            ],
+        ];
+    }
 }

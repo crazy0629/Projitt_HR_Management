@@ -16,40 +16,41 @@ use App\Models\User\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use PHPUnit\Framework\Constraint\Count;
 
-class JobApplicantController extends Controller {
-    
+class JobApplicantController extends Controller
+{
     /**
      * Get a single job applicant.
      */
-    public function single(Request $request): JsonResponse {
+    public function single(Request $request): JsonResponse
+    {
 
         $object = JobApplicant::singleObject($request->input('job_id'), $request->input('applicant_id'));
+
         return $this->sendSuccess($object, config('messages.success'));
     }
-
 
     /**
      * Add or Update job applicant contact info.
      */
-    public function editJobApplicantContactInfo(EditJobApplicantContactInfoRequest $request): JsonResponse {
+    public function editJobApplicantContactInfo(EditJobApplicantContactInfoRequest $request): JsonResponse
+    {
 
         DB::beginTransaction();
-    
+
         try {
 
             $jobApplicant = JobApplicant::singleObject($request->job_id, $request->applicant_id);
-    
-            if (!$jobApplicant) {
+
+            if (! $jobApplicant) {
                 // Create new JobApplicant if not found
-                $jobApplicant = new JobApplicant();
+                $jobApplicant = new JobApplicant;
                 $jobApplicant->job_id = $request->job_id;
                 $jobApplicant->applicant_id = $request->applicant_id;
                 $jobApplicant->created_by = auth()->id(); // optional: track creator
                 $jobApplicant->save();
             }
-    
+
             $jobApplicantData = $request->only([
                 'address',
                 'city',
@@ -57,11 +58,11 @@ class JobApplicantController extends Controller {
                 'zip_code',
                 'country',
                 'contact_code',
-                'contact_no'
+                'contact_no',
             ]);
             $jobApplicantData['updated_by'] = auth()->id();
             $jobApplicant->fill($jobApplicantData)->save();
-    
+
             $user = $jobApplicant->applicant;
             if ($user) {
                 $user->first_name = $request->first_name;
@@ -71,14 +72,15 @@ class JobApplicantController extends Controller {
                 }
                 $user->save();
             }
-    
+
             DB::commit();
-    
+
             $profile = JobApplicant::singleObject($request->job_id, $request->applicant_id);
-    
+
             return $this->sendSuccess($profile, config('messages.success'));
         } catch (\Exception $exception) {
             DB::rollBack();
+
             return $this->sendError(config('messages.error'), $exception->getMessage());
         }
     }
@@ -90,7 +92,7 @@ class JobApplicantController extends Controller {
     {
         try {
             $jobApplicant = JobApplicant::singleObject($request->job_id, $request->applicant_id);
-            if (!$jobApplicant) {
+            if (! $jobApplicant) {
                 return $this->sendError('Job applicant not found.', []);
             }
 
@@ -107,7 +109,6 @@ class JobApplicantController extends Controller {
         }
     }
 
-
     /**
      * Update job applicant info.
      */
@@ -115,11 +116,11 @@ class JobApplicantController extends Controller {
     {
         try {
             $jobApplicant = JobApplicant::singleObject($request->job_id, $request->applicant_id);
-    
-            if (!$jobApplicant) {
+
+            if (! $jobApplicant) {
                 return $this->sendError('Job applicant not found.', []);
             }
-    
+
             $jobApplicant->fill([
                 'skill_ids' => $request->skill_ids,
                 'linkedin_link' => $request->linkedin_link,
@@ -127,9 +128,9 @@ class JobApplicantController extends Controller {
                 'other_links' => $request->other_links,
                 'updated_by' => auth()->id(),
             ])->save();
-    
+
             $updated = JobApplicant::singleObject($request->job_id, $request->applicant_id);
-    
+
             return $this->sendSuccess($updated, config('messages.success'));
         } catch (\Exception $exception) {
             return $this->sendError(config('messages.error'), $exception->getMessage());
@@ -143,15 +144,15 @@ class JobApplicantController extends Controller {
     {
         $job = JobApplicant::where([
             'job_id' => $request->job_id,
-            'applicant_id' => $request->applicant_id
+            'applicant_id' => $request->applicant_id,
         ])->first();
-        $job->status  = 'submitted';
+        $job->status = 'submitted';
         $job->save();
 
         $updated = JobApplicant::singleObject($request->job_id, $request->applicant_id);
+
         return $this->sendSuccess($updated, config('messages.success'));
     }
-
 
     /**
      * get applicant jobs.
@@ -161,24 +162,23 @@ class JobApplicantController extends Controller {
         $jobs = DB::table('job_applicants')
             ->select('id', 'job_id', 'applicant_id', 'created_at', 'status')->where('applicant_id', $request->input('applicant_id'))
             ->get();
-    
+
         foreach ($jobs as $job) {
             $jobDetail = DB::table('jobs')
                 ->select('id', 'title', 'status', 'location_type_id', 'country_id', 'state')
                 ->where('id', $job->job_id)
                 ->first();
-    
+
             if ($jobDetail) {
                 $jobDetail->location_type = Master::find($jobDetail->location_type_id);
                 $jobDetail->country = Country::find($jobDetail->country_id);
             }
-    
+
             $job->job = $jobDetail;
         }
-    
+
         return $this->sendSuccess($jobs, config('messages.success'));
     }
-
 
     /**
      * change email address.
@@ -187,26 +187,18 @@ class JobApplicantController extends Controller {
     {
         $existingEmail = $request->input('existing_email');
         $newEmail = $request->input('new_email');
-    
+
         $user = User::where('email', $existingEmail)
             ->whereNull('deleted_at')
             ->first();
-    
-        if (!$user) {
+
+        if (! $user) {
             return $this->sendError('User not found.', 404);
         }
-    
+
         $user->email = $newEmail;
         $user->save();
-    
+
         return $this->sendSuccess(null, 'Email updated successfully.');
     }
-    
-
-
-    
-    
-    
-
-    
 }

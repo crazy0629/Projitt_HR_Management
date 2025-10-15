@@ -3,19 +3,15 @@
 namespace App\Http\Controllers\Assessment;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
+use App\Http\Requests\Assessment\AddAssessmentRequest;
+use App\Http\Requests\Assessment\DeleteAssessmentRequest;
+use App\Http\Requests\Assessment\EditAssessmentRequest;
+use App\Http\Requests\Assessment\ListWithFilterAssessmentRequest;
+use App\Models\Assessment\Assessment;
+use App\Models\Assessment\AssessmentQuestions;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-
-use App\Models\Assessment\Assessment;
-use App\Models\Assessment\AssessmentQuestions;
-
-use App\Http\Requests\Assessment\AddAssessmentRequest;
-use App\Http\Requests\Assessment\EditAssessmentRequest;
-use App\Http\Requests\Assessment\DeleteAssessmentRequest;
-use App\Http\Requests\Assessment\ListWithFilterAssessmentRequest;
-use App\Http\Requests\Assessment\ListWithFiltersAssessmentRequest;
 
 class AssessmentController extends Controller
 {
@@ -27,7 +23,7 @@ class AssessmentController extends Controller
         DB::beginTransaction();
 
         try {
-            $object = new Assessment();
+            $object = new Assessment;
             $object->name = $request->filled('name') ? $request->input('name') : null;
             $object->description = $request->filled('description') ? $request->input('description') : null;
             $object->time_duration = $request->filled('time_duration') ? $request->input('time_duration') : null;
@@ -49,10 +45,12 @@ class AssessmentController extends Controller
             DB::commit();
 
             $object->questions = AssessmentQuestions::getAssessmentQuestions($object->id);
+
             return $this->sendSuccess(config('messages.success'), $object, 200);
 
         } catch (\Exception $e) {
             DB::rollBack();
+
             return $this->sendError('Failed to add assessment.', $e->getMessage(), 500);
         }
     }
@@ -89,10 +87,12 @@ class AssessmentController extends Controller
             DB::commit();
 
             $object->questions = AssessmentQuestions::getAssessmentQuestions($object->id);
+
             return successResponse(config('messages.success'), $object, 200);
 
         } catch (\Exception $e) {
             DB::rollBack();
+
             return $this->sendError('Failed to update assessment.', $e->getMessage(), 500);
         }
     }
@@ -117,6 +117,7 @@ class AssessmentController extends Controller
     {
         $object = Assessment::find($id);
         $object->questions = AssessmentQuestions::getAssessmentQuestions($object->id);
+
         return successResponse(config('messages.success'), $object, 200);
     }
 
@@ -127,6 +128,7 @@ class AssessmentController extends Controller
     {
         $object = Assessment::filterData($request);
         $object = getData($object, $request->input('pagination'), $request->input('per_page'), $request->input('page'));
+
         return successResponse(config('messages.success'), $object, 200);
     }
 }

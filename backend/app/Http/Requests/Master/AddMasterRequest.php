@@ -30,7 +30,7 @@ class AddMasterRequest extends FormRequest
                 Rule::unique('masters')
                     ->where(function ($query) {
                         return $query->where('type_id', $this->type_id)
-                                     ->whereNull('deleted_at');
+                            ->whereNull('deleted_at');
                     }),
             ],
             'type_id' => 'required|integer|between:1,20',

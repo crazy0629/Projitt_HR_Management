@@ -3,12 +3,12 @@
 namespace App\Http\Controllers\Job;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Job\AddJobApplicantEducationRequest;
+use App\Http\Requests\Job\DeleteJobApplicantEducationRequest;
+use App\Http\Requests\Job\EditJobApplicantEducationRequest;
+use App\Models\Job\JobApplicantEducation;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use App\Models\Job\JobApplicantEducation;
-use App\Http\Requests\Job\AddJobApplicantEducationRequest;
-use App\Http\Requests\Job\EditJobApplicantEducationRequest;
-use App\Http\Requests\Job\DeleteJobApplicantEducationRequest;
 
 class JobApplicantEducationController extends Controller
 {
@@ -20,7 +20,7 @@ class JobApplicantEducationController extends Controller
         try {
             $data = $request->validated();
 
-            $education = new JobApplicantEducation();
+            $education = new JobApplicantEducation;
             $education->fill($data);
             $education->created_by = auth()->id();
             $education->updated_by = auth()->id();
@@ -57,6 +57,7 @@ class JobApplicantEducationController extends Controller
     public function single($id): JsonResponse
     {
         $object = JobApplicantEducation::with('degree')->where('id', $id)->first();
+
         return successResponse(config('messages.success'), $object, 200);
     }
 

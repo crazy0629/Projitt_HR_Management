@@ -35,7 +35,7 @@ class AddQuestionRequest extends FormRequest
             'options.*' => 'string|max:255',
             'is_required' => 'nullable|boolean',
 
-            'tags'   => ['required', 'array'],
+            'tags' => ['required', 'array'],
             'tags.*' => ['required', 'string', 'max:100'],
         ];
     }

@@ -3,7 +3,6 @@
 namespace App\Http\Requests\Interview;
 
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 
 class ListWithFiltersRequest extends FormRequest
 {
@@ -16,16 +15,16 @@ class ListWithFiltersRequest extends FormRequest
     {
         $rules = [
             'schedule_type' => 'nullable|in:request_availability,propose_time',
-            'mode'          => 'nullable|in:google_meet,zoom,projitt_video_conference,microsoft_team',
-            'status'        => 'nullable|in:review,screen,test,rejected,selected,hired',
-            'job_id'        => 'nullable|integer|exists:jobs,id,deleted_at,NULL',
-            'applicant_id'  => 'nullable|integer|exists:users,id,deleted_at,NULL',
-            'date'          => 'nullable|date'
+            'mode' => 'nullable|in:google_meet,zoom,projitt_video_conference,microsoft_team',
+            'status' => 'nullable|in:review,screen,test,rejected,selected,hired',
+            'job_id' => 'nullable|integer|exists:jobs,id,deleted_at,NULL',
+            'applicant_id' => 'nullable|integer|exists:users,id,deleted_at,NULL',
+            'date' => 'nullable|date',
         ];
 
         if ($this->query('pagination')) {
             $rules['per_page'] = 'required|integer|min:1';
-            $rules['page']     = 'required|integer|min:1';
+            $rules['page'] = 'required|integer|min:1';
         }
 
         return $rules;

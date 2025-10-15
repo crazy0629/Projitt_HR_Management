@@ -18,7 +18,7 @@ return new class extends Migration
             $table->foreignId('question_id')->nullable()->constrained('questions')->onUpdate('restrict')->onDelete('cascade');
             $table->foreignId('job_id')->nullable()->constrained('jobs')->onUpdate('restrict')->onDelete('cascade');
             $table->foreignId('applicant_id')->nullable()->constrained('users')->onUpdate('restrict')->onDelete('cascade');
-            
+
             $table->text('answer')->nullable()->comment('stores string, json, file path, or HTML');
 
             $table->foreignId('created_by')->nullable()->constrained('users')->onUpdate('restrict')->onDelete('cascade');

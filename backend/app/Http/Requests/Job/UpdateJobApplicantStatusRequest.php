@@ -29,8 +29,8 @@ class UpdateJobApplicantStatusRequest extends FormRequest
             // ],
             'applicant_id' => [
                 'required',
-                Rule::exists('users', 'id')->whereNull('deleted_at')
-            ]
+                Rule::exists('users', 'id')->whereNull('deleted_at'),
+            ],
         ];
     }
 }

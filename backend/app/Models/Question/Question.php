@@ -58,9 +58,6 @@ class Question extends Model
 
     /**
      * Retrieve a single question by ID.
-     *
-     * @param int $id
-     * @return self|null
      */
     public static function singleObject(int $id): ?self
     {
@@ -70,18 +67,18 @@ class Question extends Model
     /**
      * Apply filters to the Question model based on request input.
      *
-     * @param \Illuminate\Http\Request $request
+     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Database\Eloquent\Builder
      */
     public static function filterData($request)
     {
         $filteredData = self::query();
 
-        if (!empty($request->input('name'))) {
-            $filteredData->where('question_name', 'LIKE', '%' . $request->input('name') . '%');
+        if (! empty($request->input('name'))) {
+            $filteredData->where('question_name', 'LIKE', '%'.$request->input('name').'%');
         }
 
-        if (!empty($request->input('answer_type'))) {
+        if (! empty($request->input('answer_type'))) {
             $filteredData->where('answer_type', $request->input('answer_type'));
         }
 
@@ -91,18 +88,18 @@ class Question extends Model
     /**
      * Perform a limited search for intellisense/autocomplete functionality.
      *
-     * @param \Illuminate\Http\Request $request
+     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Support\Collection
      */
     public static function intellisenseSearch($request)
     {
         $query = self::select('id', 'question_name', 'tags');
 
-        if (!empty($request->input('name'))) {
-            $query->where('question_name', 'LIKE', '%' . $request->input('name') . '%');
+        if (! empty($request->input('name'))) {
+            $query->where('question_name', 'LIKE', '%'.$request->input('name').'%');
         }
 
-        if (!empty($request->input('tags'))) {
+        if (! empty($request->input('tags'))) {
             foreach ($request->input('tags') as $questionId) {
                 $query->whereJsonContains('tags', $questionId);
             }
@@ -110,5 +107,4 @@ class Question extends Model
 
         return $query->limit(50)->get();
     }
-    
 }

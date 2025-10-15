@@ -2,7 +2,6 @@
 
 namespace Database\Seeders;
 
-
 use Database\Seeders\Country\CountrySeeder;
 use Database\Seeders\Country\UsStatsSeeder;
 use Database\Seeders\Master\MasterSeeder;
@@ -26,8 +25,8 @@ class DatabaseSeeder extends Seeder
             MasterSeeder::class,
             CountrySeeder::class,
             UsStatsSeeder::class,
-            QuestionSeeder::class
-            
+            QuestionSeeder::class,
+
         ]);
     }
 }

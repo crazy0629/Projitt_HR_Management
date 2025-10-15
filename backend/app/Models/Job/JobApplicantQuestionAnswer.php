@@ -53,25 +53,24 @@ class JobApplicantQuestionAnswer extends Model
     public static function singleObject($jobId, $applicantId)
     {
         $job = Job::select('id', 'question_ids')->find($jobId);
-    
-        if (!$job || empty($job->question_ids)) {
+
+        if (! $job || empty($job->question_ids)) {
             return collect();
         }
-    
+
         $questionIds = is_array($job->question_ids)
             ? $job->question_ids
             : json_decode($job->question_ids, true);
-    
+
         $questions = Question::whereIn('id', $questionIds)->get()->keyBy('id');
-    
+
         foreach ($questions as $question) {
             $question->applicant_answer = JobApplicantQuestionAnswer::where('job_id', $jobId)
-            ->where('applicant_id', $applicantId)
-            ->where('question_id', $question->id)
-            ->value('answer');
+                ->where('applicant_id', $applicantId)
+                ->where('question_id', $question->id)
+                ->value('answer');
         }
-    
+
         return $questions->values(); // return as indexed collection
     }
-    
 }
