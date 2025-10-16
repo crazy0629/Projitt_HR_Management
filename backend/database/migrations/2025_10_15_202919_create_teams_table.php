@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->foreignId('manager_user_id')->constrained('users');
-            $table->foreignId('org_unit_id')->nullable()->constrained('org_units');
+            $table->unsignedBigInteger('org_unit_id')->nullable(); // Future org structure reference
             $table->text('description')->nullable();
             $table->json('metadata')->nullable(); // Additional team properties
             $table->boolean('is_active')->default(true);
