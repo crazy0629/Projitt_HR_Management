@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Talent;
 
 use App\Http\Controllers\Controller;
+use App\Models\Talent\PromotionApproval;
 use App\Models\Talent\PromotionCandidate;
 use App\Models\Talent\PromotionWorkflow;
 use App\Services\Talent\PromotionWorkflowService;
@@ -235,7 +236,7 @@ class PromotionController extends Controller
 
         try {
             // We need to find the promotion ID from the approval
-            $approval = \App\Models\Talent\PromotionApproval::findOrFail($approvalId);
+            $approval = PromotionApproval::findOrFail($approvalId);
             $promotion = $this->promotionService->processApproval(
                 $approval->promotion_id,
                 $approvalId,
@@ -353,7 +354,10 @@ class PromotionController extends Controller
             ];
         }
 
-        usort($timeline, fn ($a, $b) => $a['date']->compare($b['date']));
+        usort($timeline, function ($a, $b) {
+            return strtotime($a['date']) <=> strtotime($b['date']);
+        });
+
 
         return response()->json([
             'success' => true,

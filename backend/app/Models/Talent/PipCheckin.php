@@ -14,13 +14,20 @@ class PipCheckin extends Model
         'pip_id',
         'checkin_date',
         'summary',
-        'next_steps',
+        'status',
         'rating',
+        'goals_progress',
+        'manager_notes',
+        'next_steps',
+        'next_checkin_date',
         'created_by',
+        'updated_by',
     ];
 
     protected $casts = [
         'checkin_date' => 'date',
+        'next_checkin_date' => 'date',
+        'goals_progress' => 'array',
     ];
 
     // Relationships

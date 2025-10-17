@@ -11,9 +11,13 @@ class Pip extends Model
 {
     use HasFactory;
 
-    protected $fillable = [
+protected $fillable = [
         'employee_id',
-        'goal_text',
+        'manager_id',
+        'title',
+        'description',
+        'goals',
+        'success_criteria',
         'learning_path_id',
         'mentor_id',
         'start_date',
@@ -28,6 +32,7 @@ class Pip extends Model
     protected $casts = [
         'start_date' => 'date',
         'end_date' => 'date',
+        'goals' => 'array',
     ];
 
     // Relationships
@@ -341,22 +346,26 @@ class Pip extends Model
         return $this;
     }
 
-    public function addCheckin($summary, $nextSteps = null, $rating = null)
-    {
-        return PipCheckin::create([
-            'pip_id' => $this->id,
-            'checkin_date' => now()->toDateString(),
-            'summary' => $summary,
-            'next_steps' => $nextSteps,
-            'rating' => $rating,
-            'created_by' => auth()->id(),
-        ]);
-    }
+public function addCheckin($data)
+{
+    return $this->checkins()->create([
+        'checkin_date' => $data['checkin_date'] ?? now(),
+        'summary' => $data['summary'],
+        'status' => $data['status'] ?? 'on_track',
+        'rating' => $data['rating'] ?? null,
+        'goals_progress' => $data['goals_progress'] ?? [],
+        'manager_notes' => $data['manager_notes'] ?? null,
+        'next_steps' => $data['next_steps'] ?? null,
+        'next_checkin_date' => $data['next_checkin_date'] ?? null,
+        'created_by' => \Illuminate\Support\Facades\Auth::guard('sanctum')->id() ?? auth()->id(),
+        'updated_by' => \Illuminate\Support\Facades\Auth::guard('sanctum')->id() ?? auth()->id(),
+    ]);
+}
 
     private function logActivity($action, $payload = [])
     {
         AuditLog::create([
-            'actor_id' => auth()->id(),
+            'actor_id' => \Illuminate\Support\Facades\Auth::guard('sanctum')->id() ?? auth()->id(),
             'entity_type' => 'Pip',
             'entity_id' => $this->id,
             'action' => $action,
@@ -373,14 +382,18 @@ class Pip extends Model
     {
         return self::create([
             'employee_id' => $employeeId,
-            'goal_text' => $data['goal_text'],
+            'manager_id' => $data['manager_id'] ?? null,
+            'title' => $data['title'],
+            'description' => $data['description'] ?? null,
+            'goals' => $data['goals'] ?? [],
+            'success_criteria' => $data['success_criteria'] ?? null,
             'learning_path_id' => $data['learning_path_id'] ?? null,
             'mentor_id' => $data['mentor_id'] ?? null,
             'start_date' => $data['start_date'],
             'end_date' => $data['end_date'],
             'checkin_frequency' => $data['checkin_frequency'] ?? 'weekly',
             'status' => 'active',
-            'created_by' => auth()->id(),
+            'created_by' => \Illuminate\Support\Facades\Auth::guard('sanctum')->id() ?? auth()->id(),
         ]);
     }
 

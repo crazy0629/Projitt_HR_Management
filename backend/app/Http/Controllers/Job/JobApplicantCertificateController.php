@@ -22,8 +22,8 @@ class JobApplicantCertificateController extends Controller
 
             $certificate = new JobApplicantCertificat;
             $certificate->fill($data);
-            $certificate->created_by = auth()->id();
-            $certificate->updated_by = auth()->id();
+            $certificate->created_by = \Illuminate\Support\Facades\Auth::guard('sanctum')->id() ?? auth()->id();
+            $certificate->updated_by = \Illuminate\Support\Facades\Auth::guard('sanctum')->id() ?? auth()->id();
             $certificate->save();
 
             return $this->sendSuccess($certificate, 'Certificate added successfully.');
@@ -41,7 +41,7 @@ class JobApplicantCertificateController extends Controller
 
         $certificate = JobApplicantCertificat::findOrFail($data['id']);
         $certificate->fill($data);
-        $certificate->updated_by = auth()->id();
+        $certificate->updated_by = \Illuminate\Support\Facades\Auth::guard('sanctum')->id() ?? auth()->id();
         $certificate->save();
 
         return $this->sendSuccess($certificate, 'Certificate updated successfully.');
@@ -77,7 +77,7 @@ class JobApplicantCertificateController extends Controller
     {
         $ids = $request->input('ids');
 
-        JobApplicantCertificat::whereIn('id', $ids)->update(['deleted_by' => auth()->id()]);
+        JobApplicantCertificat::whereIn('id', $ids)->update(['deleted_by' => \Illuminate\Support\Facades\Auth::guard('sanctum')->id() ?? auth()->id()]);
         JobApplicantCertificat::whereIn('id', $ids)->delete();
 
         return $this->sendSuccess([], 'Certificate(s) deleted successfully.');

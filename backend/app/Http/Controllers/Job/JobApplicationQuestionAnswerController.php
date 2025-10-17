@@ -39,13 +39,13 @@ class JobApplicationQuestionAnswerController extends Controller
 
             if ($answer) {
                 $answer->answer = $validated['answer'];
-                $answer->updated_by = auth()->id();
+                $answer->updated_by = \Illuminate\Support\Facades\Auth::guard('sanctum')->id() ?? auth()->id();
                 $answer->save();
             } else {
                 $answer = new JobApplicantQuestionAnswer;
                 $answer->fill($validated);
-                $answer->created_by = auth()->id();
-                $answer->updated_by = auth()->id();
+                $answer->created_by = \Illuminate\Support\Facades\Auth::guard('sanctum')->id() ?? auth()->id();
+                $answer->updated_by = \Illuminate\Support\Facades\Auth::guard('sanctum')->id() ?? auth()->id();
                 $answer->save();
             }
 

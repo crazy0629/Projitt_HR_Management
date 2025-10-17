@@ -14,21 +14,21 @@ return new class extends Migration
         Schema::create('pips', function (Blueprint $table) {
             $table->id();
             $table->foreignId('employee_id')->constrained('users')->onDelete('cascade');
-            $table->text('goal_text');
+            $table->foreignId('manager_id')->nullable()->constrained('users')->onDelete('set null');
+            $table->string('title');
+            $table->text('description')->nullable();
+            $table->json('goals')->nullable(); // store multiple goals as JSON
+            $table->text('success_criteria')->nullable();
             $table->foreignId('learning_path_id')->nullable()->constrained('learning_paths')->onDelete('set null');
             $table->foreignId('mentor_id')->nullable()->constrained('users')->onDelete('set null');
             $table->date('start_date');
             $table->date('end_date');
-            $table->enum('checkin_frequency', ['weekly', 'biweekly', 'monthly']);
+            $table->enum('checkin_frequency', ['weekly', 'biweekly', 'monthly'])->default('weekly');
             $table->enum('status', ['active', 'paused', 'completed', 'cancelled'])->default('active');
             $table->text('completion_notes')->nullable();
             $table->foreignId('created_by')->constrained('users');
             $table->foreignId('updated_by')->nullable()->constrained('users');
             $table->timestamps();
-
-            $table->index(['employee_id', 'status']);
-            $table->index('status');
-            $table->index(['start_date', 'end_date']);
         });
     }
 

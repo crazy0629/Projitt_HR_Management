@@ -87,7 +87,6 @@ class LearningPathController extends Controller
                 $learningPath->load(['roles', 'tags', 'creator']),
                 201
             );
-
         } catch (\Exception $e) {
             DB::rollBack();
 
@@ -138,7 +137,7 @@ class LearningPathController extends Controller
 
                 default: // overview
                     $query->with([
-                        'courses:id,title,type,duration_hours',
+                        'courses:id,title,type,duration_minutes',
                         'assignments:id,learning_path_id,employee_id,status,progress_percentage',
                         'criteria',
                     ]);
@@ -164,15 +163,20 @@ class LearningPathController extends Controller
             // Format view-specific data
             if ($view === 'courses') {
                 $learningPath->courses->transform(function ($course) {
+                    // convert minutes to readable "xh ym" format
+                    $hours = intdiv($course->duration_minutes ?? 0, 60);
+                    $minutes = ($course->duration_minutes ?? 0) % 60;
+                    $durationFormatted = ($hours > 0 ? "{$hours}h " : '') . ($minutes > 0 ? "{$minutes}m" : '0m');
+
                     return [
                         'id' => $course->id,
                         'title' => $course->title,
                         'description' => $course->description,
                         'type' => $course->type,
                         'difficulty_level' => $course->difficulty_level,
-                        'duration_hours' => $course->duration_hours,
-                        'duration' => $course->duration_hours.'h',
-                        'category' => $course->type, // You might want to add a category field
+                        'duration_minutes' => $course->duration_minutes,
+                        'duration' => $durationFormatted,
+                        'category' => $course->type,
                         'provider' => $course->provider,
                         'creator' => $course->creator,
                         'is_required' => $course->pivot->is_required,
@@ -186,10 +190,10 @@ class LearningPathController extends Controller
                 $learningPath->employees_data = $learningPath->assignments->map(function ($assignment) {
                     return [
                         'id' => $assignment->employee->id,
-                        'name' => $assignment->employee->first_name.' '.$assignment->employee->last_name,
+                        'name' => $assignment->employee->first_name . ' ' . $assignment->employee->last_name,
                         'email' => $assignment->employee->email,
                         'role' => $assignment->employee->role->name ?? 'N/A',
-                        'department' => $assignment->employee->role->name ?? 'N/A', // Adjust based on your schema
+                        'department' => $assignment->employee->role->name ?? 'N/A',
                         'status' => $assignment->status,
                         'progress_percentage' => $assignment->progress_percentage,
                         'assigned_at' => $assignment->assigned_at,
@@ -198,7 +202,6 @@ class LearningPathController extends Controller
                         'due_date' => $assignment->due_date,
                     ];
                 });
-                // Remove the assignments relationship to avoid duplication
                 unset($learningPath->assignments);
             }
 
@@ -207,7 +210,6 @@ class LearningPathController extends Controller
                 $learningPath,
                 200
             );
-
         } catch (\Exception $e) {
             return errorResponse('Learning path not found', $e, 404);
         }
@@ -295,7 +297,6 @@ class LearningPathController extends Controller
                 $learningPath->load(['roles', 'tags', 'creator']),
                 200
             );
-
         } catch (\Exception $e) {
             DB::rollBack();
 
@@ -342,7 +343,7 @@ class LearningPathController extends Controller
             }
 
             // Update estimated duration
-            $totalDuration = $learningPath->courses()->sum('duration_hours');
+            $totalDuration = round($learningPath->courses()->sum('duration_minutes') / 60, 2);
             $learningPath->update([
                 'estimated_duration_hours' => $totalDuration,
                 'updated_by' => Auth::id(),
@@ -363,7 +364,6 @@ class LearningPathController extends Controller
                 $learningPath->load(['courses']),
                 200
             );
-
         } catch (\Exception $e) {
             DB::rollBack();
 
@@ -432,7 +432,6 @@ class LearningPathController extends Controller
                 $learningPath->load(['criteria', 'assignments.employee']),
                 200
             );
-
         } catch (\Exception $e) {
             DB::rollBack();
 
@@ -487,7 +486,6 @@ class LearningPathController extends Controller
                 $learningPath->load(['assignments.employee']),
                 200
             );
-
         } catch (\Exception $e) {
             DB::rollBack();
 
@@ -544,11 +542,11 @@ class LearningPathController extends Controller
             if (in_array($sortField, $allowedSortFields)) {
                 if ($sortField === 'completion_rate') {
                     // Sort by completion rate (calculated)
-                    $query->orderByRaw('CASE 
-                        WHEN assignments_count > 0 
-                        THEN (completed_assignments_count * 100.0 / assignments_count) 
-                        ELSE 0 
-                    END '.$sortDirection);
+                    $query->orderByRaw('CASE
+                        WHEN assignments_count > 0
+                        THEN (completed_assignments_count * 100.0 / assignments_count)
+                        ELSE 0
+                    END ' . $sortDirection);
                 } else {
                     $query->orderBy($sortField, $sortDirection);
                 }
@@ -582,7 +580,6 @@ class LearningPathController extends Controller
                 $learningPaths,
                 200
             );
-
         } catch (\Exception $e) {
             return errorResponse('Failed to retrieve learning paths', $e, 500);
         }
@@ -670,7 +667,6 @@ class LearningPathController extends Controller
                 $learningPath->load(['roles', 'tags', 'creator']),
                 200
             );
-
         } catch (\Exception $e) {
             DB::rollBack();
 
@@ -700,7 +696,7 @@ class LearningPathController extends Controller
                         'id' => $assignment->id,
                         'employee' => [
                             'id' => $assignment->employee->id,
-                            'name' => $assignment->employee->first_name.' '.$assignment->employee->last_name,
+                            'name' => $assignment->employee->first_name . ' ' . $assignment->employee->last_name,
                             'email' => $assignment->employee->email,
                             'role' => $assignment->employee->role->name ?? 'N/A',
                         ],
@@ -711,7 +707,7 @@ class LearningPathController extends Controller
                         'completed_at' => $assignment->completed_at,
                         'due_date' => $assignment->due_date,
                         'assigned_by' => $assignment->assignedBy
-                            ? $assignment->assignedBy->first_name.' '.$assignment->assignedBy->last_name
+                            ? $assignment->assignedBy->first_name . ' ' . $assignment->assignedBy->last_name
                             : 'System',
                         'notes' => $assignment->notes,
                         'is_overdue' => $assignment->isOverdue(),
@@ -737,7 +733,6 @@ class LearningPathController extends Controller
                 ],
                 200
             );
-
         } catch (\Exception $e) {
             return errorResponse('Failed to retrieve assignments', $e, 500);
         }
@@ -820,7 +815,6 @@ class LearningPathController extends Controller
                 ],
                 200
             );
-
         } catch (\Exception $e) {
             DB::rollBack();
 
@@ -858,7 +852,6 @@ class LearningPathController extends Controller
             DB::commit();
 
             return successResponse('Learning path deleted successfully', null, 200);
-
         } catch (\Exception $e) {
             DB::rollBack();
 

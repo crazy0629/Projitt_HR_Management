@@ -267,7 +267,7 @@ class EmployeeReviewAssignment extends Model
             'assigned_at' => now(),
             'due_date' => $dueDate,
             'assignment_metadata' => $metadata,
-            'assigned_by' => $assignedBy ?? auth()->id(),
+            'assigned_by' => $assignedBy ?? \Illuminate\Support\Facades\Auth::guard('sanctum')->id() ?? auth()->id(),
         ]);
     }
 }

@@ -26,7 +26,7 @@ class DatabaseSeeder extends Seeder
             CountrySeeder::class,
             UsStatsSeeder::class,
             QuestionSeeder::class,
-
+            CategorySeeder::class,
         ]);
     }
 }

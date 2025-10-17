@@ -199,7 +199,7 @@ class EmployeeReviewForm extends Model
             'allows_subordinate_review' => $this->allows_subordinate_review,
             'is_template' => false,
             'is_active' => true,
-            'created_by' => auth()->id(),
+            'created_by' => \Illuminate\Support\Facades\Auth::guard('sanctum')->id() ?? auth()->id(),
         ]);
     }
 

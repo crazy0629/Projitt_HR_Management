@@ -308,7 +308,7 @@ class SuccessionCandidate extends Model
     private function logActivity($action, $payload = [])
     {
         AuditLog::create([
-            'actor_id' => auth()->id(),
+            'actor_id' => \Illuminate\Support\Facades\Auth::guard('sanctum')->id() ?? auth()->id(),
             'entity_type' => 'SuccessionCandidate',
             'entity_id' => $this->id,
             'action' => $action,
@@ -335,7 +335,8 @@ class SuccessionCandidate extends Model
             'strengths' => $data['strengths'] ?? [],
             'development_areas' => $data['development_areas'] ?? [],
             'is_active' => true,
-            'created_by' => auth()->id(),
+            'created_by' => \Illuminate\Support\Facades\Auth::guard('sanctum')->id() ?? auth()->id(),
+            'updated_by' => \Illuminate\Support\Facades\Auth::guard('sanctum')->id() ?? auth()->id(),
         ]);
     }
 

@@ -107,10 +107,12 @@ Route::prefix('notes')->group(function () {
         ]);
     });
 
-    Route::post('/', function (Illuminate\Http\Request $request) {
-        $validator = Illuminate\Support\Facades\Validator::make($request->all(), [
+    Route::post('/notes', function (\Illuminate\Http\Request $request) {
+        $validator = \Illuminate\Support\Facades\Validator::make($request->all(), [
             'employee_id' => 'required|exists:users,id',
+            'title' => 'nullable|string|max:255',
             'body' => 'required|string|min:5',
+            'note_type' => 'nullable|in:performance,behavior,general',
             'visibility' => 'required|in:hr_only,manager_chain,employee_visible',
             'is_sensitive' => 'boolean',
         ]);
@@ -125,8 +127,10 @@ Route::prefix('notes')->group(function () {
 
         $note = \App\Models\Talent\Note::create([
             'employee_id' => $request->employee_id,
-            'author_id' => auth()->id(),
+            'author_id' => \Illuminate\Support\Facades\Auth::guard('sanctum')->id() ?? auth()->id(),
+            'title' => $request->title,
             'body' => $request->body,
+            'note_type' => $request->note_type ?? 'general',
             'visibility' => $request->visibility,
             'is_sensitive' => $request->boolean('is_sensitive', false),
         ]);
@@ -137,6 +141,7 @@ Route::prefix('notes')->group(function () {
             'data' => $note->load(['employee', 'author']),
         ], 201);
     });
+
 
     Route::get('/{id}', function ($id) {
         $note = \App\Models\Talent\Note::with(['employee', 'author'])->findOrFail($id);

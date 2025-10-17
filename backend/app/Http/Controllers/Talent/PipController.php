@@ -59,12 +59,20 @@ class PipController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'employee_id' => 'required|exists:users,id',
-            'goal_text' => 'required|string|min:10',
+            'manager_id' => 'nullable|exists:users,id',
+            'title' => 'required|string|min:5',
+            'description' => 'nullable|string',
+            'goals' => 'nullable|array',
+            'goals.*.title' => 'required_with:goals|string',
+            'goals.*.description' => 'nullable|string',
+            'goals.*.target_metric' => 'nullable|string',
+            'goals.*.due_date' => 'nullable|date',
+            'success_criteria' => 'nullable|string',
             'learning_path_id' => 'nullable|exists:learning_paths,id',
             'mentor_id' => 'nullable|exists:users,id',
             'start_date' => 'required|date',
             'end_date' => 'required|date|after:start_date',
-            'checkin_frequency' => 'required|in:weekly,biweekly,monthly',
+            'checkin_frequency' => 'nullable|in:weekly,biweekly,monthly',
         ]);
 
         if ($validator->fails()) {
@@ -78,7 +86,18 @@ class PipController extends Controller
         try {
             $pip = $this->pipService->createPip(
                 $request->employee_id,
-                $request->only(['goal_text', 'learning_path_id', 'mentor_id', 'start_date', 'end_date', 'checkin_frequency'])
+                $request->only([
+                    'manager_id',
+                    'title',
+                    'description',
+                    'goals',
+                    'success_criteria',
+                    'learning_path_id',
+                    'mentor_id',
+                    'start_date',
+                    'end_date',
+                    'checkin_frequency'
+                ])
             );
 
             return response()->json([
@@ -86,7 +105,6 @@ class PipController extends Controller
                 'message' => 'PIP created successfully',
                 'data' => $pip->load(['employee', 'mentor', 'learningPath']),
             ], 201);
-
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
@@ -94,6 +112,7 @@ class PipController extends Controller
             ], 400);
         }
     }
+
 
     /**
      * Get specific PIP details
@@ -138,7 +157,6 @@ class PipController extends Controller
                 'message' => 'PIP status updated successfully',
                 'data' => $pip,
             ]);
-
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
@@ -150,12 +168,20 @@ class PipController extends Controller
     /**
      * Add a check-in to PIP
      */
-    public function addCheckin(Request $request, $id)
+    public function addCheckin(Request $request, $pipId)
     {
         $validator = Validator::make($request->all(), [
+            'checkin_date' => 'nullable|date',
             'summary' => 'required|string|min:10',
-            'next_steps' => 'nullable|string',
+            'status' => 'nullable|in:on_track,off_track,improving,completed',
             'rating' => 'nullable|integer|min:1|max:5',
+            'goals_progress' => 'nullable|array',
+            'goals_progress.*.goal_id' => 'nullable|integer',
+            'goals_progress.*.status' => 'nullable|string',
+            'goals_progress.*.notes' => 'nullable|string',
+            'manager_notes' => 'nullable|string',
+            'next_steps' => 'nullable|string',
+            'next_checkin_date' => 'nullable|date|after_or_equal:checkin_date',
         ]);
 
         if ($validator->fails()) {
@@ -166,19 +192,15 @@ class PipController extends Controller
         }
 
         try {
-            $checkin = $this->pipService->addCheckin(
-                $id,
-                $request->summary,
-                $request->next_steps,
-                $request->rating
-            );
+            $pip = Pip::findOrFail($pipId);
+
+            $checkin = $pip->addCheckin($request->all());
 
             return response()->json([
                 'success' => true,
-                'message' => 'Check-in added successfully',
+                'message' => 'Check-in recorded successfully',
                 'data' => $checkin->load('creator'),
             ], 201);
-
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
@@ -186,6 +208,7 @@ class PipController extends Controller
             ], 400);
         }
     }
+
 
     /**
      * Get PIPs due for check-in
