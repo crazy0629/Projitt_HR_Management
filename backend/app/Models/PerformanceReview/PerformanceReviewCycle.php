@@ -5,6 +5,7 @@ namespace App\Models\PerformanceReview;
 use App\Models\User\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class PerformanceReviewCycle extends Model
@@ -165,7 +166,7 @@ class PerformanceReviewCycle extends Model
 
     public function getFormattedPeriodAttribute()
     {
-        return $this->period_start->format('M j, Y').' - '.$this->period_end->format('M j, Y');
+        return $this->period_start->format('M j, Y') . ' - ' . $this->period_end->format('M j, Y');
     }
 
     public function getDurationInDaysAttribute()
@@ -188,7 +189,7 @@ class PerformanceReviewCycle extends Model
         ];
 
         return collect($this->assignments ?? [])
-            ->map(fn ($assignment) => $types[$assignment] ?? ucfirst(str_replace('_', ' ', $assignment)))
+            ->map(fn($assignment) => $types[$assignment] ?? ucfirst(str_replace('_', ' ', $assignment)))
             ->implode(', ');
     }
 
@@ -274,7 +275,7 @@ class PerformanceReviewCycle extends Model
     public function getUserGuideUrl()
     {
         if ($this->hasUserGuide()) {
-            return asset('storage/'.$this->user_guide_path);
+            return asset('storage/' . $this->user_guide_path);
         }
 
         return null;
@@ -283,7 +284,7 @@ class PerformanceReviewCycle extends Model
     public function deleteUserGuide()
     {
         if ($this->hasUserGuide()) {
-            \Storage::delete($this->user_guide_path);
+            Storage::delete($this->user_guide_path);
             $this->user_guide_path = null;
             $this->user_guide_name = null;
             $this->save();
@@ -309,21 +310,23 @@ class PerformanceReviewCycle extends Model
     }
 
     public function createDefaultCompetencies()
-    {
-        if ($this->reviewCompetencies()->count() === 0) {
-            $competencies = ReviewCompetency::createDefault($this->id);
+{
+    if ($this->reviewCompetencies()->count() === 0) {
+        $competencies = ReviewCompetency::createDefault($this->id);
 
-            foreach ($competencies as $competency) {
-                ReviewCriteria::createDefaultForCompetency($competency->id, $competency->name);
-            }
-
-            $this->updateSetupStatus('criteria_added');
-
-            return $competencies;
+        foreach ($competencies as $competency) {
+            ReviewCriteria::createDefaultForCompetency($competency->id, $competency->name);
         }
 
-        return [];
+        $this->updateSetupStatus('criteria_added');
     }
+
+    // ✅ Always return an Eloquent collection with relations
+    return $this->reviewCompetencies()
+        ->with('activeCriteria')
+        ->get();
+}
+
 
     public function calculateEligibleEmployees($criteria = null)
     {

@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::prefix('api/v1/manager')->middleware(['auth:sanctum'])->group(function () {
+Route::prefix('manager')->middleware(['auth:sanctum'])->group(function () {
 
     // Team Review Management
     Route::prefix('team-reviews')->group(function () {

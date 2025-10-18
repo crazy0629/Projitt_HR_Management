@@ -568,12 +568,11 @@
 									}
 								],
 								"url": {
-									"raw": "{{base_url}}/api/performance-reviews/cycles?status=active",
+									"raw": "{{base_url}}/performance-reviews/cycles?status=active",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
-										"api",
 										"performance-reviews",
 										"cycles"
 									],
@@ -601,15 +600,14 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n    \"name\": \"Q4 2024 Performance Review\",\n    \"description\": \"Quarterly performance review for Q4 2024\",\n    \"start_date\": \"2024-10-01\",\n    \"end_date\": \"2024-12-31\",\n    \"review_template\": \"annual\",\n    \"auto_assign\": true\n}"
+									"raw": "{\n  \"name\": \"Q1 2024 Review\",\n  \"description\": \"Quarterly performance review\",\n  \"period_start\": \"2024-10-01\",\n  \"period_end\": \"2024-12-31\",\n  \"frequency\": \"quarterly\",\n  \"competencies\": [\"Leadership\", \"Teamwork\"],\n  \"assignments\": [\"self_review\", \"manager_review\"],\n  \"employee_ids\": [1, 2]\n}"
 								},
 								"url": {
-									"raw": "{{base_url}}/api/performance-reviews/cycles",
+									"raw": "{{base_url}}/performance-reviews/cycles",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
-										"api",
 										"performance-reviews",
 										"cycles"
 									]
@@ -629,12 +627,11 @@
 									}
 								],
 								"url": {
-									"raw": "{{base_url}}/api/performance-reviews/cycles/{{cycle_id}}",
+									"raw": "{{base_url}}/performance-reviews/cycles/{{cycle_id}}",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
-										"api",
 										"performance-reviews",
 										"cycles",
 										"{{cycle_id}}"
@@ -655,12 +652,11 @@
 									}
 								],
 								"url": {
-									"raw": "{{base_url}}/api/performance-reviews/cycles/{{cycle_id}}/activate",
+									"raw": "{{base_url}}/performance-reviews/cycles/{{cycle_id}}/activate",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
-										"api",
 										"performance-reviews",
 										"cycles",
 										"{{cycle_id}}",
@@ -682,12 +678,11 @@
 									}
 								],
 								"url": {
-									"raw": "{{base_url}}/api/performance-reviews/cycles/{{cycle_id}}/setup/status",
+									"raw": "{{base_url}}/performance-reviews/cycles/{{cycle_id}}/setup/status",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
-										"api",
 										"performance-reviews",
 										"cycles",
 										"{{cycle_id}}",
@@ -714,12 +709,11 @@
 									"raw": "{\n    \"template\": \"standard\"\n}"
 								},
 								"url": {
-									"raw": "{{base_url}}/api/performance-reviews/cycles/{{cycle_id}}/setup/default-competencies",
+									"raw": "{{base_url}}/performance-reviews/cycles/{{cycle_id}}/setup/default-competencies",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
-										"api",
 										"performance-reviews",
 										"cycles",
 										"{{cycle_id}}",
@@ -740,9 +734,9 @@
 									"mode": "formdata",
 									"formdata": [
 										{
-											"key": "csv_file",
+											"key": "file",
 											"type": "file",
-											"src": []
+											"src": "/C:/Users/MUmai/OneDrive/Documents/Webpages/React/Logico/node_modules/jquery/AUTHORS.txt"
 										},
 										{
 											"key": "import_type",
@@ -752,12 +746,11 @@
 									]
 								},
 								"url": {
-									"raw": "{{base_url}}/api/performance-reviews/cycles/{{cycle_id}}/import/csv",
+									"raw": "{{base_url}}/performance-reviews/cycles/{{cycle_id}}/import/csv",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
-										"api",
 										"performance-reviews",
 										"cycles",
 										"{{cycle_id}}",
@@ -766,37 +759,6 @@
 									]
 								},
 								"description": "Upload CSV file for bulk import"
-							},
-							"response": []
-						},
-						{
-							"name": "Launch Cycle",
-							"request": {
-								"method": "POST",
-								"header": [
-									{
-										"key": "Content-Type",
-										"value": "application/json"
-									}
-								],
-								"body": {
-									"mode": "raw",
-									"raw": "{\n    \"send_notifications\": true,\n    \"auto_assign_reviews\": true\n}"
-								},
-								"url": {
-									"raw": "{{base_url}}/api/performance-reviews/cycles/{{cycle_id}}/launch",
-									"host": [
-										"{{base_url}}"
-									],
-									"path": [
-										"api",
-										"performance-reviews",
-										"cycles",
-										"{{cycle_id}}",
-										"launch"
-									]
-								},
-								"description": "Launch the review cycle with assignments"
 							},
 							"response": []
 						}
@@ -816,12 +778,11 @@
 									}
 								],
 								"url": {
-									"raw": "{{base_url}}/api/performance-reviews/reviews?cycle_id={{cycle_id}}&status=in_progress",
+									"raw": "{{base_url}}/performance-reviews/reviews?cycle_id={{cycle_id}}&status=in_progress",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
-										"api",
 										"performance-reviews",
 										"reviews"
 									],
@@ -841,35 +802,6 @@
 							"response": []
 						},
 						{
-							"name": "Create Review",
-							"request": {
-								"method": "POST",
-								"header": [
-									{
-										"key": "Content-Type",
-										"value": "application/json"
-									}
-								],
-								"body": {
-									"mode": "raw",
-									"raw": "{\n    \"cycle_id\": 1,\n    \"reviewee_id\": 2,\n    \"reviewer_id\": 1,\n    \"review_type\": \"manager\",\n    \"due_date\": \"2024-11-30\"\n}"
-								},
-								"url": {
-									"raw": "{{base_url}}/api/performance-reviews/reviews",
-									"host": [
-										"{{base_url}}"
-									],
-									"path": [
-										"api",
-										"performance-reviews",
-										"reviews"
-									]
-								},
-								"description": "Create a new performance review"
-							},
-							"response": []
-						},
-						{
 							"name": "Get Review Details",
 							"request": {
 								"method": "GET",
@@ -880,49 +812,17 @@
 									}
 								],
 								"url": {
-									"raw": "{{base_url}}/api/performance-reviews/reviews/1",
+									"raw": "{{base_url}}/performance-reviews/reviews/1",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
-										"api",
 										"performance-reviews",
 										"reviews",
 										"1"
 									]
 								},
 								"description": "Get detailed information about a specific review"
-							},
-							"response": []
-						},
-						{
-							"name": "Submit Review",
-							"request": {
-								"method": "PUT",
-								"header": [
-									{
-										"key": "Content-Type",
-										"value": "application/json"
-									}
-								],
-								"body": {
-									"mode": "raw",
-									"raw": "{\n    \"scores\": [\n        {\n            \"competency_id\": 1,\n            \"score\": 4,\n            \"comments\": \"Excellent performance in this area\"\n        },\n        {\n            \"competency_id\": 2,\n            \"score\": 3,\n            \"comments\": \"Good performance with room for improvement\"\n        }\n    ],\n    \"overall_comments\": \"Strong performance overall with clear areas for development\"\n}"
-								},
-								"url": {
-									"raw": "{{base_url}}/api/performance-reviews/reviews/1/submit",
-									"host": [
-										"{{base_url}}"
-									],
-									"path": [
-										"api",
-										"performance-reviews",
-										"reviews",
-										"1",
-										"submit"
-									]
-								},
-								"description": "Submit a completed review"
 							},
 							"response": []
 						}
@@ -1691,6 +1591,188 @@
 				}
 			],
 			"description": "Complete talent management ecosystem for career advancement, succession planning, and employee development"
+		},
+		{
+			"name": "Manager Performance Reviews (Employee)",
+			"item": [
+				{
+					"name": "Team Review Management",
+					"item": [
+						{
+							"name": "Get Review Cycles",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/manager/team-reviews/cycles?scope=ongoing&limit=25",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"manager",
+										"team-reviews",
+										"cycles"
+									],
+									"query": [
+										{
+											"key": "scope",
+											"value": "ongoing",
+											"description": "Filter by scope: ongoing, completed, draft"
+										},
+										{
+											"key": "limit",
+											"value": "25",
+											"description": "Number of results to return (max 100)"
+										}
+									]
+								},
+								"description": "Get cycles where manager has reviewees with completion stats and team headcount"
+							},
+							"response": []
+						},
+						{
+							"name": "Get Cycle Reviewees",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/manager/team-reviews/cycles/{{cycle_id}}/reviewees?limit=25",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"manager",
+										"team-reviews",
+										"cycles",
+										"{{cycle_id}}",
+										"reviewees"
+									],
+									"query": [
+										{
+											"key": "limit",
+											"value": "25",
+											"description": "Number of results to return"
+										}
+									]
+								},
+								"description": "Get reviewees for a specific cycle with AI-powered badge classification"
+							},
+							"response": []
+						},
+						{
+							"name": "Send Review Reminders",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"audience\": \"all\",\n    \"reviewee_ids\": [1, 2, 3]\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/manager/team-reviews/cycles/{{cycle_id}}/reminders",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"manager",
+										"team-reviews",
+										"cycles",
+										"{{cycle_id}}",
+										"reminders"
+									]
+								},
+								"description": "Send targeted reminders to reviewers (rate limited to once per 4 hours)"
+							},
+							"response": []
+						},
+						{
+							"name": "Get Team Summary",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/manager/team-reviews/team-summary?cycle_id={{cycle_id}}",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"manager",
+										"team-reviews",
+										"team-summary"
+									],
+									"query": [
+										{
+											"key": "cycle_id",
+											"value": "{{cycle_id}}",
+											"description": "Optional cycle ID for specific cycle data"
+										}
+									]
+								},
+								"description": "Get team performance summary with completion statistics and high performer percentages"
+							},
+							"response": []
+						},
+						{
+							"name": "Get Team Members",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/manager/team-reviews/team-members?cycle_id={{cycle_id}}&limit=25",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"manager",
+										"team-reviews",
+										"team-members"
+									],
+									"query": [
+										{
+											"key": "cycle_id",
+											"value": "{{cycle_id}}",
+											"description": "Filter by specific cycle"
+										},
+										{
+											"key": "limit",
+											"value": "25",
+											"description": "Number of results to return"
+										}
+									]
+								},
+								"description": "Get team members with performance data and AI-powered badge classification"
+							},
+							"response": []
+						}
+					]
+				}
+			],
+			"description": "Manager-facing performance review tools for team management and talent actions"
 		}
 	],
 	"auth": {

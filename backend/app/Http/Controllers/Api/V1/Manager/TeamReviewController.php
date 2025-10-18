@@ -121,7 +121,7 @@ class TeamReviewController extends Controller
                 $query->orderBy('final_score', 'desc');
                 break;
             case 'progress':
-                $query->orderBy('progress_percentage', 'desc');
+                $query->orderBy('progress', 'desc');
                 break;
             default:
                 $query->orderBy('created_at', 'desc');
@@ -148,7 +148,7 @@ class TeamReviewController extends Controller
                     'department' => $review->reviewee->profile?->department,
                     'location' => $review->reviewee->profile?->location,
                 ],
-                'progress' => $review->progress_percentage,
+                'progress' => $review->progress,
                 'final_score' => $review->final_score,
                 'badges' => $badges,
                 'status' => $review->status,
@@ -234,7 +234,6 @@ class TeamReviewController extends Controller
                 'message' => "Reminders sent to {$reminderCount} reviewers",
                 'reminders_sent' => $reminderCount,
             ]);
-
         } catch (\Exception $e) {
             return response()->json([
                 'error' => 'Failed to send reminders',
@@ -296,46 +295,42 @@ class TeamReviewController extends Controller
         $limit = min($request->get('limit', 25), 100);
         $cursor = $request->get('cursor');
 
+        // get team members managed by current user
         $teamMembers = TeamMember::getTeamMembersForManager($managerId);
         $teamMemberIds = $teamMembers->pluck('employee_user_id');
 
         $query = DB::table('users')
-            ->whereIn('id', $teamMemberIds)
+            ->whereIn('users.id', $teamMemberIds)
+            // join performance reviews (employee_id)
             ->leftJoin('performance_reviews', function ($join) use ($cycleId) {
-                $join->on('users.id', '=', 'performance_reviews.reviewee_id');
+                $join->on('users.id', '=', 'performance_reviews.employee_id');
                 if ($cycleId) {
                     $join->where('performance_reviews.cycle_id', $cycleId);
                 }
             })
-            ->leftJoin('performance_review_scores as peer_scores', function ($join) use ($cycleId) {
-                $join->on('users.id', '=', 'peer_scores.reviewee_id')
-                    ->where('peer_scores.reviewer_type', 'peer');
-                if ($cycleId) {
-                    $join->where('peer_scores.cycle_id', $cycleId);
-                }
+            // join peer scores
+            ->leftJoin('performance_review_scores as peer_scores', function ($join) {
+                $join->on('performance_reviews.id', '=', 'peer_scores.review_id')
+                    ->where('peer_scores.type', 'peer');
             })
-            ->leftJoin('performance_review_scores as manager_scores', function ($join) use ($cycleId) {
-                $join->on('users.id', '=', 'manager_scores.reviewee_id')
-                    ->where('manager_scores.reviewer_type', 'manager');
-                if ($cycleId) {
-                    $join->where('manager_scores.cycle_id', $cycleId);
-                }
+            // join manager scores
+            ->leftJoin('performance_review_scores as manager_scores', function ($join) {
+                $join->on('performance_reviews.id', '=', 'manager_scores.review_id')
+                    ->where('manager_scores.type', 'manager');
             })
-            ->leftJoin('performance_review_scores as self_scores', function ($join) use ($cycleId) {
-                $join->on('users.id', '=', 'self_scores.reviewee_id')
-                    ->where('self_scores.reviewer_type', 'self');
-                if ($cycleId) {
-                    $join->where('self_scores.cycle_id', $cycleId);
-                }
+            // join self scores
+            ->leftJoin('performance_review_scores as self_scores', function ($join) {
+                $join->on('performance_reviews.id', '=', 'self_scores.review_id')
+                    ->where('self_scores.type', 'self');
             })
             ->select([
                 'users.id',
-                'users.name',
+                DB::raw("CONCAT_WS(' ', users.first_name, users.middle_name, users.last_name) as name"),
                 'users.email',
                 'performance_reviews.final_score',
-                'peer_scores.overall_score as peer_score',
-                'manager_scores.overall_score as manager_score',
-                'self_scores.overall_score as self_score',
+                'peer_scores.average_score as peer_score',
+                'manager_scores.average_score as manager_score',
+                'self_scores.average_score as self_score',
                 'performance_reviews.status as review_status',
             ]);
 
@@ -350,30 +345,26 @@ class TeamReviewController extends Controller
             $members->pop();
         }
 
-        // Add badges to each member
+        // add badges
         $members->transform(function ($member) {
-            $badges = $this->calculateMemberBadges($member);
-
-            $member->badges = $badges;
-
+            $member->badges = $this->calculateMemberBadges($member);
             return $member;
         });
 
-        // Apply status filter if specified
+        // optional filter by badge/status
         if (isset($filter['status'])) {
-            $members = $members->filter(function ($member) use ($filter) {
-                return in_array($filter['status'], $member->badges);
-            });
+            $members = $members->filter(fn($m) => in_array($filter['status'], $m->badges));
         }
 
         return response()->json([
-            'members' => $members,
+            'members' => $members->values(),
             'pagination' => [
                 'has_more' => $hasMore,
                 'next_cursor' => $hasMore ? $members->last()->id : null,
             ],
         ]);
     }
+
 
     /**
      * Calculate employee badges based on performance

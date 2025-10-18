@@ -20,33 +20,37 @@ class ActionsController extends Controller
     public function createPromotion(Request $request): JsonResponse
     {
         $request->validate([
-            'employee_user_id' => 'required|integer|exists:users,id',
-            'cycle_id' => 'sometimes|integer|exists:performance_review_cycles,id',
-            'target_role_id' => 'required|integer|exists:roles,id',
+            'employee_id' => 'required|integer|exists:users,id',
+            'review_cycle_id' => 'sometimes|integer|exists:performance_review_cycles,id',
+            'proposed_role_id' => 'required|integer|exists:roles,id',
             'justification' => 'required|string|min:10|max:1000',
+            'current_salary' => 'sometimes|numeric|min:0',
+            'proposed_salary' => 'sometimes|numeric|min:0',
+            'priority' => 'sometimes|string|in:low,medium,high',
             'comp_adjustment_min' => 'sometimes|numeric|min:0',
             'comp_adjustment_max' => 'sometimes|numeric|min:0|gte:comp_adjustment_min',
             'workflow_id' => 'sometimes|string|max:255',
+            'effective_date' => 'sometimes|date',
         ]);
 
         $managerId = Auth::id();
-        $employeeId = $request->get('employee_user_id');
+        $employeeId = $request->get('employee_id');
 
-        // Verify employee is in manager's team
+        // Ensure the employee is under this manager
         $teamMember = TeamMember::findByEmployee($employeeId);
-        if (! $teamMember || ! $this->canManagerAccessEmployee($managerId, $employeeId)) {
+        if (!$teamMember || !$this->canManagerAccessEmployee($managerId, $employeeId)) {
             return response()->json([
                 'error' => 'Employee not found in your team',
                 'code' => '403-SCOPE',
             ], 403);
         }
 
-        // Check for existing pending recommendation
-        $existingRecommendation = PromotionRecommendation::forEmployee($employeeId)
+        // Prevent duplicate pending recommendations
+        $existing = PromotionRecommendation::forEmployee($employeeId)
             ->pending()
             ->first();
 
-        if ($existingRecommendation) {
+        if ($existing) {
             return response()->json([
                 'error' => 'Employee already has a pending promotion recommendation',
                 'code' => '409-DUPLICATE',
@@ -55,33 +59,37 @@ class ActionsController extends Controller
 
         try {
             $promotion = DB::transaction(function () use ($request, $managerId, $employeeId) {
-                // Get employee's current role
-                $employee = \App\Models\User::with('currentRole')->find($employeeId);
+                // Get current employee role
+                $employee = \App\Models\User\User::with('currentRole')->find($employeeId);
                 $currentRoleId = $employee->currentRole?->id;
 
-                return PromotionRecommendation::createRecommendation(
-                    employeeId: $employeeId,
-                    proposedById: $managerId,
-                    targetRoleId: $request->get('target_role_id'),
-                    justification: $request->get('justification'),
-                    cycleId: $request->get('cycle_id'),
-                    currentRoleId: $currentRoleId,
-                    compMin: $request->get('comp_adjustment_min'),
-                    compMax: $request->get('comp_adjustment_max'),
-                    workflowId: $request->get('workflow_id'),
-                    metadata: [
+                return PromotionRecommendation::create([
+                    'review_cycle_id'     => $request->get('review_cycle_id'),
+                    'employee_id'         => $employeeId,
+                    'proposed_by_id'      => $managerId,
+                    'current_role_id'     => $currentRoleId,
+                    'proposed_role_id'    => $request->get('proposed_role_id'),
+                    'justification'       => $request->get('justification'),
+                    'current_salary'      => $request->get('current_salary'),
+                    'proposed_salary'     => $request->get('proposed_salary'),
+                    'priority'            => $request->get('priority', 'medium'),
+                    'comp_adjustment_min' => $request->get('comp_adjustment_min'),
+                    'comp_adjustment_max' => $request->get('comp_adjustment_max'),
+                    'workflow_id'         => $request->get('workflow_id'),
+                    'effective_date'      => $request->get('effective_date'),
+                    'meta'                => [
                         'created_by_manager' => true,
                         'source' => 'manager_recommendation',
-                    ]
-                );
+                    ],
+                    'status' => 'pending',
+                ]);
             });
 
             return response()->json([
                 'message' => 'Promotion recommendation created successfully',
-                'promotion' => $promotion->load(['employee', 'targetRole', 'currentRole']),
+                'promotion' => $promotion->load(['employee', 'proposedRole', 'currentRole']),
             ], 201);
-
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             return response()->json([
                 'error' => 'Failed to create promotion recommendation',
                 'message' => $e->getMessage(),
@@ -191,7 +199,6 @@ class ActionsController extends Controller
                 'message' => 'Promotion recommendation withdrawn successfully',
                 'promotion' => $promotion->fresh(),
             ]);
-
         } catch (\Exception $e) {
             return response()->json([
                 'error' => 'Failed to withdraw promotion recommendation',
@@ -263,7 +270,6 @@ class ActionsController extends Controller
                 'message' => 'Employee added to succession pool successfully',
                 'succession_candidate' => $succession->load(['employee', 'successionPool.role', 'learningPath', 'mentor']),
             ], 201);
-
         } catch (\Exception $e) {
             return response()->json([
                 'error' => 'Failed to add employee to succession pool',
@@ -329,7 +335,6 @@ class ActionsController extends Controller
                 'message' => 'Career path assigned successfully',
                 'career_path_assignment' => $careerPath->load(['employee', 'targetRole', 'learningPath', 'assignedBy']),
             ], 201);
-
         } catch (\Exception $e) {
             return response()->json([
                 'error' => 'Failed to assign career path',
@@ -377,7 +382,7 @@ class ActionsController extends Controller
      */
     private function canManagerAccessEmployee(int $managerId, int $employeeId): bool
     {
-        // Check direct reports
+        // Check direct report
         $directReport = TeamMember::active()
             ->reportsTo($managerId)
             ->forEmployee($employeeId)
@@ -387,20 +392,20 @@ class ActionsController extends Controller
             return true;
         }
 
-        // Check indirect reports (team members)
-        $teamMember = TeamMember::findByEmployee($employeeId);
-        if (! $teamMember) {
+        // Check indirect (nested team hierarchy)
+        $employeeTeamMember = TeamMember::findByEmployee($employeeId);
+        if (!$employeeTeamMember) {
             return false;
         }
 
-        // Get all subordinates of the manager
         $managerTeamMember = TeamMember::findByEmployee($managerId);
-        if (! $managerTeamMember) {
+        if (!$managerTeamMember) {
             return false;
         }
 
+        // Retrieve all subordinate IDs
         $allSubordinates = $managerTeamMember->getAllSubordinates();
 
-        return $allSubordinates->contains('employee_user_id', $employeeId);
+        return $allSubordinates->contains('employee_id', $employeeId);
     }
 }

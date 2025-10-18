@@ -16,23 +16,28 @@ class PromotionRecommendation extends Model
 
     protected $fillable = [
         'review_cycle_id',
-        'employee_user_id',
-        'proposed_by_user_id',
+        'employee_id',
+        'proposed_by_id',
         'current_role_id',
-        'target_role_id',
+        'proposed_role_id',
         'justification',
+        'current_salary',
+        'proposed_salary',
+        'priority',
         'comp_adjustment_min',
         'comp_adjustment_max',
         'workflow_id',
         'status',
         'meta',
         'approval_notes',
-        'approved_by_user_id',
+        'approved_by_id',
         'approved_at',
         'effective_date',
     ];
 
     protected $casts = [
+        'current_salary' => 'decimal:2',
+        'proposed_salary' => 'decimal:2',
         'comp_adjustment_min' => 'decimal:2',
         'comp_adjustment_max' => 'decimal:2',
         'meta' => 'array',
@@ -40,7 +45,12 @@ class PromotionRecommendation extends Model
         'effective_date' => 'datetime',
     ];
 
-    // Relationships
+    /*
+    |--------------------------------------------------------------------------
+    | Relationships
+    |--------------------------------------------------------------------------
+    */
+
     public function reviewCycle(): BelongsTo
     {
         return $this->belongsTo(PerformanceReviewCycle::class, 'review_cycle_id');
@@ -48,12 +58,12 @@ class PromotionRecommendation extends Model
 
     public function employee(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'employee_user_id');
+        return $this->belongsTo(User::class, 'employee_id');
     }
 
     public function proposedBy(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'proposed_by_user_id');
+        return $this->belongsTo(User::class, 'proposed_by_id');
     }
 
     public function currentRole(): BelongsTo
@@ -61,17 +71,22 @@ class PromotionRecommendation extends Model
         return $this->belongsTo(Role::class, 'current_role_id');
     }
 
-    public function targetRole(): BelongsTo
+    public function proposedRole(): BelongsTo
     {
-        return $this->belongsTo(Role::class, 'target_role_id');
+        return $this->belongsTo(Role::class, 'proposed_role_id');
     }
 
     public function approvedBy(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'approved_by_user_id');
+        return $this->belongsTo(User::class, 'approved_by_id');
     }
 
-    // Scopes
+    /*
+    |--------------------------------------------------------------------------
+    | Scopes
+    |--------------------------------------------------------------------------
+    */
+
     public function scopeByStatus(Builder $query, string $status): Builder
     {
         return $query->where('status', $status);
@@ -84,12 +99,12 @@ class PromotionRecommendation extends Model
 
     public function scopeForEmployee(Builder $query, int $employeeId): Builder
     {
-        return $query->where('employee_user_id', $employeeId);
+        return $query->where('employee_id', $employeeId);
     }
 
     public function scopeProposedBy(Builder $query, int $managerId): Builder
     {
-        return $query->where('proposed_by_user_id', $managerId);
+        return $query->where('proposed_by_id', $managerId);
     }
 
     public function scopeInCycle(Builder $query, int $cycleId): Builder
@@ -97,7 +112,12 @@ class PromotionRecommendation extends Model
         return $query->where('review_cycle_id', $cycleId);
     }
 
-    // Helper methods
+    /*
+    |--------------------------------------------------------------------------
+    | Helper Methods
+    |--------------------------------------------------------------------------
+    */
+
     public function isPending(): bool
     {
         return $this->status === 'pending';
@@ -115,7 +135,7 @@ class PromotionRecommendation extends Model
 
     public function canWithdraw(): bool
     {
-        return $this->isPending() && ! $this->approved_at;
+        return $this->isPending() && !$this->approved_at;
     }
 
     public function canApprove(): bool
@@ -125,7 +145,7 @@ class PromotionRecommendation extends Model
 
     public function withdraw(): self
     {
-        if (! $this->canWithdraw()) {
+        if (!$this->canWithdraw()) {
             throw new \InvalidArgumentException('Cannot withdraw this promotion recommendation');
         }
 
@@ -136,13 +156,13 @@ class PromotionRecommendation extends Model
 
     public function approve(int $approvedByUserId, ?string $notes = null, ?\DateTime $effectiveDate = null): self
     {
-        if (! $this->canApprove()) {
+        if (!$this->canApprove()) {
             throw new \InvalidArgumentException('Cannot approve this promotion recommendation');
         }
 
         $this->update([
             'status' => 'approved',
-            'approved_by_user_id' => $approvedByUserId,
+            'approved_by_id' => $approvedByUserId,
             'approved_at' => now(),
             'approval_notes' => $notes,
             'effective_date' => $effectiveDate ?? now(),
@@ -153,13 +173,13 @@ class PromotionRecommendation extends Model
 
     public function reject(int $rejectedByUserId, string $reason): self
     {
-        if (! $this->canApprove()) {
+        if (!$this->canApprove()) {
             throw new \InvalidArgumentException('Cannot reject this promotion recommendation');
         }
 
         $this->update([
             'status' => 'rejected',
-            'approved_by_user_id' => $rejectedByUserId,
+            'approved_by_id' => $rejectedByUserId,
             'approved_at' => now(),
             'approval_notes' => $reason,
         ]);
@@ -167,39 +187,47 @@ class PromotionRecommendation extends Model
         return $this->fresh();
     }
 
-    public function getCompensationAdjustmentRange(): array
+    public function getCompensationAdjustmentRange(): ?array
     {
+        if ($this->comp_adjustment_min === null && $this->comp_adjustment_max === null) {
+            return null;
+        }
+
+        $avg = null;
+        if ($this->comp_adjustment_min !== null && $this->comp_adjustment_max !== null) {
+            $avg = ($this->comp_adjustment_min + $this->comp_adjustment_max) / 2;
+        }
+
         return [
             'min' => $this->comp_adjustment_min,
             'max' => $this->comp_adjustment_max,
-            'average' => ($this->comp_adjustment_min + $this->comp_adjustment_max) / 2,
+            'average' => $avg,
         ];
     }
 
     public function getPromotionLevel(): string
     {
-        // This would need to be implemented based on role hierarchy
         $currentLevel = $this->currentRole->level ?? 1;
-        $targetLevel = $this->targetRole->level ?? 1;
+        $targetLevel = $this->proposedRole->level ?? 1;
 
-        $levelDifference = $targetLevel - $currentLevel;
+        $diff = $targetLevel - $currentLevel;
 
         return match (true) {
-            $levelDifference >= 2 => 'double_promotion',
-            $levelDifference === 1 => 'standard_promotion',
-            $levelDifference === 0 => 'lateral_move',
-            default => 'demotion'
+            $diff >= 2 => 'double_promotion',
+            $diff === 1 => 'standard_promotion',
+            $diff === 0 => 'lateral_move',
+            default => 'demotion',
         };
     }
 
     public function getStatusColor(): string
     {
         return match ($this->status) {
-            'pending' => '#F59E0B', // Amber
-            'approved' => '#10B981', // Green
-            'rejected' => '#EF4444', // Red
-            'withdrawn' => '#6B7280', // Gray
-            default => '#6B7280'
+            'pending' => '#F59E0B',
+            'approved' => '#10B981',
+            'rejected' => '#EF4444',
+            'withdrawn' => '#6B7280',
+            default => '#6B7280',
         };
     }
 
@@ -210,24 +238,26 @@ class PromotionRecommendation extends Model
             'approved' => 'check-circle',
             'rejected' => 'x-circle',
             'withdrawn' => 'minus-circle',
-            default => 'help-circle'
+            default => 'help-circle',
         };
     }
 
     public function getTimeToDecision(): ?int
     {
-        if (! $this->approved_at) {
-            return null;
-        }
-
-        return $this->created_at->diffInDays($this->approved_at);
+        return $this->approved_at ? $this->created_at->diffInDays($this->approved_at) : null;
     }
 
-    // Static helper methods
+    /*
+    |--------------------------------------------------------------------------
+    | Static Factories & Utilities
+    |--------------------------------------------------------------------------
+    */
+
     public static function getStatuses(): array
     {
         return [
             'pending' => 'Pending Review',
+            'under_review' => 'Under Review',
             'approved' => 'Approved',
             'rejected' => 'Rejected',
             'withdrawn' => 'Withdrawn',
@@ -237,7 +267,7 @@ class PromotionRecommendation extends Model
     public static function createRecommendation(
         int $employeeId,
         int $proposedById,
-        int $targetRoleId,
+        int $proposedRoleId,
         string $justification,
         ?int $cycleId = null,
         ?int $currentRoleId = null,
@@ -247,9 +277,9 @@ class PromotionRecommendation extends Model
         ?array $metadata = null
     ): self {
         return self::create([
-            'employee_user_id' => $employeeId,
-            'proposed_by_user_id' => $proposedById,
-            'target_role_id' => $targetRoleId,
+            'employee_id' => $employeeId,
+            'proposed_by_id' => $proposedById,
+            'proposed_role_id' => $proposedRoleId,
             'justification' => $justification,
             'review_cycle_id' => $cycleId,
             'current_role_id' => $currentRoleId,
@@ -261,10 +291,10 @@ class PromotionRecommendation extends Model
         ]);
     }
 
-    public static function getManagerRecommendations(int $managerId, ?string $status = null): \Illuminate\Database\Eloquent\Collection
+    public static function getManagerRecommendations(int $managerId, ?string $status = null)
     {
         $query = self::proposedBy($managerId)
-            ->with(['employee', 'targetRole', 'currentRole', 'reviewCycle']);
+            ->with(['employee', 'proposedRole', 'currentRole', 'reviewCycle']);
 
         if ($status) {
             $query->byStatus($status);
@@ -273,10 +303,10 @@ class PromotionRecommendation extends Model
         return $query->orderBy('created_at', 'desc')->get();
     }
 
-    public static function getTeamRecommendations(array $employeeIds, ?string $status = null): \Illuminate\Database\Eloquent\Collection
+    public static function getTeamRecommendations(array $employeeIds, ?string $status = null)
     {
-        $query = self::whereIn('employee_user_id', $employeeIds)
-            ->with(['employee', 'targetRole', 'currentRole', 'proposedBy', 'reviewCycle']);
+        $query = self::whereIn('employee_id', $employeeIds)
+            ->with(['employee', 'proposedRole', 'currentRole', 'proposedBy', 'reviewCycle']);
 
         if ($status) {
             $query->byStatus($status);

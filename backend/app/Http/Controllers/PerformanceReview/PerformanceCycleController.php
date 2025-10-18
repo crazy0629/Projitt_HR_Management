@@ -34,7 +34,7 @@ class PerformanceCycleController extends Controller
 
             // Search by name
             if ($request->has('search') && $request->search) {
-                $query->where('name', 'like', '%'.$request->search.'%');
+                $query->where('name', 'like', '%' . $request->search . '%');
             }
 
             // Sort options
@@ -49,9 +49,8 @@ class PerformanceCycleController extends Controller
                 'data' => $cycles,
                 'message' => 'Performance review cycles retrieved successfully',
             ]);
-
         } catch (\Exception $e) {
-            Log::error('Error retrieving performance cycles: '.$e->getMessage());
+            Log::error('Error retrieving performance cycles: ' . $e->getMessage());
 
             return response()->json([
                 'status' => 'error',
@@ -96,8 +95,8 @@ class PerformanceCycleController extends Controller
                 'period_start' => $request->period_start,
                 'period_end' => $request->period_end,
                 'frequency' => $request->frequency,
-                'competencies' => $request->competencies,
-                'assignments' => $request->assignments,
+                'competencies' => (array) $request->competencies,
+                'assignments' => (array) $request->assignments,
                 'status' => 'draft',
                 'created_by' => Auth::id(),
             ]);
@@ -122,10 +121,9 @@ class PerformanceCycleController extends Controller
                 'data' => $cycle->load(['creator', 'reviews']),
                 'message' => 'Performance review cycle created successfully',
             ], 201);
-
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Error creating performance cycle: '.$e->getMessage());
+            Log::error('Error creating performance cycle: ' . $e->getMessage());
 
             return response()->json([
                 'status' => 'error',
@@ -151,9 +149,8 @@ class PerformanceCycleController extends Controller
                 'data' => $cycle,
                 'message' => 'Performance review cycle retrieved successfully',
             ]);
-
         } catch (\Exception $e) {
-            Log::error('Error retrieving performance cycle: '.$e->getMessage());
+            Log::error('Error retrieving performance cycle: ' . $e->getMessage());
 
             return response()->json([
                 'status' => 'error',
@@ -179,7 +176,7 @@ class PerformanceCycleController extends Controller
             }
 
             $validator = Validator::make($request->all(), [
-                'name' => 'sometimes|string|max:255|unique:performance_review_cycles,name,'.$id,
+                'name' => 'sometimes|string|max:255|unique:performance_review_cycles,name,' . $id,
                 'description' => 'nullable|string',
                 'period_start' => 'sometimes|date',
                 'period_end' => 'sometimes|date|after:period_start',
@@ -199,8 +196,13 @@ class PerformanceCycleController extends Controller
             }
 
             $cycle->update($request->only([
-                'name', 'description', 'period_start', 'period_end',
-                'frequency', 'competencies', 'assignments',
+                'name',
+                'description',
+                'period_start',
+                'period_end',
+                'frequency',
+                'competencies',
+                'assignments',
             ]));
 
             Log::info('Performance review cycle updated', [
@@ -213,9 +215,8 @@ class PerformanceCycleController extends Controller
                 'data' => $cycle->load(['creator', 'reviews']),
                 'message' => 'Performance review cycle updated successfully',
             ]);
-
         } catch (\Exception $e) {
-            Log::error('Error updating performance cycle: '.$e->getMessage());
+            Log::error('Error updating performance cycle: ' . $e->getMessage());
 
             return response()->json([
                 'status' => 'error',
@@ -257,20 +258,14 @@ class PerformanceCycleController extends Controller
 
             DB::commit();
 
-            Log::info('Performance review cycle activated', [
-                'cycle_id' => $cycle->id,
-                'activated_by' => Auth::id(),
-            ]);
-
             return response()->json([
                 'status' => 'success',
                 'data' => $cycle->load(['creator', 'reviews']),
                 'message' => 'Performance review cycle activated successfully',
             ]);
-
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Error activating performance cycle: '.$e->getMessage());
+            Log::error('Error activating performance cycle: ' . $e->getMessage());
 
             return response()->json([
                 'status' => 'error',
@@ -322,9 +317,8 @@ class PerformanceCycleController extends Controller
                 'data' => $cycle->load(['creator', 'reviews']),
                 'message' => 'Performance review cycle completed successfully',
             ]);
-
         } catch (\Exception $e) {
-            Log::error('Error completing performance cycle: '.$e->getMessage());
+            Log::error('Error completing performance cycle: ' . $e->getMessage());
 
             return response()->json([
                 'status' => 'error',
@@ -385,12 +379,11 @@ class PerformanceCycleController extends Controller
             return response()->json([
                 'status' => 'success',
                 'data' => $cycle->load(['creator', 'reviews']),
-                'message' => count($request->employee_ids).' employees added to cycle successfully',
+                'message' => count($request->employee_ids) . ' employees added to cycle successfully',
             ]);
-
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Error adding employees to performance cycle: '.$e->getMessage());
+            Log::error('Error adding employees to performance cycle: ' . $e->getMessage());
 
             return response()->json([
                 'status' => 'error',
@@ -427,7 +420,7 @@ class PerformanceCycleController extends Controller
 
             // Department breakdown
             $departmentStats = $cycle->reviews()
-                ->selectRaw('department_name, COUNT(*) as total, 
+                ->selectRaw('department_name, COUNT(*) as total,
                            SUM(CASE WHEN status = "completed" THEN 1 ELSE 0 END) as completed,
                            AVG(CASE WHEN status = "completed" THEN final_score END) as avg_score')
                 ->groupBy('department_name')
@@ -459,9 +452,8 @@ class PerformanceCycleController extends Controller
                 ],
                 'message' => 'Cycle analytics retrieved successfully',
             ]);
-
         } catch (\Exception $e) {
-            Log::error('Error retrieving cycle analytics: '.$e->getMessage());
+            Log::error('Error retrieving cycle analytics: ' . $e->getMessage());
 
             return response()->json([
                 'status' => 'error',
@@ -492,12 +484,12 @@ class PerformanceCycleController extends Controller
             $review = PerformanceReview::create([
                 'cycle_id' => $cycle->id,
                 'employee_id' => $employeeId,
-                'employee_name' => $employee->name,
+                'employee_name' => trim($employee->first_name . ' ' . $employee->middle_name . ' ' . $employee->last_name),
                 'employee_email' => $employee->email,
-                'department_name' => $employee->department ?? 'Unknown',
+                'department_name' => $employee->department ?? 'General',
                 'status' => 'pending',
                 'progress' => 0,
-                'total_reviewers' => count($cycle->assignments),
+                'total_reviewers' => count($cycle->assignments ?? []),
                 'completed_reviewers' => 0,
                 'due_date' => $cycle->period_end,
             ]);
@@ -516,16 +508,26 @@ class PerformanceCycleController extends Controller
         foreach ($assignments as $assignmentType) {
             $reviewerId = $this->getReviewerId($review->employee_id, $assignmentType);
 
-            if ($reviewerId) {
-                $reviewer = User::find($reviewerId);
-
-                $review->scores()->create([
-                    'reviewer_id' => $reviewerId,
-                    'reviewer_name' => $reviewer->name,
-                    'type' => $assignmentType,
-                    'status' => 'pending',
-                ]);
+            if (! $reviewerId) {
+                continue;
             }
+
+            $reviewer = User::find($reviewerId);
+
+            $review->scores()->create([
+                'cycle_id' => $review->cycle_id,
+                'reviewee_id' => $review->employee_id,
+                'reviewer_id' => $reviewerId,
+                'reviewer_name' => $reviewer?->first_name . ' ' . $reviewer?->last_name ?? 'Unknown',
+                'type' => str_replace('_review', '', $assignmentType), // normalize to match enum
+                'scores' => [], // not json_encode([])
+                'average_score' => null,
+                'comments' => null,
+                'strengths' => null,
+                'opportunities' => null,
+                'is_anonymous' => $assignmentType === 'peer_review',
+                'status' => 'pending',
+            ]);
         }
 
         $review->updateProgress();
@@ -539,18 +541,18 @@ class PerformanceCycleController extends Controller
         switch ($assignmentType) {
             case 'self_review':
                 return $employeeId;
+
             case 'manager_review':
-                // In a real system, you'd query the manager relationship
-                // For now, return the first admin user
-                return User::where('role', 'admin')->first()?->id;
+                return User::whereHas('role', function ($q) {
+                    $q->whereIn('name', ['HR Manager', 'Department Head', 'Super Admin']);
+                })->inRandomOrder()->first()?->id;
+
             case 'peer_review':
-                // In a real system, you'd select peers from the same department
-                // For now, return a random colleague
                 return User::where('id', '!=', $employeeId)->inRandomOrder()->first()?->id;
+
             case 'direct_report':
-                // In a real system, you'd query direct reports
-                // For now, return null
                 return null;
+
             default:
                 return null;
         }
@@ -582,9 +584,8 @@ class PerformanceCycleController extends Controller
                 'status' => 'success',
                 'message' => 'Performance review cycle deleted successfully',
             ]);
-
         } catch (\Exception $e) {
-            Log::error('Error deleting performance cycle: '.$e->getMessage());
+            Log::error('Error deleting performance cycle: ' . $e->getMessage());
 
             return response()->json([
                 'status' => 'error',
@@ -627,9 +628,8 @@ class PerformanceCycleController extends Controller
                     'recent_imports' => $cycle->questionImports()->limit(5)->get(),
                 ],
             ]);
-
         } catch (\Exception $e) {
-            Log::error('Error retrieving setup status: '.$e->getMessage());
+            Log::error('Error retrieving setup status: ' . $e->getMessage());
 
             return response()->json([
                 'status' => 'error',
@@ -662,16 +662,15 @@ class PerformanceCycleController extends Controller
             return response()->json([
                 'status' => 'success',
                 'data' => [
-                    'competencies' => $competencies->load('activeCriteria'),
+                    'competencies' => $competencies,
                     'setup_status' => $cycle->fresh()->setup_status,
                     'setup_progress' => $cycle->getSetupProgress(),
                 ],
                 'message' => 'Default competencies created successfully',
             ]);
-
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Error creating default competencies: '.$e->getMessage());
+            Log::error('Error creating default competencies: ' . $e->getMessage());
 
             return response()->json([
                 'status' => 'error',
@@ -696,9 +695,8 @@ class PerformanceCycleController extends Controller
                 'status' => 'success',
                 'data' => $competencies,
             ]);
-
         } catch (\Exception $e) {
-            Log::error('Error retrieving competencies: '.$e->getMessage());
+            Log::error('Error retrieving competencies: ' . $e->getMessage());
 
             return response()->json([
                 'status' => 'error',
@@ -755,9 +753,8 @@ class PerformanceCycleController extends Controller
                 'data' => $competency->load('activeCriteria'),
                 'message' => 'Competency created successfully',
             ]);
-
         } catch (\Exception $e) {
-            Log::error('Error creating competency: '.$e->getMessage());
+            Log::error('Error creating competency: ' . $e->getMessage());
 
             return response()->json([
                 'status' => 'error',
@@ -804,9 +801,8 @@ class PerformanceCycleController extends Controller
                 'data' => $competency->load('activeCriteria'),
                 'message' => 'Competency updated successfully',
             ]);
-
         } catch (\Exception $e) {
-            Log::error('Error updating competency: '.$e->getMessage());
+            Log::error('Error updating competency: ' . $e->getMessage());
 
             return response()->json([
                 'status' => 'error',
@@ -866,9 +862,8 @@ class PerformanceCycleController extends Controller
                 'data' => $criteria,
                 'message' => 'Criteria created successfully',
             ]);
-
         } catch (\Exception $e) {
-            Log::error('Error creating criteria: '.$e->getMessage());
+            Log::error('Error creating criteria: ' . $e->getMessage());
 
             return response()->json([
                 'status' => 'error',
@@ -893,7 +888,7 @@ class PerformanceCycleController extends Controller
             }
 
             $validator = Validator::make($request->all(), [
-                'file' => 'required|file|mimes:csv,txt|max:2048',
+                'file' => 'required|file|mimes:csv,txt,xls,xlsx|max:2048',
             ]);
 
             if ($validator->fails()) {
@@ -912,9 +907,8 @@ class PerformanceCycleController extends Controller
                 'data' => $import,
                 'message' => 'CSV file uploaded successfully',
             ]);
-
         } catch (\Exception $e) {
-            Log::error('Error uploading CSV: '.$e->getMessage());
+            Log::error('Error uploading CSV: ' . $e->getMessage());
 
             return response()->json([
                 'status' => 'error',
@@ -947,9 +941,8 @@ class PerformanceCycleController extends Controller
                 'data' => $result,
                 'message' => $result['success'] ? 'CSV import completed successfully' : 'CSV import failed',
             ]);
-
         } catch (\Exception $e) {
-            Log::error('Error processing CSV import: '.$e->getMessage());
+            Log::error('Error processing CSV import: ' . $e->getMessage());
 
             return response()->json([
                 'status' => 'error',
@@ -970,9 +963,8 @@ class PerformanceCycleController extends Controller
                 'Content-Type' => 'text/csv',
                 'Content-Disposition' => 'attachment; filename="performance_review_criteria_sample.csv"',
             ]);
-
         } catch (\Exception $e) {
-            Log::error('Error generating sample CSV: '.$e->getMessage());
+            Log::error('Error generating sample CSV: ' . $e->getMessage());
 
             return response()->json([
                 'status' => 'error',
@@ -1012,9 +1004,8 @@ class PerformanceCycleController extends Controller
                 ],
                 'message' => 'User guide uploaded successfully',
             ]);
-
         } catch (\Exception $e) {
-            Log::error('Error uploading user guide: '.$e->getMessage());
+            Log::error('Error uploading user guide: ' . $e->getMessage());
 
             return response()->json([
                 'status' => 'error',
@@ -1063,8 +1054,13 @@ class PerformanceCycleController extends Controller
             }
 
             $criteria = $request->only([
-                'departments', 'roles', 'employment_types', 'min_tenure_months',
-                'status', 'excluded_users', 'included_users',
+                'departments',
+                'roles',
+                'employment_types',
+                'min_tenure_months',
+                'status',
+                'excluded_users',
+                'included_users',
             ]);
 
             $cycle->update(['eligibility_criteria' => $criteria]);
@@ -1080,9 +1076,8 @@ class PerformanceCycleController extends Controller
                 ],
                 'message' => 'Eligibility criteria updated successfully',
             ]);
-
         } catch (\Exception $e) {
-            Log::error('Error setting eligibility criteria: '.$e->getMessage());
+            Log::error('Error setting eligibility criteria: ' . $e->getMessage());
 
             return response()->json([
                 'status' => 'error',
@@ -1128,9 +1123,8 @@ class PerformanceCycleController extends Controller
                 ],
                 'message' => 'Cycle marked as ready to launch',
             ]);
-
         } catch (\Exception $e) {
-            Log::error('Error marking cycle ready: '.$e->getMessage());
+            Log::error('Error marking cycle ready: ' . $e->getMessage());
 
             return response()->json([
                 'status' => 'error',
@@ -1176,9 +1170,8 @@ class PerformanceCycleController extends Controller
                 'data' => $result,
                 'message' => 'Cycle launched successfully',
             ]);
-
         } catch (\Exception $e) {
-            Log::error('Error launching cycle: '.$e->getMessage());
+            Log::error('Error launching cycle: ' . $e->getMessage());
 
             return response()->json([
                 'status' => 'error',
