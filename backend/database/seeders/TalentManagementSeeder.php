@@ -12,7 +12,7 @@ use App\Models\Talent\PromotionWorkflow;
 use App\Models\Talent\RetentionRiskSnapshot;
 use App\Models\Talent\SuccessionCandidate;
 use App\Models\Talent\SuccessionRole;
-use App\Models\User;
+use App\Models\User\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 

@@ -23,6 +23,8 @@ class User extends Authenticatable implements HasApiTokensContract
 
     protected $hidden = ['password', 'remember_token'];
 
+/*************  ✨ Windsurf Command ⭐  *************/
+/*******  0162ad31-35aa-4b37-9301-40b2d2a51e46  *******/
     public static function boot()
     {
         parent::boot();

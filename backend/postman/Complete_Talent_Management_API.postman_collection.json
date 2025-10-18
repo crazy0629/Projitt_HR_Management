@@ -1,1858 +1,1903 @@
 {
-	"info": {
-		"_postman_id": "884f18a4-184e-44f0-9357-64d74af32487",
-		"name": "Complete Talent Management API",
-		"description": "Comprehensive API collection for the entire Talent Management ecosystem including Learning Paths, Performance Reviews, Talent Management (HR), and Manager Performance Reviews (Employee). This collection covers all endpoints for both HR and Employee perspectives.",
-		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "41082104"
-	},
-	"item": [
-		{
-			"name": "Authentication",
-			"item": [
-				{
-					"name": "Login",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"Status code is 200\", function () {",
-									"    pm.response.to.have.status(200);",
-									"});",
-									"",
-									"const jsonData = pm.response.json();",
-									"const token = jsonData?.data?.token;",
-									"",
-									"pm.test(\"Response contains auth token\", function () {",
-									"    pm.expect(token, \"Auth token should exist in response\").to.exist;",
-									"});",
-									"",
-									"// Save token to the collection variable (modern Postman)",
-									"if (token) {",
-									"    pm.collectionVariables.set(\"auth_token\", token);",
-									"    console.log(\"✅ Token saved successfully:\", token);",
-									"} else {",
-									"    console.error(\"❌ Token not found in response!\");",
-									"}",
-									""
-								],
-								"type": "text/javascript",
-								"packages": {},
-								"requests": {}
-							}
-						}
-					],
-					"request": {
-						"method": "PUT",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"email\": \"super.admin1@example.com\",\n    \"password\": \"Pass*&1122\"\n}"
-						},
-						"url": {
-							"raw": "{{base_url}}/user/login",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"user",
-								"login"
-							]
-						}
-					},
-					"response": []
-				}
-			]
-		},
-		{
-			"name": "Learning Paths",
-			"item": [
-				{
-					"name": "Learning Path Management",
-					"item": [
-						{
-							"name": "List Learning Paths",
-							"request": {
-								"method": "GET",
-								"header": [
-									{
-										"key": "Accept",
-										"value": "application/json"
-									}
-								],
-								"url": {
-									"raw": "{{base_url}}/learning/learning-paths?status=active&page=1",
-									"host": [
-										"{{base_url}}"
-									],
-									"path": [
-										"learning",
-										"learning-paths"
-									],
-									"query": [
-										{
-											"key": "status",
-											"value": "active"
-										},
-										{
-											"key": "page",
-											"value": "1"
-										}
-									]
-								},
-								"description": "Get all learning paths with optional filtering"
-							},
-							"response": []
-						},
-						{
-							"name": "Create Learning Path",
-							"request": {
-								"method": "POST",
-								"header": [
-									{
-										"key": "Content-Type",
-										"value": "application/json"
-									}
-								],
-								"body": {
-									"mode": "raw",
-									"raw": "{\n    \"name\": \"Frontend Development Mastery\",\n    \"description\": \"Comprehensive learning path for frontend development skills\",\n    \"begin_month\": \"2025-10\",\n    \"end_month\": \"2026-01\",\n    \"estimated_duration_hours\": 120,\n    \"roles\": [3, 4],\n    \"tags\": [\"javascript\", \"react\", \"frontend\"]\n}\n"
-								},
-								"url": {
-									"raw": "{{base_url}}/learning/learning-paths",
-									"host": [
-										"{{base_url}}"
-									],
-									"path": [
-										"learning",
-										"learning-paths"
-									]
-								},
-								"description": "Create a new learning path"
-							},
-							"response": []
-						},
-						{
-							"name": "Get Learning Path Details",
-							"request": {
-								"method": "GET",
-								"header": [
-									{
-										"key": "Accept",
-										"value": "application/json"
-									}
-								],
-								"url": {
-									"raw": "{{base_url}}/learning/learning-paths/{{learning_path_id}}",
-									"host": [
-										"{{base_url}}"
-									],
-									"path": [
-										"learning",
-										"learning-paths",
-										"{{learning_path_id}}"
-									]
-								},
-								"description": "Get detailed information about a specific learning path"
-							},
-							"response": []
-						},
-						{
-							"name": "Update Learning Path",
-							"request": {
-								"method": "PUT",
-								"header": [
-									{
-										"key": "Content-Type",
-										"value": "application/json"
-									}
-								],
-								"body": {
-									"mode": "raw",
-									"raw": "{\n    \"name\": \"Frontend Development Mastery(updated)\",\n    \"title\": \"Advanced Frontend Development\",\n    \"description\": \"Updated description for advanced frontend skills\",\n    \"duration_weeks\": 16,\n    \"difficulty_level\": \"advanced\"\n}"
-								},
-								"url": {
-									"raw": "{{base_url}}/learning/learning-paths/{{learning_path_id}}",
-									"host": [
-										"{{base_url}}"
-									],
-									"path": [
-										"learning",
-										"learning-paths",
-										"{{learning_path_id}}"
-									]
-								},
-								"description": "Update an existing learning path"
-							},
-							"response": []
-						},
-						{
-							"name": "Add Courses to Learning Path",
-							"request": {
-								"method": "POST",
-								"header": [
-									{
-										"key": "Content-Type",
-										"value": "application/json"
-									}
-								],
-								"body": {
-									"mode": "raw",
-									"raw": "{\n    \"courses\": [\n        {\n            \"course_id\": 1,\n            \"order_index\": 1,\n            \"is_required\": true\n        },\n        {\n            \"course_id\": 2,\n            \"order_index\": 2,\n            \"is_required\": true\n        },\n        {\n            \"course_id\": 3,\n            \"order_index\": 3,\n            \"is_required\": true\n        }\n    ]\n}"
-								},
-								"url": {
-									"raw": "{{base_url}}/learning/learning-paths/{{learning_path_id}}/courses",
-									"host": [
-										"{{base_url}}"
-									],
-									"path": [
-										"learning",
-										"learning-paths",
-										"{{learning_path_id}}",
-										"courses"
-									]
-								},
-								"description": "Add courses to a learning path with order and requirements"
-							},
-							"response": []
-						},
-						{
-							"name": "Set Eligibility Criteria",
-							"request": {
-								"method": "POST",
-								"header": [
-									{
-										"key": "Content-Type",
-										"value": "application/json"
-									}
-								],
-								"body": {
-									"mode": "raw",
-									"raw": "{\n    \"criteria\": [\n        {\n            \"field\": \"role\",\n            \"operator\": \"IN\",\n            \"value\": [\"Developer\", \"Senior Developer\"]\n        },\n        {\n            \"field\": \"experience_years\",\n            \"operator\": \">=\",\n            \"value\": 2\n        }\n    ]\n}\n"
-								},
-								"url": {
-									"raw": "{{base_url}}/learning/learning-paths/{{learning_path_id}}/eligibility",
-									"host": [
-										"{{base_url}}"
-									],
-									"path": [
-										"learning",
-										"learning-paths",
-										"{{learning_path_id}}",
-										"eligibility"
-									]
-								},
-								"description": "Set eligibility criteria for the learning path"
-							},
-							"response": []
-						},
-						{
-							"name": "Publish Learning Path",
-							"request": {
-								"method": "PATCH",
-								"header": [
-									{
-										"key": "Content-Type",
-										"value": "application/json"
-									}
-								],
-								"url": {
-									"raw": "{{base_url}}/learning/learning-paths/{{learning_path_id}}/publish",
-									"host": [
-										"{{base_url}}"
-									],
-									"path": [
-										"learning",
-										"learning-paths",
-										"{{learning_path_id}}",
-										"publish"
-									]
-								},
-								"description": "Publish the learning path making it available to employees"
-							},
-							"response": []
-						},
-						{
-							"name": "Assign to Employees",
-							"request": {
-								"method": "POST",
-								"header": [
-									{
-										"key": "Content-Type",
-										"value": "application/json"
-									}
-								],
-								"body": {
-									"mode": "raw",
-									"raw": "{\n    \"employee_ids\": [1, 2, 3, 4],\n    \"due_date\": \"2026-12-31\",\n    \"is_mandatory\": true,\n    \"send_notification\": true\n}"
-								},
-								"url": {
-									"raw": "{{base_url}}/learning/learning-paths/{{learning_path_id}}/assign",
-									"host": [
-										"{{base_url}}"
-									],
-									"path": [
-										"learning",
-										"learning-paths",
-										"{{learning_path_id}}",
-										"assign"
-									]
-								},
-								"description": "Assign learning path to specific employees"
-							},
-							"response": []
-						},
-						{
-							"name": "Get Assignments",
-							"request": {
-								"method": "GET",
-								"header": [
-									{
-										"key": "Accept",
-										"value": "application/json"
-									}
-								],
-								"url": {
-									"raw": "{{base_url}}/learning/learning-paths/{{learning_path_id}}/assignments?status=in_progress",
-									"host": [
-										"{{base_url}}"
-									],
-									"path": [
-										"learning",
-										"learning-paths",
-										"{{learning_path_id}}",
-										"assignments"
-									],
-									"query": [
-										{
-											"key": "status",
-											"value": "in_progress",
-											"description": "Filter by assignment status"
-										}
-									]
-								},
-								"description": "Get all assignments for a learning path"
-							},
-							"response": []
-						}
-					]
-				},
-				{
-					"name": "Course Library",
-					"item": [
-						{
-							"name": "List Courses",
-							"request": {
-								"method": "GET",
-								"header": [
-									{
-										"key": "Accept",
-										"value": "application/json"
-									}
-								],
-								"url": {
-									"raw": "{{base_url}}/learning/courses?category=1&status=active",
-									"host": [
-										"{{base_url}}"
-									],
-									"path": [
-										"learning",
-										"courses"
-									],
-									"query": [
-										{
-											"key": "category",
-											"value": "1",
-											"description": "Filter by category ID"
-										},
-										{
-											"key": "status",
-											"value": "active",
-											"description": "Filter by status"
-										}
-									]
-								},
-								"description": "Get all courses with filtering options"
-							},
-							"response": []
-						},
-						{
-							"name": "Get Categories",
-							"request": {
-								"method": "GET",
-								"header": [
-									{
-										"key": "Accept",
-										"value": "application/json"
-									}
-								],
-								"url": {
-									"raw": "{{base_url}}/learning/courses/categories",
-									"host": [
-										"{{base_url}}"
-									],
-									"path": [
-										"learning",
-										"courses",
-										"categories"
-									]
-								},
-								"description": "Get all course categories"
-							},
-							"response": []
-						},
-						{
-							"name": "Create External Course",
-							"request": {
-								"method": "POST",
-								"header": [
-									{
-										"key": "Content-Type",
-										"value": "application/json"
-									}
-								],
-								"body": {
-									"mode": "raw",
-									"raw": "{\n    \"title\": \"React Fundamentals\",\n    \"description\": \"Learn the basics of React development\",\n    \"category_id\": 1,\n    \"url\": \"https://reactjs.org/tutorial\",\n    \"duration_hours\": 8,\n    \"difficulty_level\": \"beginner\",\n    \"tags\": [\"react\", \"javascript\", \"frontend\"]\n}\n"
-								},
-								"url": {
-									"raw": "{{base_url}}/learning/courses/external",
-									"host": [
-										"{{base_url}}"
-									],
-									"path": [
-										"learning",
-										"courses",
-										"external"
-									]
-								},
-								"description": "Create a new external course with URL link"
-							},
-							"response": []
-						},
-						{
-							"name": "Create Upload Course",
-							"request": {
-								"method": "POST",
-								"header": [],
-								"body": {
-									"mode": "formdata",
-									"formdata": [
-										{
-											"key": "title",
-											"value": "Advanced JavaScript Concepts",
-											"type": "text"
-										},
-										{
-											"key": "description",
-											"value": "Deep dive into advanced JavaScript concepts",
-											"type": "text"
-										},
-										{
-											"key": "category_id",
-											"value": "1",
-											"type": "text"
-										},
-										{
-											"key": "file",
-											"type": "file",
-											"src": "/C:/Users/MUmai/Downloads/MSCI-2113 Introduction Entrepreneurship - Shafiq.pdf"
-										},
-										{
-											"key": "duration_hours",
-											"value": "12",
-											"type": "text"
-										},
-										{
-											"key": "difficulty_level",
-											"value": "advanced",
-											"type": "text"
-										}
-									]
-								},
-								"url": {
-									"raw": "{{base_url}}/learning/courses/upload",
-									"host": [
-										"{{base_url}}"
-									],
-									"path": [
-										"learning",
-										"courses",
-										"upload"
-									]
-								},
-								"description": "Create a new course with file upload"
-							},
-							"response": []
-						},
-						{
-							"name": "Get Course Details",
-							"request": {
-								"method": "GET",
-								"header": [
-									{
-										"key": "Accept",
-										"value": "application/json"
-									}
-								],
-								"url": {
-									"raw": "{{base_url}}/learning/courses/{{course_id}}",
-									"host": [
-										"{{base_url}}"
-									],
-									"path": [
-										"learning",
-										"courses",
-										"{{course_id}}"
-									]
-								},
-								"description": "Get detailed information about a specific course"
-							},
-							"response": []
-						},
-						{
-							"name": "Update Course Status",
-							"request": {
-								"method": "PATCH",
-								"header": [
-									{
-										"key": "Content-Type",
-										"value": "application/json"
-									}
-								],
-								"body": {
-									"mode": "raw",
-									"raw": "{\n    \"status\": \"active\"\n}"
-								},
-								"url": {
-									"raw": "{{base_url}}/learning/courses/{{course_id}}/status",
-									"host": [
-										"{{base_url}}"
-									],
-									"path": [
-										"learning",
-										"courses",
-										"{{course_id}}",
-										"status"
-									]
-								},
-								"description": "Update course status (active, inactive, archived)"
-							},
-							"response": []
-						}
-					]
-				}
-			],
-			"description": "Learning and development management system with course assignments and progress tracking"
-		},
-		{
-			"name": "Performance Reviews",
-			"item": [
-				{
-					"name": "Review Cycles",
-					"item": [
-						{
-							"name": "List Review Cycles",
-							"request": {
-								"method": "GET",
-								"header": [
-									{
-										"key": "Accept",
-										"value": "application/json"
-									}
-								],
-								"url": {
-									"raw": "{{base_url}}/performance-reviews/cycles?status=active",
-									"host": [
-										"{{base_url}}"
-									],
-									"path": [
-										"performance-reviews",
-										"cycles"
-									],
-									"query": [
-										{
-											"key": "status",
-											"value": "active",
-											"description": "Filter by status: draft, active, completed"
-										}
-									]
-								},
-								"description": "Get all performance review cycles"
-							},
-							"response": []
-						},
-						{
-							"name": "Create Review Cycle",
-							"request": {
-								"method": "POST",
-								"header": [
-									{
-										"key": "Content-Type",
-										"value": "application/json"
-									}
-								],
-								"body": {
-									"mode": "raw",
-									"raw": "{\n  \"name\": \"Q1 2024 Review\",\n  \"description\": \"Quarterly performance review\",\n  \"period_start\": \"2024-10-01\",\n  \"period_end\": \"2024-12-31\",\n  \"frequency\": \"quarterly\",\n  \"competencies\": [\"Leadership\", \"Teamwork\"],\n  \"assignments\": [\"self_review\", \"manager_review\"],\n  \"employee_ids\": [1, 2]\n}"
-								},
-								"url": {
-									"raw": "{{base_url}}/performance-reviews/cycles",
-									"host": [
-										"{{base_url}}"
-									],
-									"path": [
-										"performance-reviews",
-										"cycles"
-									]
-								},
-								"description": "Create a new performance review cycle"
-							},
-							"response": []
-						},
-						{
-							"name": "Get Cycle Details",
-							"request": {
-								"method": "GET",
-								"header": [
-									{
-										"key": "Accept",
-										"value": "application/json"
-									}
-								],
-								"url": {
-									"raw": "{{base_url}}/performance-reviews/cycles/{{cycle_id}}",
-									"host": [
-										"{{base_url}}"
-									],
-									"path": [
-										"performance-reviews",
-										"cycles",
-										"{{cycle_id}}"
-									]
-								},
-								"description": "Get detailed information about a specific cycle"
-							},
-							"response": []
-						},
-						{
-							"name": "Activate Cycle",
-							"request": {
-								"method": "POST",
-								"header": [
-									{
-										"key": "Content-Type",
-										"value": "application/json"
-									}
-								],
-								"url": {
-									"raw": "{{base_url}}/performance-reviews/cycles/{{cycle_id}}/activate",
-									"host": [
-										"{{base_url}}"
-									],
-									"path": [
-										"performance-reviews",
-										"cycles",
-										"{{cycle_id}}",
-										"activate"
-									]
-								},
-								"description": "Activate a review cycle"
-							},
-							"response": []
-						},
-						{
-							"name": "Get Setup Status",
-							"request": {
-								"method": "GET",
-								"header": [
-									{
-										"key": "Accept",
-										"value": "application/json"
-									}
-								],
-								"url": {
-									"raw": "{{base_url}}/performance-reviews/cycles/{{cycle_id}}/setup/status",
-									"host": [
-										"{{base_url}}"
-									],
-									"path": [
-										"performance-reviews",
-										"cycles",
-										"{{cycle_id}}",
-										"setup",
-										"status"
-									]
-								},
-								"description": "Get setup wizard status for a cycle"
-							},
-							"response": []
-						},
-						{
-							"name": "Create Default Competencies",
-							"request": {
-								"method": "POST",
-								"header": [
-									{
-										"key": "Content-Type",
-										"value": "application/json"
-									}
-								],
-								"body": {
-									"mode": "raw",
-									"raw": "{\n    \"template\": \"standard\"\n}"
-								},
-								"url": {
-									"raw": "{{base_url}}/performance-reviews/cycles/{{cycle_id}}/setup/default-competencies",
-									"host": [
-										"{{base_url}}"
-									],
-									"path": [
-										"performance-reviews",
-										"cycles",
-										"{{cycle_id}}",
-										"setup",
-										"default-competencies"
-									]
-								},
-								"description": "Create default competencies for the cycle"
-							},
-							"response": []
-						},
-						{
-							"name": "Upload CSV Import",
-							"request": {
-								"method": "POST",
-								"header": [],
-								"body": {
-									"mode": "formdata",
-									"formdata": [
-										{
-											"key": "file",
-											"type": "file",
-											"src": "/C:/Users/MUmai/OneDrive/Documents/Webpages/React/Logico/node_modules/jquery/AUTHORS.txt"
-										},
-										{
-											"key": "import_type",
-											"value": "questions",
-											"type": "text"
-										}
-									]
-								},
-								"url": {
-									"raw": "{{base_url}}/performance-reviews/cycles/{{cycle_id}}/import/csv",
-									"host": [
-										"{{base_url}}"
-									],
-									"path": [
-										"performance-reviews",
-										"cycles",
-										"{{cycle_id}}",
-										"import",
-										"csv"
-									]
-								},
-								"description": "Upload CSV file for bulk import"
-							},
-							"response": []
-						}
-					]
-				},
-				{
-					"name": "Reviews Management",
-					"item": [
-						{
-							"name": "List Reviews",
-							"request": {
-								"method": "GET",
-								"header": [
-									{
-										"key": "Accept",
-										"value": "application/json"
-									}
-								],
-								"url": {
-									"raw": "{{base_url}}/performance-reviews/reviews?cycle_id={{cycle_id}}&status=in_progress",
-									"host": [
-										"{{base_url}}"
-									],
-									"path": [
-										"performance-reviews",
-										"reviews"
-									],
-									"query": [
-										{
-											"key": "cycle_id",
-											"value": "{{cycle_id}}"
-										},
-										{
-											"key": "status",
-											"value": "in_progress"
-										}
-									]
-								},
-								"description": "Get all reviews with filtering"
-							},
-							"response": []
-						},
-						{
-							"name": "Get Review Details",
-							"request": {
-								"method": "GET",
-								"header": [
-									{
-										"key": "Accept",
-										"value": "application/json"
-									}
-								],
-								"url": {
-									"raw": "{{base_url}}/performance-reviews/reviews/1",
-									"host": [
-										"{{base_url}}"
-									],
-									"path": [
-										"performance-reviews",
-										"reviews",
-										"1"
-									]
-								},
-								"description": "Get detailed information about a specific review"
-							},
-							"response": []
-						}
-					]
-				}
-			],
-			"description": "Comprehensive performance review system with cycles, competencies, and feedback management"
-		},
-		{
-			"name": "Talent Management (HR)",
-			"item": [
-				{
-					"name": "Promotions",
-					"item": [
-						{
-							"name": "List Promotion Requests",
-							"request": {
-								"method": "GET",
-								"header": [
-									{
-										"key": "Accept",
-										"value": "application/json"
-									}
-								],
-								"url": {
-									"raw": "{{base_url}}/talent/promotions?status=submitted&page=1",
-									"host": [
-										"{{base_url}}"
-									],
-									"path": [
-										"talent",
-										"promotions"
-									],
-									"query": [
-										{
-											"key": "status",
-											"value": "submitted",
-											"description": "Filter by status: draft, submitted, in_review, approved, rejected"
-										},
-										{
-											"key": "page",
-											"value": "1"
-										}
-									]
-								},
-								"description": "Get all promotion requests with optional filtering"
-							},
-							"response": []
-						},
-						{
-							"name": "Create Promotion Request",
-							"request": {
-								"method": "POST",
-								"header": [
-									{
-										"key": "Content-Type",
-										"value": "application/json"
-									}
-								],
-								"body": {
-									"mode": "raw",
-									"raw": "{\n    \"employee_id\": 1,\n    \"current_role_id\": 2,\n    \"proposed_role_id\": 3,\n    \"workflow_id\": 1,\n    \"current_salary\": 85000,\n    \"proposed_salary\": 95000,\n    \"justification\": \"Excellent performance over the past year with consistent delivery of high-quality results.\",\n    \"skills\": [\"Leadership\", \"Project Management\", \"Technical Excellence\"],\n    \"achievements\": [\"Led team of 5 developers\", \"Delivered 3 major projects on time\", \"Mentored 2 junior developers\"]\n}"
-								},
-								"url": {
-									"raw": "{{base_url}}/talent/promotions",
-									"host": [
-										"{{base_url}}"
-									],
-									"path": [
-										"talent",
-										"promotions"
-									]
-								},
-								"description": "Create a new promotion request"
-							},
-							"response": []
-						},
-						{
-							"name": "Create Second Promotion Request",
-							"request": {
-								"method": "POST",
-								"header": [
-									{
-										"key": "Content-Type",
-										"value": "application/json"
-									}
-								],
-								"body": {
-									"mode": "raw",
-									"raw": "{\n    \"employee_id\": 1,\n    \"current_role_id\": 2,\n    \"proposed_role_id\": 3,\n    \"workflow_id\": 1,\n    \"current_salary\": 85000,\n    \"proposed_salary\": 95000,\n    \"justification\": \"Excellent performance over the past year with consistent delivery of high-quality results.\",\n    \"skills\": [\"Leadership\", \"Project Management\", \"Technical Excellence\"],\n    \"achievements\": [\"Led team of 5 developers\", \"Delivered 3 major projects on time\", \"Mentored 2 junior developers\"]\n}"
-								},
-								"url": {
-									"raw": "{{base_url}}/talent/promotions",
-									"host": [
-										"{{base_url}}"
-									],
-									"path": [
-										"talent",
-										"promotions"
-									]
-								},
-								"description": "Create a new promotion request"
-							},
-							"response": []
-						},
-						{
-							"name": "Get Promotion Details",
-							"request": {
-								"method": "GET",
-								"header": [
-									{
-										"key": "Accept",
-										"value": "application/json"
-									}
-								],
-								"url": {
-									"raw": "{{base_url}}/talent/promotions/{{promotion_id}}",
-									"host": [
-										"{{base_url}}"
-									],
-									"path": [
-										"talent",
-										"promotions",
-										"{{promotion_id}}"
-									]
-								},
-								"description": "Get detailed information about a specific promotion"
-							},
-							"response": []
-						},
-						{
-							"name": "Submit Promotion for Approval",
-							"request": {
-								"method": "POST",
-								"header": [
-									{
-										"key": "Content-Type",
-										"value": "application/json"
-									}
-								],
-								"url": {
-									"raw": "{{base_url}}/talent/promotions/{{promotion_id}}/submit",
-									"host": [
-										"{{base_url}}"
-									],
-									"path": [
-										"talent",
-										"promotions",
-										"{{promotion_id}}",
-										"submit"
-									]
-								},
-								"description": "Submit promotion request for approval workflow"
-							},
-							"response": []
-						},
-						{
-							"name": "Submit Second Promotion for Approval",
-							"request": {
-								"method": "POST",
-								"header": [
-									{
-										"key": "Content-Type",
-										"value": "application/json"
-									}
-								],
-								"url": {
-									"raw": "{{base_url}}/talent/promotions/2/submit",
-									"host": [
-										"{{base_url}}"
-									],
-									"path": [
-										"talent",
-										"promotions",
-										"2",
-										"submit"
-									]
-								},
-								"description": "Submit promotion request for approval workflow"
-							},
-							"response": []
-						},
-						{
-							"name": "Withdraw Promotion",
-							"request": {
-								"method": "POST",
-								"header": [
-									{
-										"key": "Content-Type",
-										"value": "application/json"
-									}
-								],
-								"body": {
-									"mode": "raw",
-									"raw": "{\n    \"reason\": \"Employee has decided to explore other opportunities\"\n}"
-								},
-								"url": {
-									"raw": "{{base_url}}/talent/promotions/{{promotion_id}}/withdraw",
-									"host": [
-										"{{base_url}}"
-									],
-									"path": [
-										"talent",
-										"promotions",
-										"{{promotion_id}}",
-										"withdraw"
-									]
-								},
-								"description": "Withdraw a promotion request"
-							},
-							"response": []
-						},
-						{
-							"name": "Get Promotion Timeline",
-							"request": {
-								"method": "GET",
-								"header": [
-									{
-										"key": "Accept",
-										"value": "application/json"
-									}
-								],
-								"url": {
-									"raw": "{{base_url}}/talent/promotions/{{promotion_id}}/timeline",
-									"host": [
-										"{{base_url}}"
-									],
-									"path": [
-										"talent",
-										"promotions",
-										"{{promotion_id}}",
-										"timeline"
-									]
-								},
-								"description": "Get approval timeline and history for a promotion"
-							},
-							"response": []
-						},
-						{
-							"name": "Get Available Workflows",
-							"request": {
-								"method": "GET",
-								"header": [
-									{
-										"key": "Accept",
-										"value": "application/json"
-									}
-								],
-								"url": {
-									"raw": "{{base_url}}/talent/promotions/workflows",
-									"host": [
-										"{{base_url}}"
-									],
-									"path": [
-										"talent",
-										"promotions",
-										"workflows"
-									]
-								},
-								"description": "Get available promotion workflows"
-							},
-							"response": []
-						},
-						{
-							"name": "Process Approval",
-							"request": {
-								"method": "POST",
-								"header": [
-									{
-										"key": "Content-Type",
-										"value": "application/json"
-									}
-								],
-								"body": {
-									"mode": "raw",
-									"raw": "{\n    \"decision\": \"approved\",\n    \"comments\": \"Excellent candidate, well deserved promotion\",\n    \"conditions\": []\n}"
-								},
-								"url": {
-									"raw": "{{base_url}}/talent/promotions/approvals/2",
-									"host": [
-										"{{base_url}}"
-									],
-									"path": [
-										"talent",
-										"promotions",
-										"approvals",
-										"2"
-									]
-								},
-								"description": "Process a promotion approval"
-							},
-							"response": []
-						}
-					]
-				},
-				{
-					"name": "Succession Planning",
-					"item": [
-						{
-							"name": "Get Succession Overview",
-							"request": {
-								"method": "GET",
-								"header": [
-									{
-										"key": "Accept",
-										"value": "application/json"
-									}
-								],
-								"url": {
-									"raw": "{{base_url}}/talent/succession",
-									"host": [
-										"{{base_url}}"
-									],
-									"path": [
-										"talent",
-										"succession"
-									]
-								},
-								"description": "Get succession planning overview and metrics"
-							},
-							"response": []
-						},
-						{
-							"name": "Get Succession Metrics",
-							"request": {
-								"method": "GET",
-								"header": [
-									{
-										"key": "Accept",
-										"value": "application/json"
-									}
-								],
-								"url": {
-									"raw": "{{base_url}}/talent/succession/metrics",
-									"host": [
-										"{{base_url}}"
-									],
-									"path": [
-										"talent",
-										"succession",
-										"metrics"
-									]
-								},
-								"description": "Get detailed succession planning metrics"
-							},
-							"response": []
-						},
-						{
-							"name": "Get Critical Gaps",
-							"request": {
-								"method": "GET",
-								"header": [
-									{
-										"key": "Accept",
-										"value": "application/json"
-									}
-								],
-								"url": {
-									"raw": "{{base_url}}/talent/succession/critical-gaps",
-									"host": [
-										"{{base_url}}"
-									],
-									"path": [
-										"talent",
-										"succession",
-										"critical-gaps"
-									]
-								},
-								"description": "Get critical role gaps in succession planning"
-							},
-							"response": []
-						},
-						{
-							"name": "Create Succession Role",
-							"request": {
-								"method": "POST",
-								"header": [
-									{
-										"key": "Content-Type",
-										"value": "application/json"
-									}
-								],
-								"body": {
-									"mode": "raw",
-									"raw": "{\n  \"role_id\": 3,\n  \"criticality\": \"high\",\n  \"risk_level\": \"medium\",\n  \"replacement_timeline\": \"short\",\n  \"required_successors\": 2,\n  \"description\": \"Senior leadership position requiring strategic thinking and team management\"\n}\n"
-								},
-								"url": {
-									"raw": "{{base_url}}/talent/succession/roles",
-									"host": [
-										"{{base_url}}"
-									],
-									"path": [
-										"talent",
-										"succession",
-										"roles"
-									]
-								},
-								"description": "Create a new succession role"
-							},
-							"response": []
-						},
-						{
-							"name": "Add Succession Candidate",
-							"request": {
-								"method": "POST",
-								"header": [
-									{
-										"key": "Content-Type",
-										"value": "application/json"
-									}
-								],
-								"body": {
-									"mode": "raw",
-									"raw": "{\n    \"succession_role_id\": 1,\n    \"employee_id\": 2,\n    \"target_role_id\": 3,\n    \"readiness\": \"developing\",\n    \"development_plan\": {\n        \"actions\": [\"Complete leadership training\", \"Shadow senior manager\"]\n    },\n    \"learning_path_id\": 1,\n    \"target_ready_date\": \"2025-12-31\",\n    \"strengths\": [\"Team Leadership\", \"Technical Skills\"],\n    \"development_areas\": [\"Strategic Planning\", \"Budget Management\"],\n    \"source\": \"hr_action\",\n    \"is_active\": true\n}\n"
-								},
-								"url": {
-									"raw": "{{base_url}}/talent/succession/candidates",
-									"host": [
-										"{{base_url}}"
-									],
-									"path": [
-										"talent",
-										"succession",
-										"candidates"
-									]
-								},
-								"description": "Add an employee as a succession candidate"
-							},
-							"response": []
-						},
-						{
-							"name": "Update Candidate Readiness",
-							"request": {
-								"method": "PUT",
-								"header": [
-									{
-										"key": "Content-Type",
-										"value": "application/json"
-									}
-								],
-								"body": {
-									"mode": "raw",
-									"raw": "{\n    \"readiness\": \"ready\",\n    \"readiness_score\": 92,\n    \"assessment_notes\": \"Completed leadership development program successfully\"\n}"
-								},
-								"url": {
-									"raw": "{{base_url}}/talent/succession/candidates/1/readiness",
-									"host": [
-										"{{base_url}}"
-									],
-									"path": [
-										"talent",
-										"succession",
-										"candidates",
-										"1",
-										"readiness"
-									]
-								},
-								"description": "Update succession candidate readiness level"
-							},
-							"response": []
-						},
-						{
-							"name": "Assign Learning Path",
-							"request": {
-								"method": "POST",
-								"header": [
-									{
-										"key": "Content-Type",
-										"value": "application/json"
-									}
-								],
-								"body": {
-									"mode": "raw",
-									"raw": "{\n    \"learning_path_id\": 1,\n    \"priority\": \"high\",\n    \"target_completion_date\": \"2024-06-30\"\n}"
-								},
-								"url": {
-									"raw": "{{base_url}}/talent/succession/candidates/1/learning-path",
-									"host": [
-										"{{base_url}}"
-									],
-									"path": [
-										"talent",
-										"succession",
-										"candidates",
-										"1",
-										"learning-path"
-									]
-								},
-								"description": "Assign learning path to succession candidate"
-							},
-							"response": []
-						}
-					]
-				},
-				{
-					"name": "Performance Improvement Plans",
-					"item": [
-						{
-							"name": "List PIPs",
-							"request": {
-								"method": "GET",
-								"header": [
-									{
-										"key": "Accept",
-										"value": "application/json"
-									}
-								],
-								"url": {
-									"raw": "{{base_url}}/talent/pips?status=active&page=1",
-									"host": [
-										"{{base_url}}"
-									],
-									"path": [
-										"talent",
-										"pips"
-									],
-									"query": [
-										{
-											"key": "status",
-											"value": "active",
-											"description": "Filter by status: active, completed, terminated"
-										},
-										{
-											"key": "page",
-											"value": "1"
-										}
-									]
-								},
-								"description": "Get all PIPs with filtering options"
-							},
-							"response": []
-						},
-						{
-							"name": "Create PIP",
-							"request": {
-								"method": "POST",
-								"header": [
-									{
-										"key": "Content-Type",
-										"value": "application/json"
-									}
-								],
-								"body": {
-									"mode": "raw",
-									"raw": "{\n    \"employee_id\": 1,\n    \"manager_id\": 2,\n    \"title\": \"Performance Improvement Plan - Q4 2024\",\n    \"description\": \"Focused improvement plan for meeting delivery deadlines\",\n    \"start_date\": \"2024-10-01\",\n    \"end_date\": \"2024-12-31\",\n    \"goals\": [\n        {\n            \"title\": \"Improve Delivery Timeliness\",\n            \"description\": \"Complete all assigned tasks within agreed deadlines\",\n            \"target_metric\": \"95% on-time delivery\",\n            \"due_date\": \"2024-11-30\"\n        }\n    ],\n    \"success_criteria\": \"Meeting all goals with satisfactory performance\"\n}\n"
-								},
-								"url": {
-									"raw": "{{base_url}}/talent/pips",
-									"host": [
-										"{{base_url}}"
-									],
-									"path": [
-										"talent",
-										"pips"
-									]
-								},
-								"description": "Create a new Performance Improvement Plan"
-							},
-							"response": []
-						},
-						{
-							"name": "Get PIP Details",
-							"request": {
-								"method": "GET",
-								"header": [
-									{
-										"key": "Accept",
-										"value": "application/json"
-									}
-								],
-								"url": {
-									"raw": "{{base_url}}/talent/pips/1",
-									"host": [
-										"{{base_url}}"
-									],
-									"path": [
-										"talent",
-										"pips",
-										"1"
-									]
-								},
-								"description": "Get detailed information about a specific PIP"
-							},
-							"response": []
-						},
-						{
-							"name": "Add PIP Check-in",
-							"request": {
-								"method": "POST",
-								"header": [
-									{
-										"key": "Content-Type",
-										"value": "application/json"
-									}
-								],
-								"body": {
-									"mode": "raw",
-									"raw": "{\n  \"checkin_date\": \"2024-10-15\",\n  \"summary\": \"Employee has shown noticeable improvement in delivery timeliness and proactive updates.\",\n  \"status\": \"improving\",\n  \"rating\": 4,\n  \"goals_progress\": [\n    {\n      \"goal_id\": 1,\n      \"title\": \"Improve Delivery Timeliness\",\n      \"status\": \"on_track\",\n      \"notes\": \"90% of deliverables met on time this cycle\",\n      \"metric\": \"90%\"\n    },\n    {\n      \"goal_id\": 2,\n      \"title\": \"Enhance Communication\",\n      \"status\": \"improving\",\n      \"notes\": \"Regular progress updates shared via Slack\"\n    }\n  ],\n  \"manager_notes\": \"Keep focusing on time management and proactive updates. Great improvement overall.\",\n  \"next_steps\": \"Work on consistent reporting of blockers during sprint planning.\",\n  \"next_checkin_date\": \"2024-11-01\"\n}\n"
-								},
-								"url": {
-									"raw": "{{base_url}}/talent/pips/1/checkins",
-									"host": [
-										"{{base_url}}"
-									],
-									"path": [
-										"talent",
-										"pips",
-										"1",
-										"checkins"
-									]
-								},
-								"description": "Add a check-in to a PIP"
-							},
-							"response": []
-						},
-						{
-							"name": "Update PIP Status",
-							"request": {
-								"method": "PUT",
-								"header": [
-									{
-										"key": "Content-Type",
-										"value": "application/json"
-									}
-								],
-								"body": {
-									"mode": "raw",
-									"raw": "{\n    \"status\": \"completed\",\n    \"completion_notes\": \"All goals achieved successfully\",\n    \"outcome\": \"successful\"\n}"
-								},
-								"url": {
-									"raw": "{{base_url}}/talent/pips/1/status",
-									"host": [
-										"{{base_url}}"
-									],
-									"path": [
-										"talent",
-										"pips",
-										"1",
-										"status"
-									]
-								},
-								"description": "Update PIP status and outcome"
-							},
-							"response": []
-						},
-						{
-							"name": "Get PIP Metrics",
-							"request": {
-								"method": "GET",
-								"header": [
-									{
-										"key": "Accept",
-										"value": "application/json"
-									}
-								],
-								"url": {
-									"raw": "{{base_url}}/talent/pips/metrics",
-									"host": [
-										"{{base_url}}"
-									],
-									"path": [
-										"talent",
-										"pips",
-										"metrics"
-									]
-								},
-								"description": "Get PIP metrics and analytics"
-							},
-							"response": []
-						}
-					]
-				},
-				{
-					"name": "Employee Notes",
-					"item": [
-						{
-							"name": "List Employee Notes",
-							"request": {
-								"method": "GET",
-								"header": [
-									{
-										"key": "Accept",
-										"value": "application/json"
-									}
-								],
-								"url": {
-									"raw": "{{base_url}}/talent/notes?employee_id=1&visibility=manager_chain",
-									"host": [
-										"{{base_url}}"
-									],
-									"path": [
-										"talent",
-										"notes"
-									],
-									"query": [
-										{
-											"key": "employee_id",
-											"value": "1",
-											"description": "Filter by employee ID"
-										},
-										{
-											"key": "visibility",
-											"value": "manager_chain",
-											"description": "Filter by visibility level"
-										}
-									]
-								},
-								"description": "Get employee notes with filtering"
-							},
-							"response": []
-						},
-						{
-							"name": "Create Employee Note",
-							"request": {
-								"method": "POST",
-								"header": [
-									{
-										"key": "Content-Type",
-										"value": "application/json"
-									}
-								],
-								"body": {
-									"mode": "raw",
-									"raw": "{\n    \"employee_id\": 1,\n    \"title\": \"Quarterly Performance Check-in\",\n    \"body\": \"Employee demonstrated excellent leadership skills during the project delivery phase.\",\n    \"note_type\": \"performance\",\n    \"visibility\": \"manager_chain\",\n    \"is_sensitive\": false\n}\n"
-								},
-								"url": {
-									"raw": "{{base_url}}/talent/notes",
-									"host": [
-										"{{base_url}}"
-									],
-									"path": [
-										"talent",
-										"notes"
-									]
-								},
-								"description": "Create a new employee note"
-							},
-							"response": []
-						},
-						{
-							"name": "Get Note Details",
-							"request": {
-								"method": "GET",
-								"header": [
-									{
-										"key": "Accept",
-										"value": "application/json"
-									}
-								],
-								"url": {
-									"raw": "{{base_url}}/talent/notes/1",
-									"host": [
-										"{{base_url}}"
-									],
-									"path": [
-										"talent",
-										"notes",
-										"1"
-									]
-								},
-								"description": "Get detailed information about a specific note"
-							},
-							"response": []
-						}
-					]
-				}
-			],
-			"description": "Complete talent management ecosystem for career advancement, succession planning, and employee development"
-		},
-		{
-			"name": "Manager Performance Reviews (Employee)",
-			"item": [
-				{
-					"name": "Team Review Management",
-					"item": [
-						{
-							"name": "Get Review Cycles",
-							"request": {
-								"method": "GET",
-								"header": [
-									{
-										"key": "Accept",
-										"value": "application/json"
-									}
-								],
-								"url": {
-									"raw": "{{base_url}}/manager/team-reviews/cycles?scope=ongoing&limit=25",
-									"host": [
-										"{{base_url}}"
-									],
-									"path": [
-										"manager",
-										"team-reviews",
-										"cycles"
-									],
-									"query": [
-										{
-											"key": "scope",
-											"value": "ongoing",
-											"description": "Filter by scope: ongoing, completed, draft"
-										},
-										{
-											"key": "limit",
-											"value": "25",
-											"description": "Number of results to return (max 100)"
-										}
-									]
-								},
-								"description": "Get cycles where manager has reviewees with completion stats and team headcount"
-							},
-							"response": []
-						},
-						{
-							"name": "Get Cycle Reviewees",
-							"request": {
-								"method": "GET",
-								"header": [
-									{
-										"key": "Accept",
-										"value": "application/json"
-									}
-								],
-								"url": {
-									"raw": "{{base_url}}/manager/team-reviews/cycles/{{cycle_id}}/reviewees?limit=25",
-									"host": [
-										"{{base_url}}"
-									],
-									"path": [
-										"manager",
-										"team-reviews",
-										"cycles",
-										"{{cycle_id}}",
-										"reviewees"
-									],
-									"query": [
-										{
-											"key": "limit",
-											"value": "25",
-											"description": "Number of results to return"
-										}
-									]
-								},
-								"description": "Get reviewees for a specific cycle with AI-powered badge classification"
-							},
-							"response": []
-						},
-						{
-							"name": "Send Review Reminders",
-							"request": {
-								"method": "POST",
-								"header": [
-									{
-										"key": "Content-Type",
-										"value": "application/json"
-									}
-								],
-								"body": {
-									"mode": "raw",
-									"raw": "{\n    \"audience\": \"all\",\n    \"reviewee_ids\": [1, 2, 3]\n}"
-								},
-								"url": {
-									"raw": "{{base_url}}/manager/team-reviews/cycles/{{cycle_id}}/reminders",
-									"host": [
-										"{{base_url}}"
-									],
-									"path": [
-										"manager",
-										"team-reviews",
-										"cycles",
-										"{{cycle_id}}",
-										"reminders"
-									]
-								},
-								"description": "Send targeted reminders to reviewers (rate limited to once per 4 hours)"
-							},
-							"response": []
-						},
-						{
-							"name": "Get Team Summary",
-							"request": {
-								"method": "GET",
-								"header": [
-									{
-										"key": "Accept",
-										"value": "application/json"
-									}
-								],
-								"url": {
-									"raw": "{{base_url}}/manager/team-reviews/team-summary?cycle_id={{cycle_id}}",
-									"host": [
-										"{{base_url}}"
-									],
-									"path": [
-										"manager",
-										"team-reviews",
-										"team-summary"
-									],
-									"query": [
-										{
-											"key": "cycle_id",
-											"value": "{{cycle_id}}",
-											"description": "Optional cycle ID for specific cycle data"
-										}
-									]
-								},
-								"description": "Get team performance summary with completion statistics and high performer percentages"
-							},
-							"response": []
-						},
-						{
-							"name": "Get Team Members",
-							"request": {
-								"method": "GET",
-								"header": [
-									{
-										"key": "Accept",
-										"value": "application/json"
-									}
-								],
-								"url": {
-									"raw": "{{base_url}}/manager/team-reviews/team-members?cycle_id={{cycle_id}}&limit=25",
-									"host": [
-										"{{base_url}}"
-									],
-									"path": [
-										"manager",
-										"team-reviews",
-										"team-members"
-									],
-									"query": [
-										{
-											"key": "cycle_id",
-											"value": "{{cycle_id}}",
-											"description": "Filter by specific cycle"
-										},
-										{
-											"key": "limit",
-											"value": "25",
-											"description": "Number of results to return"
-										}
-									]
-								},
-								"description": "Get team members with performance data and AI-powered badge classification"
-							},
-							"response": []
-						}
-					]
-				}
-			],
-			"description": "Manager-facing performance review tools for team management and talent actions"
-		}
-	],
-	"auth": {
-		"type": "bearer",
-		"bearer": [
-			{
-				"key": "token",
-				"value": "{{auth_token}}",
-				"type": "string"
-			}
-		]
-	},
-	"event": [
-		{
-			"listen": "prerequest",
-			"script": {
-				"type": "text/javascript",
-				"requests": {},
-				"exec": [
-					"const token = pm.collectionVariables.get('auth_token');",
-					"",
-					"if (token) {",
-					"    pm.variables.set('auth_token', token);",
-					"    console.log(\"✅ Using updated auth token:\", token);",
-					"} else {",
-					"    console.warn(\"⚠️ No stored token found!\");",
-					"}",
-					"",
-					"// Ensure base URL exists",
-					"if (!pm.variables.get('base_url')) {",
-					"    pm.variables.set('base_url', 'http://localhost:8000');",
-					"}",
-					""
-				]
-			}
-		},
-		{
-			"listen": "test",
-			"script": {
-				"type": "text/javascript",
-				"packages": {},
-				"requests": {},
-				"exec": [
-					""
-				]
-			}
-		}
-	],
-	"variable": [
-		{
-			"key": "base_url",
-			"value": "http://localhost:8000"
-		},
-		{
-			"key": "auth_token",
-			"value": "your-bearer-token-here"
-		},
-		{
-			"key": "cycle_id",
-			"value": "1"
-		},
-		{
-			"key": "employee_id",
-			"value": "1"
-		},
-		{
-			"key": "promotion_id",
-			"value": "1"
-		},
-		{
-			"key": "role_id",
-			"value": "1"
-		},
-		{
-			"key": "learning_path_id",
-			"value": "1"
-		},
-		{
-			"key": "course_id",
-			"value": "1"
-		}
-	]
+    "info": {
+        "_postman_id": "884f18a4-184e-44f0-9357-64d74af32487",
+        "name": "Talent Management API",
+        "description": "Comprehensive API collection for the entire Talent Management ecosystem including Learning Paths, Performance Reviews, Talent Management (HR), and Manager Performance Reviews (Employee). This collection covers all endpoints for both HR and Employee perspectives.",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+        "_exporter_id": "41082104"
+    },
+    "item": [
+        {
+            "name": "Authentication",
+            "item": [
+                {
+                    "name": "Login",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test(\"Status code is 200\", function () {",
+                                    "    pm.response.to.have.status(200);",
+                                    "});",
+                                    "",
+                                    "const jsonData = pm.response.json();",
+                                    "const token = jsonData?.data?.token;",
+                                    "",
+                                    "pm.test(\"Response contains auth token\", function () {",
+                                    "    pm.expect(token, \"Auth token should exist in response\").to.exist;",
+                                    "});",
+                                    "",
+                                    "// Save token to the collection variable (modern Postman)",
+                                    "if (token) {",
+                                    "    pm.collectionVariables.set(\"auth_token\", token);",
+                                    "    console.log(\"✅ Token saved successfully:\", token);",
+                                    "} else {",
+                                    "    console.error(\"❌ Token not found in response!\");",
+                                    "}",
+                                    ""
+                                ],
+                                "type": "text/javascript",
+                                "packages": {},
+                                "requests": {}
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"email\": \"super.admin1@example.com\",\n    \"password\": \"Pass*&1122\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/user/login",
+                            "host": ["{{base_url}}"],
+                            "path": ["user", "login"]
+                        }
+                    },
+                    "response": []
+                }
+            ]
+        },
+        {
+            "name": "Learning Paths",
+            "item": [
+                {
+                    "name": "Learning Path Management",
+                    "item": [
+                        {
+                            "name": "List Learning Paths",
+                            "request": {
+                                "method": "GET",
+                                "header": [
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{base_url}}/learning/learning-paths?status=active&page=1",
+                                    "host": ["{{base_url}}"],
+                                    "path": ["learning", "learning-paths"],
+                                    "query": [
+                                        {
+                                            "key": "status",
+                                            "value": "active"
+                                        },
+                                        {
+                                            "key": "page",
+                                            "value": "1"
+                                        }
+                                    ]
+                                },
+                                "description": "Get all learning paths with optional filtering"
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "Create Learning Path",
+                            "request": {
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n    \"name\": \"Frontend Development Mastery\",\n    \"description\": \"Comprehensive learning path for frontend development skills\",\n    \"begin_month\": \"2025-10\",\n    \"end_month\": \"2026-01\",\n    \"estimated_duration_hours\": 120,\n    \"roles\": [3, 4],\n    \"tags\": [\"javascript\", \"react\", \"frontend\"]\n}\n"
+                                },
+                                "url": {
+                                    "raw": "{{base_url}}/learning/learning-paths",
+                                    "host": ["{{base_url}}"],
+                                    "path": ["learning", "learning-paths"]
+                                },
+                                "description": "Create a new learning path"
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "Get Learning Path Details",
+                            "request": {
+                                "method": "GET",
+                                "header": [
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{base_url}}/learning/learning-paths/{{learning_path_id}}",
+                                    "host": ["{{base_url}}"],
+                                    "path": [
+                                        "learning",
+                                        "learning-paths",
+                                        "{{learning_path_id}}"
+                                    ]
+                                },
+                                "description": "Get detailed information about a specific learning path"
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "Update Learning Path",
+                            "request": {
+                                "method": "PUT",
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n    \"name\": \"Frontend Development Mastery(updated)\",\n    \"title\": \"Advanced Frontend Development\",\n    \"description\": \"Updated description for advanced frontend skills\",\n    \"duration_weeks\": 16,\n    \"difficulty_level\": \"advanced\"\n}"
+                                },
+                                "url": {
+                                    "raw": "{{base_url}}/learning/learning-paths/{{learning_path_id}}",
+                                    "host": ["{{base_url}}"],
+                                    "path": [
+                                        "learning",
+                                        "learning-paths",
+                                        "{{learning_path_id}}"
+                                    ]
+                                },
+                                "description": "Update an existing learning path"
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "Add Courses to Learning Path",
+                            "request": {
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n    \"courses\": [\n        {\n            \"course_id\": 1,\n            \"order_index\": 1,\n            \"is_required\": true\n        },\n        {\n            \"course_id\": 2,\n            \"order_index\": 2,\n            \"is_required\": true\n        },\n        {\n            \"course_id\": 3,\n            \"order_index\": 3,\n            \"is_required\": true\n        }\n    ]\n}"
+                                },
+                                "url": {
+                                    "raw": "{{base_url}}/learning/learning-paths/{{learning_path_id}}/courses",
+                                    "host": ["{{base_url}}"],
+                                    "path": [
+                                        "learning",
+                                        "learning-paths",
+                                        "{{learning_path_id}}",
+                                        "courses"
+                                    ]
+                                },
+                                "description": "Add courses to a learning path with order and requirements"
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "Set Eligibility Criteria",
+                            "request": {
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n    \"criteria\": [\n        {\n            \"field\": \"role\",\n            \"operator\": \"IN\",\n            \"value\": [\"Developer\", \"Senior Developer\"]\n        },\n        {\n            \"field\": \"experience_years\",\n            \"operator\": \">=\",\n            \"value\": 2\n        }\n    ]\n}\n"
+                                },
+                                "url": {
+                                    "raw": "{{base_url}}/learning/learning-paths/{{learning_path_id}}/eligibility",
+                                    "host": ["{{base_url}}"],
+                                    "path": [
+                                        "learning",
+                                        "learning-paths",
+                                        "{{learning_path_id}}",
+                                        "eligibility"
+                                    ]
+                                },
+                                "description": "Set eligibility criteria for the learning path"
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "Publish Learning Path",
+                            "request": {
+                                "method": "PATCH",
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{base_url}}/learning/learning-paths/{{learning_path_id}}/publish",
+                                    "host": ["{{base_url}}"],
+                                    "path": [
+                                        "learning",
+                                        "learning-paths",
+                                        "{{learning_path_id}}",
+                                        "publish"
+                                    ]
+                                },
+                                "description": "Publish the learning path making it available to employees"
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "Assign to Employees",
+                            "request": {
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n    \"employee_ids\": [1, 2, 3, 4],\n    \"due_date\": \"2026-12-31\",\n    \"is_mandatory\": true,\n    \"send_notification\": true\n}"
+                                },
+                                "url": {
+                                    "raw": "{{base_url}}/learning/learning-paths/{{learning_path_id}}/assign",
+                                    "host": ["{{base_url}}"],
+                                    "path": [
+                                        "learning",
+                                        "learning-paths",
+                                        "{{learning_path_id}}",
+                                        "assign"
+                                    ]
+                                },
+                                "description": "Assign learning path to specific employees"
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "Get Assignments",
+                            "request": {
+                                "method": "GET",
+                                "header": [
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{base_url}}/learning/learning-paths/{{learning_path_id}}/assignments?status=in_progress",
+                                    "host": ["{{base_url}}"],
+                                    "path": [
+                                        "learning",
+                                        "learning-paths",
+                                        "{{learning_path_id}}",
+                                        "assignments"
+                                    ],
+                                    "query": [
+                                        {
+                                            "key": "status",
+                                            "value": "in_progress",
+                                            "description": "Filter by assignment status"
+                                        }
+                                    ]
+                                },
+                                "description": "Get all assignments for a learning path"
+                            },
+                            "response": []
+                        }
+                    ]
+                },
+                {
+                    "name": "Course Library",
+                    "item": [
+                        {
+                            "name": "List Courses",
+                            "request": {
+                                "method": "GET",
+                                "header": [
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{base_url}}/learning/courses?category=1&status=active",
+                                    "host": ["{{base_url}}"],
+                                    "path": ["learning", "courses"],
+                                    "query": [
+                                        {
+                                            "key": "category",
+                                            "value": "1",
+                                            "description": "Filter by category ID"
+                                        },
+                                        {
+                                            "key": "status",
+                                            "value": "active",
+                                            "description": "Filter by status"
+                                        }
+                                    ]
+                                },
+                                "description": "Get all courses with filtering options"
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "Get Categories",
+                            "request": {
+                                "method": "GET",
+                                "header": [
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{base_url}}/learning/courses/categories",
+                                    "host": ["{{base_url}}"],
+                                    "path": [
+                                        "learning",
+                                        "courses",
+                                        "categories"
+                                    ]
+                                },
+                                "description": "Get all course categories"
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "Create External Course",
+                            "request": {
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n    \"title\": \"React Fundamentals\",\n    \"description\": \"Learn the basics of React development\",\n    \"category_id\": 1,\n    \"url\": \"https://reactjs.org/tutorial\",\n    \"duration_hours\": 8,\n    \"difficulty_level\": \"beginner\",\n    \"tags\": [\"react\", \"javascript\", \"frontend\"]\n}\n"
+                                },
+                                "url": {
+                                    "raw": "{{base_url}}/learning/courses/external",
+                                    "host": ["{{base_url}}"],
+                                    "path": ["learning", "courses", "external"]
+                                },
+                                "description": "Create a new external course with URL link"
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "Create Upload Course",
+                            "request": {
+                                "method": "POST",
+                                "header": [],
+                                "body": {
+                                    "mode": "formdata",
+                                    "formdata": [
+                                        {
+                                            "key": "title",
+                                            "value": "Advanced JavaScript Concepts",
+                                            "type": "text"
+                                        },
+                                        {
+                                            "key": "description",
+                                            "value": "Deep dive into advanced JavaScript concepts",
+                                            "type": "text"
+                                        },
+                                        {
+                                            "key": "category_id",
+                                            "value": "1",
+                                            "type": "text"
+                                        },
+                                        {
+                                            "key": "file",
+                                            "type": "file",
+                                            "src": "/C:/Users/MUmai/Downloads/MSCI-2113 Introduction Entrepreneurship - Shafiq.pdf"
+                                        },
+                                        {
+                                            "key": "duration_hours",
+                                            "value": "12",
+                                            "type": "text"
+                                        },
+                                        {
+                                            "key": "difficulty_level",
+                                            "value": "advanced",
+                                            "type": "text"
+                                        }
+                                    ]
+                                },
+                                "url": {
+                                    "raw": "{{base_url}}/learning/courses/upload",
+                                    "host": ["{{base_url}}"],
+                                    "path": ["learning", "courses", "upload"]
+                                },
+                                "description": "Create a new course with file upload"
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "Get Course Details",
+                            "request": {
+                                "method": "GET",
+                                "header": [
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{base_url}}/learning/courses/{{course_id}}",
+                                    "host": ["{{base_url}}"],
+                                    "path": [
+                                        "learning",
+                                        "courses",
+                                        "{{course_id}}"
+                                    ]
+                                },
+                                "description": "Get detailed information about a specific course"
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "Update Course Status",
+                            "request": {
+                                "method": "PATCH",
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n    \"status\": \"active\"\n}"
+                                },
+                                "url": {
+                                    "raw": "{{base_url}}/learning/courses/{{course_id}}/status",
+                                    "host": ["{{base_url}}"],
+                                    "path": [
+                                        "learning",
+                                        "courses",
+                                        "{{course_id}}",
+                                        "status"
+                                    ]
+                                },
+                                "description": "Update course status (active, inactive, archived)"
+                            },
+                            "response": []
+                        }
+                    ]
+                }
+            ],
+            "description": "Learning and development management system with course assignments and progress tracking"
+        },
+        {
+            "name": "Performance Reviews",
+            "item": [
+                {
+                    "name": "Review Cycles",
+                    "item": [
+                        {
+                            "name": "List Review Cycles",
+                            "request": {
+                                "method": "GET",
+                                "header": [
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{base_url}}/performance-reviews/cycles?status=active",
+                                    "host": ["{{base_url}}"],
+                                    "path": ["performance-reviews", "cycles"],
+                                    "query": [
+                                        {
+                                            "key": "status",
+                                            "value": "active",
+                                            "description": "Filter by status: draft, active, completed"
+                                        }
+                                    ]
+                                },
+                                "description": "Get all performance review cycles"
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "Create Review Cycle",
+                            "request": {
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n  \"name\": \"Q1 2024 Review\",\n  \"description\": \"Quarterly performance review\",\n  \"period_start\": \"2024-10-01\",\n  \"period_end\": \"2024-12-31\",\n  \"frequency\": \"quarterly\",\n  \"competencies\": [\"Leadership\", \"Teamwork\"],\n  \"assignments\": [\"self_review\", \"manager_review\"],\n  \"employee_ids\": [1, 2]\n}"
+                                },
+                                "url": {
+                                    "raw": "{{base_url}}/performance-reviews/cycles",
+                                    "host": ["{{base_url}}"],
+                                    "path": ["performance-reviews", "cycles"]
+                                },
+                                "description": "Create a new performance review cycle"
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "Get Cycle Details",
+                            "request": {
+                                "method": "GET",
+                                "header": [
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{base_url}}/performance-reviews/cycles/{{cycle_id}}",
+                                    "host": ["{{base_url}}"],
+                                    "path": [
+                                        "performance-reviews",
+                                        "cycles",
+                                        "{{cycle_id}}"
+                                    ]
+                                },
+                                "description": "Get detailed information about a specific cycle"
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "Activate Cycle",
+                            "request": {
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{base_url}}/performance-reviews/cycles/{{cycle_id}}/activate",
+                                    "host": ["{{base_url}}"],
+                                    "path": [
+                                        "performance-reviews",
+                                        "cycles",
+                                        "{{cycle_id}}",
+                                        "activate"
+                                    ]
+                                },
+                                "description": "Activate a review cycle"
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "Get Setup Status",
+                            "request": {
+                                "method": "GET",
+                                "header": [
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{base_url}}/performance-reviews/cycles/{{cycle_id}}/setup/status",
+                                    "host": ["{{base_url}}"],
+                                    "path": [
+                                        "performance-reviews",
+                                        "cycles",
+                                        "{{cycle_id}}",
+                                        "setup",
+                                        "status"
+                                    ]
+                                },
+                                "description": "Get setup wizard status for a cycle"
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "Create Default Competencies",
+                            "request": {
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n    \"template\": \"standard\"\n}"
+                                },
+                                "url": {
+                                    "raw": "{{base_url}}/performance-reviews/cycles/{{cycle_id}}/setup/default-competencies",
+                                    "host": ["{{base_url}}"],
+                                    "path": [
+                                        "performance-reviews",
+                                        "cycles",
+                                        "{{cycle_id}}",
+                                        "setup",
+                                        "default-competencies"
+                                    ]
+                                },
+                                "description": "Create default competencies for the cycle"
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "Upload CSV Import",
+                            "request": {
+                                "method": "POST",
+                                "header": [],
+                                "body": {
+                                    "mode": "formdata",
+                                    "formdata": [
+                                        {
+                                            "key": "file",
+                                            "type": "file",
+                                            "src": "/C:/Users/MUmai/OneDrive/Documents/Webpages/React/Logico/node_modules/jquery/AUTHORS.txt"
+                                        },
+                                        {
+                                            "key": "import_type",
+                                            "value": "questions",
+                                            "type": "text"
+                                        }
+                                    ]
+                                },
+                                "url": {
+                                    "raw": "{{base_url}}/performance-reviews/cycles/{{cycle_id}}/import/csv",
+                                    "host": ["{{base_url}}"],
+                                    "path": [
+                                        "performance-reviews",
+                                        "cycles",
+                                        "{{cycle_id}}",
+                                        "import",
+                                        "csv"
+                                    ]
+                                },
+                                "description": "Upload CSV file for bulk import"
+                            },
+                            "response": []
+                        }
+                    ]
+                },
+                {
+                    "name": "Reviews Management",
+                    "item": [
+                        {
+                            "name": "List Reviews",
+                            "request": {
+                                "method": "GET",
+                                "header": [
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{base_url}}/performance-reviews/reviews?cycle_id={{cycle_id}}&status=in_progress",
+                                    "host": ["{{base_url}}"],
+                                    "path": ["performance-reviews", "reviews"],
+                                    "query": [
+                                        {
+                                            "key": "cycle_id",
+                                            "value": "{{cycle_id}}"
+                                        },
+                                        {
+                                            "key": "status",
+                                            "value": "in_progress"
+                                        }
+                                    ]
+                                },
+                                "description": "Get all reviews with filtering"
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "Get Review Details",
+                            "request": {
+                                "method": "GET",
+                                "header": [
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{base_url}}/performance-reviews/reviews/1",
+                                    "host": ["{{base_url}}"],
+                                    "path": [
+                                        "performance-reviews",
+                                        "reviews",
+                                        "1"
+                                    ]
+                                },
+                                "description": "Get detailed information about a specific review"
+                            },
+                            "response": []
+                        }
+                    ]
+                }
+            ],
+            "description": "Comprehensive performance review system with cycles, competencies, and feedback management"
+        },
+        {
+            "name": "Talent Management (HR)",
+            "item": [
+                {
+                    "name": "Promotions",
+                    "item": [
+                        {
+                            "name": "List Promotion Requests",
+                            "request": {
+                                "method": "GET",
+                                "header": [
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{base_url}}/talent/promotions?status=submitted&page=1",
+                                    "host": ["{{base_url}}"],
+                                    "path": ["talent", "promotions"],
+                                    "query": [
+                                        {
+                                            "key": "status",
+                                            "value": "submitted",
+                                            "description": "Filter by status: draft, submitted, in_review, approved, rejected"
+                                        },
+                                        {
+                                            "key": "page",
+                                            "value": "1"
+                                        }
+                                    ]
+                                },
+                                "description": "Get all promotion requests with optional filtering"
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "Create Promotion Request",
+                            "request": {
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n    \"employee_id\": 1,\n    \"current_role_id\": 2,\n    \"proposed_role_id\": 3,\n    \"workflow_id\": 1,\n    \"current_salary\": 85000,\n    \"proposed_salary\": 95000,\n    \"justification\": \"Excellent performance over the past year with consistent delivery of high-quality results.\",\n    \"skills\": [\"Leadership\", \"Project Management\", \"Technical Excellence\"],\n    \"achievements\": [\"Led team of 5 developers\", \"Delivered 3 major projects on time\", \"Mentored 2 junior developers\"]\n}"
+                                },
+                                "url": {
+                                    "raw": "{{base_url}}/talent/promotions",
+                                    "host": ["{{base_url}}"],
+                                    "path": ["talent", "promotions"]
+                                },
+                                "description": "Create a new promotion request"
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "Create Second Promotion Request",
+                            "request": {
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n    \"employee_id\": 1,\n    \"current_role_id\": 2,\n    \"proposed_role_id\": 3,\n    \"workflow_id\": 1,\n    \"current_salary\": 85000,\n    \"proposed_salary\": 95000,\n    \"justification\": \"Excellent performance over the past year with consistent delivery of high-quality results.\",\n    \"skills\": [\"Leadership\", \"Project Management\", \"Technical Excellence\"],\n    \"achievements\": [\"Led team of 5 developers\", \"Delivered 3 major projects on time\", \"Mentored 2 junior developers\"]\n}"
+                                },
+                                "url": {
+                                    "raw": "{{base_url}}/talent/promotions",
+                                    "host": ["{{base_url}}"],
+                                    "path": ["talent", "promotions"]
+                                },
+                                "description": "Create a new promotion request"
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "Get Promotion Details",
+                            "request": {
+                                "method": "GET",
+                                "header": [
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{base_url}}/talent/promotions/{{promotion_id}}",
+                                    "host": ["{{base_url}}"],
+                                    "path": [
+                                        "talent",
+                                        "promotions",
+                                        "{{promotion_id}}"
+                                    ]
+                                },
+                                "description": "Get detailed information about a specific promotion"
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "Submit Promotion for Approval",
+                            "request": {
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{base_url}}/talent/promotions/{{promotion_id}}/submit",
+                                    "host": ["{{base_url}}"],
+                                    "path": [
+                                        "talent",
+                                        "promotions",
+                                        "{{promotion_id}}",
+                                        "submit"
+                                    ]
+                                },
+                                "description": "Submit promotion request for approval workflow"
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "Submit Second Promotion for Approval",
+                            "request": {
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{base_url}}/talent/promotions/2/submit",
+                                    "host": ["{{base_url}}"],
+                                    "path": [
+                                        "talent",
+                                        "promotions",
+                                        "2",
+                                        "submit"
+                                    ]
+                                },
+                                "description": "Submit promotion request for approval workflow"
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "Withdraw Promotion",
+                            "request": {
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n    \"reason\": \"Employee has decided to explore other opportunities\"\n}"
+                                },
+                                "url": {
+                                    "raw": "{{base_url}}/talent/promotions/{{promotion_id}}/withdraw",
+                                    "host": ["{{base_url}}"],
+                                    "path": [
+                                        "talent",
+                                        "promotions",
+                                        "{{promotion_id}}",
+                                        "withdraw"
+                                    ]
+                                },
+                                "description": "Withdraw a promotion request"
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "Get Promotion Timeline",
+                            "request": {
+                                "method": "GET",
+                                "header": [
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{base_url}}/talent/promotions/{{promotion_id}}/timeline",
+                                    "host": ["{{base_url}}"],
+                                    "path": [
+                                        "talent",
+                                        "promotions",
+                                        "{{promotion_id}}",
+                                        "timeline"
+                                    ]
+                                },
+                                "description": "Get approval timeline and history for a promotion"
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "Get Available Workflows",
+                            "request": {
+                                "method": "GET",
+                                "header": [
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{base_url}}/talent/promotions/workflows",
+                                    "host": ["{{base_url}}"],
+                                    "path": [
+                                        "talent",
+                                        "promotions",
+                                        "workflows"
+                                    ]
+                                },
+                                "description": "Get available promotion workflows"
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "Process Approval",
+                            "request": {
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n    \"decision\": \"approved\",\n    \"comments\": \"Excellent candidate, well deserved promotion\",\n    \"conditions\": []\n}"
+                                },
+                                "url": {
+                                    "raw": "{{base_url}}/talent/promotions/approvals/2",
+                                    "host": ["{{base_url}}"],
+                                    "path": [
+                                        "talent",
+                                        "promotions",
+                                        "approvals",
+                                        "2"
+                                    ]
+                                },
+                                "description": "Process a promotion approval"
+                            },
+                            "response": []
+                        }
+                    ]
+                },
+                {
+                    "name": "Succession Planning",
+                    "item": [
+                        {
+                            "name": "Get Succession Overview",
+                            "request": {
+                                "method": "GET",
+                                "header": [
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{base_url}}/talent/succession",
+                                    "host": ["{{base_url}}"],
+                                    "path": ["talent", "succession"]
+                                },
+                                "description": "Get succession planning overview and metrics"
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "Get Succession Metrics",
+                            "request": {
+                                "method": "GET",
+                                "header": [
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{base_url}}/talent/succession/metrics",
+                                    "host": ["{{base_url}}"],
+                                    "path": ["talent", "succession", "metrics"]
+                                },
+                                "description": "Get detailed succession planning metrics"
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "Get Critical Gaps",
+                            "request": {
+                                "method": "GET",
+                                "header": [
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{base_url}}/talent/succession/critical-gaps",
+                                    "host": ["{{base_url}}"],
+                                    "path": [
+                                        "talent",
+                                        "succession",
+                                        "critical-gaps"
+                                    ]
+                                },
+                                "description": "Get critical role gaps in succession planning"
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "Create Succession Role",
+                            "request": {
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n  \"role_id\": 3,\n  \"criticality\": \"high\",\n  \"risk_level\": \"medium\",\n  \"replacement_timeline\": \"short\",\n  \"required_successors\": 2,\n  \"description\": \"Senior leadership position requiring strategic thinking and team management\"\n}\n"
+                                },
+                                "url": {
+                                    "raw": "{{base_url}}/talent/succession/roles",
+                                    "host": ["{{base_url}}"],
+                                    "path": ["talent", "succession", "roles"]
+                                },
+                                "description": "Create a new succession role"
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "Add Succession Candidate",
+                            "request": {
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n    \"succession_role_id\": 1,\n    \"employee_id\": 2,\n    \"target_role_id\": 3,\n    \"readiness\": \"developing\",\n    \"development_plan\": {\n        \"actions\": [\"Complete leadership training\", \"Shadow senior manager\"]\n    },\n    \"learning_path_id\": 1,\n    \"target_ready_date\": \"2025-12-31\",\n    \"strengths\": [\"Team Leadership\", \"Technical Skills\"],\n    \"development_areas\": [\"Strategic Planning\", \"Budget Management\"],\n    \"source\": \"hr_action\",\n    \"is_active\": true\n}\n"
+                                },
+                                "url": {
+                                    "raw": "{{base_url}}/talent/succession/candidates",
+                                    "host": ["{{base_url}}"],
+                                    "path": [
+                                        "talent",
+                                        "succession",
+                                        "candidates"
+                                    ]
+                                },
+                                "description": "Add an employee as a succession candidate"
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "Update Candidate Readiness",
+                            "request": {
+                                "method": "PUT",
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n    \"readiness\": \"ready\",\n    \"readiness_score\": 92,\n    \"assessment_notes\": \"Completed leadership development program successfully\"\n}"
+                                },
+                                "url": {
+                                    "raw": "{{base_url}}/talent/succession/candidates/1/readiness",
+                                    "host": ["{{base_url}}"],
+                                    "path": [
+                                        "talent",
+                                        "succession",
+                                        "candidates",
+                                        "1",
+                                        "readiness"
+                                    ]
+                                },
+                                "description": "Update succession candidate readiness level"
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "Assign Learning Path",
+                            "request": {
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n    \"learning_path_id\": 1,\n    \"priority\": \"high\",\n    \"target_completion_date\": \"2024-06-30\"\n}"
+                                },
+                                "url": {
+                                    "raw": "{{base_url}}/talent/succession/candidates/1/learning-path",
+                                    "host": ["{{base_url}}"],
+                                    "path": [
+                                        "talent",
+                                        "succession",
+                                        "candidates",
+                                        "1",
+                                        "learning-path"
+                                    ]
+                                },
+                                "description": "Assign learning path to succession candidate"
+                            },
+                            "response": []
+                        }
+                    ]
+                },
+                {
+                    "name": "Performance Improvement Plans",
+                    "item": [
+                        {
+                            "name": "List PIPs",
+                            "request": {
+                                "method": "GET",
+                                "header": [
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{base_url}}/talent/pips?status=active&page=1",
+                                    "host": ["{{base_url}}"],
+                                    "path": ["talent", "pips"],
+                                    "query": [
+                                        {
+                                            "key": "status",
+                                            "value": "active",
+                                            "description": "Filter by status: active, completed, terminated"
+                                        },
+                                        {
+                                            "key": "page",
+                                            "value": "1"
+                                        }
+                                    ]
+                                },
+                                "description": "Get all PIPs with filtering options"
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "Create PIP",
+                            "request": {
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n    \"employee_id\": 1,\n    \"manager_id\": 2,\n    \"title\": \"Performance Improvement Plan - Q4 2024\",\n    \"description\": \"Focused improvement plan for meeting delivery deadlines\",\n    \"start_date\": \"2024-10-01\",\n    \"end_date\": \"2024-12-31\",\n    \"goals\": [\n        {\n            \"title\": \"Improve Delivery Timeliness\",\n            \"description\": \"Complete all assigned tasks within agreed deadlines\",\n            \"target_metric\": \"95% on-time delivery\",\n            \"due_date\": \"2024-11-30\"\n        }\n    ],\n    \"success_criteria\": \"Meeting all goals with satisfactory performance\"\n}\n"
+                                },
+                                "url": {
+                                    "raw": "{{base_url}}/talent/pips",
+                                    "host": ["{{base_url}}"],
+                                    "path": ["talent", "pips"]
+                                },
+                                "description": "Create a new Performance Improvement Plan"
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "Get PIP Details",
+                            "request": {
+                                "method": "GET",
+                                "header": [
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{base_url}}/talent/pips/1",
+                                    "host": ["{{base_url}}"],
+                                    "path": ["talent", "pips", "1"]
+                                },
+                                "description": "Get detailed information about a specific PIP"
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "Add PIP Check-in",
+                            "request": {
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n  \"checkin_date\": \"2024-10-15\",\n  \"summary\": \"Employee has shown noticeable improvement in delivery timeliness and proactive updates.\",\n  \"status\": \"improving\",\n  \"rating\": 4,\n  \"goals_progress\": [\n    {\n      \"goal_id\": 1,\n      \"title\": \"Improve Delivery Timeliness\",\n      \"status\": \"on_track\",\n      \"notes\": \"90% of deliverables met on time this cycle\",\n      \"metric\": \"90%\"\n    },\n    {\n      \"goal_id\": 2,\n      \"title\": \"Enhance Communication\",\n      \"status\": \"improving\",\n      \"notes\": \"Regular progress updates shared via Slack\"\n    }\n  ],\n  \"manager_notes\": \"Keep focusing on time management and proactive updates. Great improvement overall.\",\n  \"next_steps\": \"Work on consistent reporting of blockers during sprint planning.\",\n  \"next_checkin_date\": \"2024-11-01\"\n}\n"
+                                },
+                                "url": {
+                                    "raw": "{{base_url}}/talent/pips/1/checkins",
+                                    "host": ["{{base_url}}"],
+                                    "path": ["talent", "pips", "1", "checkins"]
+                                },
+                                "description": "Add a check-in to a PIP"
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "Update PIP Status",
+                            "request": {
+                                "method": "PUT",
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n    \"status\": \"completed\",\n    \"completion_notes\": \"All goals achieved successfully\",\n    \"outcome\": \"successful\"\n}"
+                                },
+                                "url": {
+                                    "raw": "{{base_url}}/talent/pips/1/status",
+                                    "host": ["{{base_url}}"],
+                                    "path": ["talent", "pips", "1", "status"]
+                                },
+                                "description": "Update PIP status and outcome"
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "Get PIP Metrics",
+                            "request": {
+                                "method": "GET",
+                                "header": [
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{base_url}}/talent/pips/metrics",
+                                    "host": ["{{base_url}}"],
+                                    "path": ["talent", "pips", "metrics"]
+                                },
+                                "description": "Get PIP metrics and analytics"
+                            },
+                            "response": []
+                        }
+                    ]
+                },
+                {
+                    "name": "Employee Notes",
+                    "item": [
+                        {
+                            "name": "List Employee Notes",
+                            "request": {
+                                "method": "GET",
+                                "header": [
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{base_url}}/talent/notes?employee_id=1&visibility=manager_chain",
+                                    "host": ["{{base_url}}"],
+                                    "path": ["talent", "notes"],
+                                    "query": [
+                                        {
+                                            "key": "employee_id",
+                                            "value": "1",
+                                            "description": "Filter by employee ID"
+                                        },
+                                        {
+                                            "key": "visibility",
+                                            "value": "manager_chain",
+                                            "description": "Filter by visibility level"
+                                        }
+                                    ]
+                                },
+                                "description": "Get employee notes with filtering"
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "Create Employee Note",
+                            "request": {
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n    \"employee_id\": 1,\n    \"title\": \"Quarterly Performance Check-in\",\n    \"body\": \"Employee demonstrated excellent leadership skills during the project delivery phase.\",\n    \"note_type\": \"performance\",\n    \"visibility\": \"manager_chain\",\n    \"is_sensitive\": false\n}\n"
+                                },
+                                "url": {
+                                    "raw": "{{base_url}}/talent/notes",
+                                    "host": ["{{base_url}}"],
+                                    "path": ["talent", "notes"]
+                                },
+                                "description": "Create a new employee note"
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "Get Note Details",
+                            "request": {
+                                "method": "GET",
+                                "header": [
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{base_url}}/talent/notes/1",
+                                    "host": ["{{base_url}}"],
+                                    "path": ["talent", "notes", "1"]
+                                },
+                                "description": "Get detailed information about a specific note"
+                            },
+                            "response": []
+                        }
+                    ]
+                }
+            ],
+            "description": "Complete talent management ecosystem for career advancement, succession planning, and employee development"
+        },
+        {
+            "name": "Manager Performance Reviews (Employee)",
+            "item": [
+                {
+                    "name": "Team Review Management",
+                    "item": [
+                        {
+                            "name": "Get Review Cycles",
+                            "request": {
+                                "method": "GET",
+                                "header": [
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{base_url}}/manager/team-reviews/cycles?scope=ongoing&limit=25",
+                                    "host": ["{{base_url}}"],
+                                    "path": [
+                                        "manager",
+                                        "team-reviews",
+                                        "cycles"
+                                    ],
+                                    "query": [
+                                        {
+                                            "key": "scope",
+                                            "value": "ongoing",
+                                            "description": "Filter by scope: ongoing, completed, draft"
+                                        },
+                                        {
+                                            "key": "limit",
+                                            "value": "25",
+                                            "description": "Number of results to return (max 100)"
+                                        }
+                                    ]
+                                },
+                                "description": "Get cycles where manager has reviewees with completion stats and team headcount"
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "Get Cycle Reviewees",
+                            "request": {
+                                "method": "GET",
+                                "header": [
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{base_url}}/manager/team-reviews/cycles/{{cycle_id}}/reviewees?limit=25",
+                                    "host": ["{{base_url}}"],
+                                    "path": [
+                                        "manager",
+                                        "team-reviews",
+                                        "cycles",
+                                        "{{cycle_id}}",
+                                        "reviewees"
+                                    ],
+                                    "query": [
+                                        {
+                                            "key": "limit",
+                                            "value": "25",
+                                            "description": "Number of results to return"
+                                        }
+                                    ]
+                                },
+                                "description": "Get reviewees for a specific cycle with AI-powered badge classification"
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "Send Review Reminders",
+                            "request": {
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n    \"audience\": \"all\",\n    \"reviewee_ids\": [1, 2, 3]\n}"
+                                },
+                                "url": {
+                                    "raw": "{{base_url}}/manager/team-reviews/cycles/{{cycle_id}}/reminders",
+                                    "host": ["{{base_url}}"],
+                                    "path": [
+                                        "manager",
+                                        "team-reviews",
+                                        "cycles",
+                                        "{{cycle_id}}",
+                                        "reminders"
+                                    ]
+                                },
+                                "description": "Send targeted reminders to reviewers (rate limited to once per 4 hours)"
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "Get Team Summary",
+                            "request": {
+                                "method": "GET",
+                                "header": [
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{base_url}}/manager/team-reviews/team-summary?cycle_id={{cycle_id}}",
+                                    "host": ["{{base_url}}"],
+                                    "path": [
+                                        "manager",
+                                        "team-reviews",
+                                        "team-summary"
+                                    ],
+                                    "query": [
+                                        {
+                                            "key": "cycle_id",
+                                            "value": "{{cycle_id}}",
+                                            "description": "Optional cycle ID for specific cycle data"
+                                        }
+                                    ]
+                                },
+                                "description": "Get team performance summary with completion statistics and high performer percentages"
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "Get Team Members",
+                            "request": {
+                                "method": "GET",
+                                "header": [
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{base_url}}/manager/team-reviews/team-members?cycle_id={{cycle_id}}&limit=25",
+                                    "host": ["{{base_url}}"],
+                                    "path": [
+                                        "manager",
+                                        "team-reviews",
+                                        "team-members"
+                                    ],
+                                    "query": [
+                                        {
+                                            "key": "cycle_id",
+                                            "value": "{{cycle_id}}",
+                                            "description": "Filter by specific cycle"
+                                        },
+                                        {
+                                            "key": "limit",
+                                            "value": "25",
+                                            "description": "Number of results to return"
+                                        }
+                                    ]
+                                },
+                                "description": "Get team members with performance data and AI-powered badge classification"
+                            },
+                            "response": []
+                        }
+                    ]
+                }
+            ],
+            "description": "Manager-facing performance review tools for team management and talent actions"
+        },
+        {
+            "name": "Meetings & Video Calls",
+            "item": [
+                {
+                    "name": "Meetings",
+                    "item": [
+                        {
+                            "name": "List",
+                            "request": {
+                                "method": "GET",
+                                "url": "{{base_url}}/meetings"
+                            }
+                        },
+                        {
+                            "name": "Create",
+                            "request": {
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n  \"title\": \"Demo Meeting\",\n  \"scheduled_at\": \"2025-10-01T10:00:00\",\n  \"duration_minutes\": 60\n}"
+                                },
+                                "url": "{{base_url}}/meetings"
+                            }
+                        },
+                        {
+                            "name": "Show",
+                            "request": {
+                                "method": "GET",
+                                "url": "{{base_url}}/meetings/1"
+                            }
+                        },
+                        {
+                            "name": "Update",
+                            "request": {
+                                "method": "PUT",
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n  \"title\": \"Updated Meeting Title\"\n}"
+                                },
+                                "url": "{{base_url}}/meetings/1"
+                            }
+                        },
+                        {
+                            "name": "Start",
+                            "request": {
+                                "method": "POST",
+                                "url": "{{base_url}}/meetings/1/start"
+                            }
+                        },
+                        {
+                            "name": "End",
+                            "request": {
+                                "method": "POST",
+                                "url": "{{base_url}}/meetings/1/end"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Invitations",
+                    "item": [
+                        {
+                            "name": "Invite User",
+                            "request": {
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n  \"invitee_email\": \"friend@example.com\"\n}"
+                                },
+                                "url": "{{base_url}}/meetings/1/invite"
+                            }
+                        },
+                        {
+                            "name": "Accept",
+                            "request": {
+                                "method": "POST",
+                                "url": "{{base_url}}/invitations/1/accept"
+                            }
+                        },
+                        {
+                            "name": "Reject",
+                            "request": {
+                                "method": "POST",
+                                "url": "{{base_url}}/invitations/1/reject"
+                            }
+                        },
+                        {
+                            "name": "Propose New Time",
+                            "request": {
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n  \"proposed_time\": \"2025-10-02T11:00:00\"\n}"
+                                },
+                                "url": "{{base_url}}/invitations/1/propose"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Recordings",
+                    "item": [
+                        {
+                            "name": "List",
+                            "request": {
+                                "method": "GET",
+                                "url": "{{base_url}}/meetings/1/recordings"
+                            }
+                        },
+                        {
+                            "name": "Start",
+                            "request": {
+                                "method": "POST",
+                                "url": "{{base_url}}/meetings/1/recordings/start"
+                            }
+                        },
+                        {
+                            "name": "End",
+                            "request": {
+                                "method": "POST",
+                                "url": "{{base_url}}/meetings/1/recordings/end"
+                            }
+                        },
+                        {
+                            "name": "Download",
+                            "request": {
+                                "method": "GET",
+                                "url": "{{base_url}}/recordings/1/download"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "AI Notes",
+                    "item": [
+                        {
+                            "name": "Generate Notes",
+                            "request": {
+                                "method": "POST",
+                                "url": "{{base_url}}/meetings/1/notes"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Presence",
+                    "item": [
+                        {
+                            "name": "Join",
+                            "request": {
+                                "method": "POST",
+                                "url": "{{base_url}}/meetings/1/presence/join"
+                            }
+                        },
+                        {
+                            "name": "Leave",
+                            "request": {
+                                "method": "POST",
+                                "url": "{{base_url}}/meetings/1/presence/leave"
+                            }
+                        },
+                        {
+                            "name": "Participants",
+                            "request": {
+                                "method": "GET",
+                                "url": "{{base_url}}/meetings/1/participants"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "RTC Signaling",
+                    "item": [
+                        {
+                            "name": "Send Signal",
+                            "request": {
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n  \"to_user_id\": 2,\n  \"type\": \"offer\",\n  \"payload\": {\"sdp\": \"mock_sdp_here\"}\n}"
+                                },
+                                "url": "{{base_url}}/meetings/1/rtc/send"
+                            }
+                        },
+                        {
+                            "name": "Inbox",
+                            "request": {
+                                "method": "GET",
+                                "url": "{{base_url}}/meetings/1/rtc/inbox"
+                            }
+                        },
+                        {
+                            "name": "Acknowledge",
+                            "request": {
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n  \"ids\": [1]\n}"
+                                },
+                                "url": "{{base_url}}/meetings/1/rtc/ack"
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "auth": {
+        "type": "bearer",
+        "bearer": [
+            {
+                "key": "token",
+                "value": "{{auth_token}}",
+                "type": "string"
+            }
+        ]
+    },
+    "event": [
+        {
+            "listen": "prerequest",
+            "script": {
+                "type": "text/javascript",
+                "requests": {},
+                "exec": [
+                    "const token = pm.collectionVariables.get('auth_token');",
+                    "",
+                    "if (token) {",
+                    "    pm.variables.set('auth_token', token);",
+                    "    console.log(\"✅ Using updated auth token:\", token);",
+                    "} else {",
+                    "    console.warn(\"⚠️ No stored token found!\");",
+                    "}",
+                    "",
+                    "// Ensure base URL exists",
+                    "if (!pm.variables.get('base_url')) {",
+                    "    pm.variables.set('base_url', 'http://localhost:8000');",
+                    "}",
+                    ""
+                ]
+            }
+        },
+        {
+            "listen": "test",
+            "script": {
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {},
+                "exec": [""]
+            }
+        }
+    ],
+    "variable": [
+        {
+            "key": "base_url",
+            "value": "http://localhost:8000"
+        },
+        {
+            "key": "auth_token",
+            "value": "your-bearer-token-here"
+        },
+        {
+            "key": "cycle_id",
+            "value": "1"
+        },
+        {
+            "key": "employee_id",
+            "value": "1"
+        },
+        {
+            "key": "promotion_id",
+            "value": "1"
+        },
+        {
+            "key": "role_id",
+            "value": "1"
+        },
+        {
+            "key": "learning_path_id",
+            "value": "1"
+        },
+        {
+            "key": "course_id",
+            "value": "1"
+        }
+    ]
 }
