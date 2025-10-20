@@ -19,10 +19,12 @@ class User extends Authenticatable implements HasApiTokensContract
 
     protected $table = 'users';
 
-    protected $fillable = ['uuid', 'first_name', 'middle_name', 'last_name', 'email', 'password', 'role_id'];
+    protected $fillable = ['uuid', 'first_name', 'middle_name', 'last_name', 'email', 'department', 'password', 'role_id'];
 
     protected $hidden = ['password', 'remember_token'];
 
+/*************  ✨ Windsurf Command ⭐  *************/
+/*******  0162ad31-35aa-4b37-9301-40b2d2a51e46  *******/
     public static function boot()
     {
         parent::boot();

@@ -14,15 +14,20 @@ class SuccessionRole extends Model
     protected $fillable = [
         'role_id',
         'incumbent_id',
+        'org_unit_id',
+        'title',
+        'description',
         'criticality',
         'risk_level',
         'replacement_timeline',
+        'is_critical',
         'is_active',
         'created_by',
         'updated_by',
     ];
 
     protected $casts = [
+        'is_critical' => 'boolean',
         'is_active' => 'boolean',
     ];
 
@@ -215,7 +220,7 @@ class SuccessionRole extends Model
             'risk_level' => $data['risk_level'] ?? 'medium',
             'replacement_timeline' => $data['replacement_timeline'] ?? 'medium',
             'is_active' => true,
-            'created_by' => auth()->id(),
+            'created_by' => \Illuminate\Support\Facades\Auth::guard('sanctum')->id() ?? auth()->id(),
         ]);
     }
 

@@ -9,6 +9,8 @@ class ReviewCriteria extends Model
 {
     use HasFactory;
 
+    protected $table = 'review_criterias';
+
     protected $fillable = [
         'competency_id',
         'text',

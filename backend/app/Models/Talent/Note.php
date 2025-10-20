@@ -14,7 +14,9 @@ class Note extends Model
     protected $fillable = [
         'employee_id',
         'author_id',
+        'title',
         'body',
+        'note_type',
         'visibility',
         'is_sensitive',
     ];

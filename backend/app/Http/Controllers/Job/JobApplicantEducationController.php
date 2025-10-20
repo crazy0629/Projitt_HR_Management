@@ -22,8 +22,8 @@ class JobApplicantEducationController extends Controller
 
             $education = new JobApplicantEducation;
             $education->fill($data);
-            $education->created_by = auth()->id();
-            $education->updated_by = auth()->id();
+            $education->created_by = \Illuminate\Support\Facades\Auth::guard('sanctum')->id() ?? auth()->id();
+            $education->updated_by = \Illuminate\Support\Facades\Auth::guard('sanctum')->id() ?? auth()->id();
             $education->save();
 
             $object = JobApplicantEducation::with('degree')->where('id', $education->id)->first();
@@ -43,7 +43,7 @@ class JobApplicantEducationController extends Controller
 
         $education = JobApplicantEducation::findOrFail($data['id']);
         $education->fill($data);
-        $education->updated_by = auth()->id();
+        $education->updated_by = \Illuminate\Support\Facades\Auth::guard('sanctum')->id() ?? auth()->id();
         $education->save();
 
         $object = JobApplicantEducation::with('degree')->where('id', $education->id)->first();
@@ -81,7 +81,7 @@ class JobApplicantEducationController extends Controller
     {
         $ids = $request->input('ids');
 
-        JobApplicantEducation::whereIn('id', $ids)->update(['deleted_by' => auth()->id()]);
+        JobApplicantEducation::whereIn('id', $ids)->update(['deleted_by' => \Illuminate\Support\Facades\Auth::guard('sanctum')->id() ?? auth()->id()]);
         JobApplicantEducation::whereIn('id', $ids)->delete();
 
         return $this->sendSuccess([], 'Education record(s) deleted successfully.');

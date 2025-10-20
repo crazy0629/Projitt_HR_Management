@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('middle_name', 100)->nullable();
             $table->string('last_name', 100)->nullable();
             $table->string('email', 100)->nullable();
+            $table->string('department', 150)->nullable();
             $table->string('password', 200)->nullable();
             $table->boolean('first_login')->default(1);
 

@@ -5,7 +5,7 @@ namespace App\Services\LMS;
 use App\Models\LearningPath\Course;
 use App\Models\LMS\Enrollment;
 use App\Models\LMS\PathEnrollment;
-use App\Models\User;
+use App\Models\User\User;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 

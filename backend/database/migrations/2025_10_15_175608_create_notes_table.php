@@ -15,7 +15,9 @@ return new class extends Migration
             $table->id();
             $table->foreignId('employee_id')->constrained('users')->onDelete('cascade');
             $table->foreignId('author_id')->constrained('users');
+            $table->string('title')->nullable();
             $table->text('body');
+            $table->enum('note_type', ['performance', 'behavior', 'general'])->default('general');
             $table->enum('visibility', ['hr_only', 'manager_chain', 'employee_visible'])->default('manager_chain');
             $table->boolean('is_sensitive')->default(false);
             $table->timestamps();
@@ -23,6 +25,7 @@ return new class extends Migration
 
             $table->index(['employee_id', 'visibility']);
             $table->index('author_id');
+            $table->index('note_type');
             $table->index('created_at');
         });
     }

@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models\PerformanceReview;
 
 use App\Models\User\User;
@@ -12,6 +11,8 @@ class PerformanceReviewScore extends Model
 
     protected $fillable = [
         'review_id',
+        'cycle_id',
+        'reviewee_id',
         'reviewer_id',
         'reviewer_name',
         'type',
@@ -36,14 +37,6 @@ class PerformanceReviewScore extends Model
         'updated_at' => 'datetime',
     ];
 
-    protected $dates = [
-        'started_at',
-        'completed_at',
-        'created_at',
-        'updated_at',
-    ];
-
-    // Auto-calculate average score when scores are updated
     protected static function boot()
     {
         parent::boot();
@@ -53,6 +46,31 @@ class PerformanceReviewScore extends Model
                 $score->average_score = collect($score->scores)->avg();
             }
         });
+    }
+    
+    public function reviewee()
+    {
+        return $this->belongsTo(User::class, 'reviewee_id');
+    }
+
+    public function cycle()
+    {
+        return $this->belongsTo(PerformanceReviewCycle::class, 'cycle_id');
+    }
+
+    public function scopeByCycle($query, int $cycleId)
+    {
+        return $query->where('cycle_id', $cycleId);
+    }
+
+    public function scopeByReviewee($query, int $revieweeId)
+    {
+        return $query->where('reviewee_id', $revieweeId);
+    }
+
+    public function scopeByReviewer($query, int $reviewerId)
+    {
+        return $query->where('reviewer_id', $reviewerId);
     }
 
     // Relationships

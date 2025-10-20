@@ -47,7 +47,7 @@ class JobApplicantController extends Controller
                 $jobApplicant = new JobApplicant;
                 $jobApplicant->job_id = $request->job_id;
                 $jobApplicant->applicant_id = $request->applicant_id;
-                $jobApplicant->created_by = auth()->id(); // optional: track creator
+                $jobApplicant->created_by = \Illuminate\Support\Facades\Auth::guard('sanctum')->id() ?? auth()->id(); // optional: track creator
                 $jobApplicant->save();
             }
 
@@ -60,7 +60,7 @@ class JobApplicantController extends Controller
                 'contact_code',
                 'contact_no',
             ]);
-            $jobApplicantData['updated_by'] = auth()->id();
+            $jobApplicantData['updated_by'] = \Illuminate\Support\Facades\Auth::guard('sanctum')->id() ?? auth()->id();
             $jobApplicant->fill($jobApplicantData)->save();
 
             $user = $jobApplicant->applicant;
@@ -98,7 +98,7 @@ class JobApplicantController extends Controller
 
             $jobApplicant->cv_media_id = $request->cv_media_id;
             $jobApplicant->cover_media_id = $request->cover_media_id;
-            $jobApplicant->updated_by = auth()->id();
+            $jobApplicant->updated_by = \Illuminate\Support\Facades\Auth::guard('sanctum')->id() ?? auth()->id();
             $jobApplicant->save();
 
             $updated = JobApplicant::singleObject($request->job_id, $request->applicant_id);
@@ -126,7 +126,7 @@ class JobApplicantController extends Controller
                 'linkedin_link' => $request->linkedin_link,
                 'portfolio_link' => $request->portfolio_link,
                 'other_links' => $request->other_links,
-                'updated_by' => auth()->id(),
+                'updated_by' => \Illuminate\Support\Facades\Auth::guard('sanctum')->id() ?? auth()->id(),
             ])->save();
 
             $updated = JobApplicant::singleObject($request->job_id, $request->applicant_id);

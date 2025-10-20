@@ -3,7 +3,7 @@
 namespace App\Models\EmployeeReviews;
 
 use App\Models\PerformanceReview\PerformanceReviewCycle;
-use App\Models\User;
+use App\Models\User\User;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -267,7 +267,7 @@ class EmployeeReviewAssignment extends Model
             'assigned_at' => now(),
             'due_date' => $dueDate,
             'assignment_metadata' => $metadata,
-            'assigned_by' => $assignedBy ?? auth()->id(),
+            'assigned_by' => $assignedBy ?? \Illuminate\Support\Facades\Auth::guard('sanctum')->id() ?? auth()->id(),
         ]);
     }
 }

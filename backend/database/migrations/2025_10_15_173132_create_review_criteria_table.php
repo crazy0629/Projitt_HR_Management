@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('review_criteria', function (Blueprint $table) {
+        Schema::create('review_criterias', function (Blueprint $table) {
             $table->id();
             $table->foreignId('competency_id')->constrained('review_competencies')->onDelete('cascade');
             $table->text('text'); // The actual question/criterion

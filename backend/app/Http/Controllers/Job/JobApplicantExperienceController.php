@@ -22,8 +22,8 @@ class JobApplicantExperienceController extends Controller
 
             $experience = new JobApplicantExperience;
             $experience->fill($data);
-            $experience->created_by = auth()->id();
-            $experience->updated_by = auth()->id();
+            $experience->created_by = \Illuminate\Support\Facades\Auth::guard('sanctum')->id() ?? auth()->id();
+            $experience->updated_by = \Illuminate\Support\Facades\Auth::guard('sanctum')->id() ?? auth()->id();
             $experience->save();
 
             return $this->sendSuccess($experience, 'Experience added successfully.');
@@ -41,7 +41,7 @@ class JobApplicantExperienceController extends Controller
 
         $experience = JobApplicantExperience::findOrFail($data['id']);
         $experience->fill($data);
-        $experience->updated_by = auth()->id();
+        $experience->updated_by = \Illuminate\Support\Facades\Auth::guard('sanctum')->id() ?? auth()->id();
         $experience->save();
 
         return $this->sendSuccess($experience, 'Experience updated successfully.');
@@ -74,7 +74,7 @@ class JobApplicantExperienceController extends Controller
     {
         $ids = $request->input('ids');
 
-        JobApplicantExperience::whereIn('id', $ids)->update(['deleted_by' => auth()->id()]);
+        JobApplicantExperience::whereIn('id', $ids)->update(['deleted_by' => \Illuminate\Support\Facades\Auth::guard('sanctum')->id() ?? auth()->id()]);
         JobApplicantExperience::whereIn('id', $ids)->delete();
 
         return $this->sendSuccess([], 'Experience(s) deleted successfully.');

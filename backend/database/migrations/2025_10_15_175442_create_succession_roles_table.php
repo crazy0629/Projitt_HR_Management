@@ -13,16 +13,34 @@ return new class extends Migration
     {
         Schema::create('succession_roles', function (Blueprint $table) {
             $table->id();
-            $table->string('org_unit_id')->nullable(); // department or team identifier
-            $table->string('title');
-            $table->foreignId('incumbent_employee_id')->nullable()->constrained('users')->onDelete('set null');
+
+            // Core Identifiers
+            $table->foreignId('role_id')->constrained('roles')->onDelete('cascade');
+            $table->foreignId('incumbent_id')->nullable()->constrained('users')->onDelete('set null');
+
+            // Organizational context
+            $table->string('org_unit_id')->nullable(); // Department or team identifier
+            $table->string('title')->nullable(); // Optional if role has a title field already
             $table->text('description')->nullable();
-            $table->boolean('is_critical')->default(false); // critical role for business continuity
+
+            // Succession metrics
+            $table->enum('criticality', ['low', 'medium', 'high', 'critical'])->default('medium');
+            $table->enum('risk_level', ['low', 'medium', 'high'])->default('medium');
+            $table->enum('replacement_timeline', ['immediate', 'short', 'medium', 'long'])->default('medium');
+
+            // Status flags
+            $table->boolean('is_critical')->default(false);
             $table->boolean('is_active')->default(true);
+
+            // Audit fields
+            $table->foreignId('created_by')->nullable()->constrained('users')->onDelete('set null');
+            $table->foreignId('updated_by')->nullable()->constrained('users')->onDelete('set null');
+
             $table->timestamps();
 
+            // Indexes
             $table->index(['org_unit_id', 'is_active']);
-            $table->index('is_critical');
+            $table->index(['is_critical', 'criticality', 'risk_level']);
         });
     }
 

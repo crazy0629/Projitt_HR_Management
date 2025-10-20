@@ -162,7 +162,9 @@ class LearningPath extends Model
 
     public function getTotalDurationAttribute()
     {
-        return $this->courses()->sum('duration_hours') ?? 0;
+        // Convert total minutes to hours for readability
+        $totalMinutes = $this->courses()->sum('duration_minutes') ?? 0;
+        return round($totalMinutes / 60, 2); // returns total hours with 2 decimals
     }
 
     public function getAssignedEmployeesCountAttribute()
