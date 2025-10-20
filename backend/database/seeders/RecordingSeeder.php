@@ -5,26 +5,31 @@ namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 use App\Models\VideoCall\Recording;
 use App\Models\VideoCall\Meeting;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
 class RecordingSeeder extends Seeder
 {
     public function run(): void
     {
-        Recording::truncate();
+        DB::transaction(function () {
+            $meeting = Meeting::query()->first();
 
-        $meeting = Meeting::first();
+            if (!$meeting) {
+                return;
+            }
 
-        // Create a fake recording file
-        $filename = 'recordings/meeting-'.$meeting->id.'-seed.txt';
-        Storage::disk('local')->put($filename, "This is a seeded mock recording for meeting {$meeting->id}.");
+            $filename = 'recordings/meeting-'.$meeting->id.'-seed.txt';
+            Storage::disk('local')->put($filename, "This is a seeded mock recording for meeting {$meeting->id}.");
 
-        Recording::create([
-            'meeting_id' => $meeting->id,
-            'started_at' => now()->subMinutes(30),
-            'ended_at' => now()->subMinutes(25),
-            'participants' => ['owner@example.com', 'invitee@example.com'],
-            'file_path' => $filename,
-        ]);
+            Recording::updateOrCreate(
+                ['meeting_id' => $meeting->id, 'file_path' => $filename],
+                [
+                    'started_at' => now()->subMinutes(30),
+                    'ended_at' => now()->subMinutes(25),
+                    'participants' => ['owner@example.com', 'invitee@example.com'],
+                ]
+            );
+        });
     }
 }

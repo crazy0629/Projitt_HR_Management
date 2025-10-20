@@ -7,6 +7,7 @@ use App\Http\Controllers\VideoCall\RecordingController;
 use App\Http\Controllers\VideoCall\AiNotesController;
 use App\Http\Controllers\VideoCall\PresenceController;
 use App\Http\Controllers\VideoCall\RtcSignalController;
+use App\Http\Controllers\VideoCall\TokenController;
 
 // Protected application routes
 Route::middleware('auth:sanctum')->group(function () {
@@ -42,4 +43,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/meetings/{meeting}/rtc/send', [RtcSignalController::class, 'send']);
     Route::get('/meetings/{meeting}/rtc/inbox', [RtcSignalController::class, 'inbox']);
     Route::post('/meetings/{meeting}/rtc/ack', [RtcSignalController::class, 'ack']);
+
+    Route::post('/video/token', TokenController::class);
 });

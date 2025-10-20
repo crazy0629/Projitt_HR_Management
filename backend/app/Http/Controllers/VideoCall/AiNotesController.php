@@ -10,9 +10,9 @@ use App\Events\AiNotesGenerated;
 
 class AiNotesController extends Controller
 {
-    public function generate(Meeting $meeting)
+    public function generate($meetingId)
     {
-        $this->authorizeOwner($meeting);
+        $meeting = $this->authorizeOwner($meetingId);
 
         // Simple mock transcript and notes
         $transcript = "Transcript for meeting '{$meeting->title}' on ".now()->toDateTimeString().". This is a mocked transcript.";
@@ -33,8 +33,12 @@ class AiNotesController extends Controller
         return response()->json($note, 201);
     }
 
-    private function authorizeOwner(Meeting $meeting): void
+    private function authorizeOwner($meetingId): Meeting
     {
-        abort_if($meeting->created_by !== Auth::id(), 403, 'Forbidden');
+        $meeting = Meeting::findOrFail($meetingId);
+
+        abort_if($meeting->created_by !== Auth::guard('sanctum')->id(), 403, 'Forbidden');
+
+        return $meeting;
     }
 }

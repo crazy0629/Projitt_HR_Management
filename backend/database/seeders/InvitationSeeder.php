@@ -12,18 +12,21 @@ class InvitationSeeder extends Seeder
 {
     public function run(): void
     {
-        Invitation::truncate();
-
         $meeting = Meeting::first();
         $invitee = User::where('email', 'super.admin2@example.com')->first();
         $owner = User::where('email', 'super.admin1@example.com')->first();
 
-        Invitation::create([
-            'meeting_id' => $meeting->id,
-            'inviter_id' => $owner->id,
-            'invitee_user_id' => $invitee->id,
-            'status' => 'pending',
-            'token' => Str::random(32),
-        ]);
+        if (!$meeting || !$invitee || !$owner) {
+            return;
+        }
+
+        Invitation::firstOrCreate(
+            ['meeting_id' => $meeting->id, 'invitee_user_id' => $invitee->id],
+            [
+                'inviter_id' => $owner->id,
+                'status' => 'accepted',
+                'token' => Str::random(32),
+            ]
+        );
     }
 }

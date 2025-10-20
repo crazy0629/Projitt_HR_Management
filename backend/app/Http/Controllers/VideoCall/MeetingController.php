@@ -36,7 +36,9 @@ class MeetingController extends Controller
         $sortBy = $data['sort_by'] ?? 'scheduled_at';
         $sortDir = $data['sort_dir'] ?? 'desc';
 
-        $meetings = Meeting::where('created_by', Auth::id())
+        $userId = Auth::guard('sanctum')->id();
+
+        $meetings = Meeting::where('created_by', $userId)
             ->orderBy($sortBy, $sortDir)
             ->paginate($perPage);
 
@@ -46,8 +48,7 @@ class MeetingController extends Controller
     /** Show a single meeting (owner only). */
     public function show($meetingId)
     {
-        $meeting = Meeting::findOrFail($meetingId);
-        $this->authorizeOwner($meeting);
+        $meeting = $this->authorizeOwner($meetingId);
         return response()->json($meeting);
     }
 
@@ -61,7 +62,7 @@ class MeetingController extends Controller
         ]);
 
         $meeting = Meeting::create([
-            'created_by' => Auth::id(),
+            'created_by' => Auth::guard('sanctum')->id(),
             'title' => $data['title'],
             'scheduled_at' => $data['scheduled_at'],
             'duration_minutes' => $data['duration_minutes'],
@@ -71,18 +72,13 @@ class MeetingController extends Controller
 
         event(new MeetingScheduled($meeting));
 
-        return response()->json([
-            'meeting' => $meeting,
-            'join_link' => url('/join/'.$meeting->join_code),
-        ], 201);
+        return response()->json($meeting, 201);
     }
 
     /** Mark a meeting as started (owner only) and dispatch MeetingStarted. */
     public function start($meetingId)
     {
-        $meeting = Meeting::findOrFail($meetingId);
-
-        $this->authorizeOwner($meeting);
+        $meeting = $this->authorizeOwner($meetingId);
         if ($meeting->status === 'started') {
             return response()->json(['error' => 'already_started', 'message' => 'Already started'], 200);
         }
@@ -97,9 +93,7 @@ class MeetingController extends Controller
     /** Update meeting details (owner only) and dispatch MeetingUpdated. */
     public function update($meetingId, Request $request)
     {
-        $meeting = Meeting::findOrFail($meetingId);
-
-        $this->authorizeOwner($meeting);
+        $meeting = $this->authorizeOwner($meetingId);
         $data = $request->validate([
             'title' => ['sometimes', 'string', 'max:255'],
             'scheduled_at' => ['sometimes', 'date'],
@@ -113,9 +107,7 @@ class MeetingController extends Controller
     /** Mark a meeting as ended (owner only) and dispatch MeetingEnded. */
     public function end($meetingId)
     {
-        $meeting = Meeting::findOrFail($meetingId);
-
-        $this->authorizeOwner($meeting);
+        $meeting = $this->authorizeOwner($meetingId);
         if ($meeting->status === 'ended') {
             return response()->json(['error' => 'already_ended', 'message' => 'Already ended'], 200);
         }
@@ -127,13 +119,17 @@ class MeetingController extends Controller
         return response()->json($meeting);
     }
 
-    private function authorizeOwner(Meeting $meeting): void
+    private function authorizeOwner($meetingId): Meeting
     {
-        if ($meeting->created_by !== Auth::id()) {
+        $meeting = Meeting::findOrFail($meetingId);
+
+        if ($meeting->created_by !== Auth::guard('sanctum')->id()) {
             throw new HttpResponseException(response()->json([
                 'error' => 'forbidden',
                 'message' => 'You do not own this meeting.',
             ], 403));
         }
+
+        return $meeting;
     }
 }

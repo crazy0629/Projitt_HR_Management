@@ -4,7 +4,6 @@ namespace App\Http\Controllers\VideoCall;
 
 use App\Models\VideoCall\Invitation;
 use App\Models\VideoCall\Meeting;
-use App\Models\User\User;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -14,9 +13,9 @@ use App\Events\InvitationResponded;
 
 class InvitationController extends Controller
 {
-    public function invite(Meeting $meeting, Request $request)
+    public function invite($meetingId, Request $request)
     {
-        $this->authorizeOwner($meeting);
+        $meeting = $this->authorizeOwner($meetingId);
 
         $data = $request->validate([
             'invitee_user_id' => ['nullable', 'exists:users,id'],
@@ -29,7 +28,7 @@ class InvitationController extends Controller
 
         $invitation = Invitation::create([
             'meeting_id' => $meeting->id,
-            'inviter_id' => Auth::id(),
+            'inviter_id' => Auth::guard('sanctum')->id(),
             'invitee_user_id' => $data['invitee_user_id'] ?? null,
             'invitee_email' => $data['invitee_email'] ?? null,
             'status' => 'pending',
@@ -39,25 +38,25 @@ class InvitationController extends Controller
         return response()->json($invitation, 201);
     }
 
-    public function accept(Invitation $invitation)
+    public function accept($invitationId)
     {
-        $this->ensureInvitationAccess($invitation);
+        $invitation = $this->ensureInvitationAccess($invitationId);
         $invitation->update(['status' => 'accepted', 'responded_at' => now()]);
         event(new InvitationResponded($invitation));
         return response()->json($invitation);
     }
 
-    public function reject(Invitation $invitation)
+    public function reject($invitationId)
     {
-        $this->ensureInvitationAccess($invitation);
+        $invitation = $this->ensureInvitationAccess($invitationId);
         $invitation->update(['status' => 'rejected', 'responded_at' => now()]);
         event(new InvitationResponded($invitation));
         return response()->json($invitation);
     }
 
-    public function propose(Invitation $invitation, Request $request)
+    public function propose($invitationId, Request $request)
     {
-        $this->ensureInvitationAccess($invitation);
+        $invitation = $this->ensureInvitationAccess($invitationId);
         $data = $request->validate([
             'proposed_time' => ['required', 'date'],
         ]);
@@ -66,18 +65,27 @@ class InvitationController extends Controller
         return response()->json($invitation);
     }
 
-    private function authorizeOwner(Meeting $meeting): void
+    private function authorizeOwner($meetingId): Meeting
     {
-        abort_if($meeting->created_by !== Auth::id(), 403, 'Forbidden');
+        $meeting = Meeting::findOrFail($meetingId);
+        abort_if($meeting->created_by !== Auth::guard('sanctum')->id(), 403, 'Forbidden');
+
+        return $meeting;
     }
 
-    private function ensureInvitationAccess(Invitation $invitation): void
+    private function ensureInvitationAccess($invitationId): Invitation
     {
+        $invitation = Invitation::with('meeting')->findOrFail($invitationId);
+
         // Allow invitee (by user id or email match with authenticated user) or meeting owner to act
-        $user = Auth::user();
-        $isOwner = $invitation->meeting->created_by === $user->id;
-        $isInvitee = ($invitation->invitee_user_id && $invitation->invitee_user_id === $user->id)
-            || ($invitation->invitee_email && $invitation->invitee_email === $user->email);
-        abort_unless($isOwner || $isInvitee, 403, 'Forbidden');
+        $user = Auth::guard('sanctum')->user();
+        $userId = Auth::guard('sanctum')->id();
+        $userEmail = $user?->email;
+        $isOwner = $invitation->meeting->created_by === $userId;
+        $isInviteeId = $invitation->invitee_user_id && $invitation->invitee_user_id === $userId;
+        $isInviteeEmail = $invitation->invitee_email && $invitation->invitee_email === $userEmail;
+        abort_unless($isOwner || $isInviteeId || $isInviteeEmail, 403, 'Forbidden');
+
+        return $invitation;
     }
 }

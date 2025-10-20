@@ -17,11 +17,13 @@ class RtcSignal extends Model
         'type',
         'payload',
         'acknowledged_at',
+        'delivered_at',
     ];
 
     protected $casts = [
         'payload' => 'array',
         'acknowledged_at' => 'datetime',
+        'delivered_at' => 'datetime',
     ];
 
     public function meeting()

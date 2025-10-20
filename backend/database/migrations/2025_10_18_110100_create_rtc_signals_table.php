@@ -15,6 +15,7 @@ return new class extends Migration {
             $table->string('type'); // offer|answer|candidate
             $table->json('payload');
             $table->dateTime('acknowledged_at')->nullable();
+            $table->dateTime('delivered_at')->nullable();
             $table->timestamps();
 
             $table->index(['meeting_id', 'to_user_id', 'id']);

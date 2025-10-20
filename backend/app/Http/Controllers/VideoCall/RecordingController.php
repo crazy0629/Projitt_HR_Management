@@ -18,9 +18,9 @@ use App\Events\RecordingEnded;
 class RecordingController extends Controller
 {
     /** List recordings with pagination/sorting. */
-    public function index(Meeting $meeting, Request $request)
+    public function index($meetingId, Request $request)
     {
-        $this->authorizeOwner($meeting);
+        $meeting = $this->authorizeOwner($meetingId);
         $data = $request->validate([
             'per_page' => ['sometimes', 'integer', 'min:1', 'max:100'],
             'sort_by' => ['sometimes', 'in:created_at,started_at,ended_at'],
@@ -36,9 +36,9 @@ class RecordingController extends Controller
     }
 
     /** Start a mock recording and dispatch RecordingStarted. */
-    public function start(Meeting $meeting)
+    public function start($meetingId)
     {
-        $this->authorizeOwner($meeting);
+        $meeting = $this->authorizeOwner($meetingId);
 
         // Snapshot accepted participants (emails or user ids)
         $participants = $meeting->invitations()
@@ -58,9 +58,9 @@ class RecordingController extends Controller
     }
 
     /** End the latest active mock recording and dispatch RecordingEnded. */
-    public function end(Meeting $meeting)
+    public function end($meetingId)
     {
-        $this->authorizeOwner($meeting);
+        $meeting = $this->authorizeOwner($meetingId);
         $rec = $meeting->recordings()->whereNull('ended_at')->latest()->first();
         if (!$rec) {
             return response()->json(['error' => 'no_active_recording', 'message' => 'No active recording'], 404);
@@ -78,10 +78,27 @@ class RecordingController extends Controller
     }
 
     /** Download the mock recording file (owner only). */
-    public function download(Recording $recording)
+    public function download($recordingId)
     {
+        $recording = Recording::with('meeting')->find($recordingId);
+
+        if (!$recording) {
+            return response()->json([
+                'error' => 'recording_not_found',
+                'message' => 'Recording not found.',
+            ], 404);
+        }
+
         $meeting = $recording->meeting;
-        $this->authorizeOwner($meeting);
+
+        if (!$meeting) {
+            return response()->json([
+                'error' => 'meeting_missing',
+                'message' => 'Recording is not linked to a meeting.',
+            ], 404);
+        }
+
+        $this->authorizeOwner($meeting->id);
 
         if (!$recording->file_path || !Storage::disk('local')->exists($recording->file_path)) {
             return response()->json(['error' => 'file_unavailable', 'message' => 'File not available'], 404);
@@ -89,13 +106,24 @@ class RecordingController extends Controller
         return Storage::disk('local')->download($recording->file_path, basename($recording->file_path));
     }
 
-    private function authorizeOwner(Meeting $meeting): void
+    private function authorizeOwner($meetingId): Meeting
     {
-        if ($meeting->created_by !== Auth::id()) {
+        $meeting = Meeting::find($meetingId);
+
+        if (!$meeting) {
+            throw new HttpResponseException(response()->json([
+                'error' => 'meeting_not_found',
+                'message' => 'Meeting not found for this recording.',
+            ], 404));
+        }
+
+        if ($meeting->created_by !== Auth::guard('sanctum')->id()) {
             throw new HttpResponseException(response()->json([
                 'error' => 'forbidden',
                 'message' => 'You do not own this meeting.',
             ], 403));
         }
+
+        return $meeting;
     }
 }
