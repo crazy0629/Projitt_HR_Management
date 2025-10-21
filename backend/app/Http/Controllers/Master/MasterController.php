@@ -21,6 +21,7 @@ class MasterController extends Controller
         $object->name = $request->filled('name') ? $request->input('name') : null;
         $object->description = $request->filled('description') ? $request->input('description') : null;
         $object->type_id = $request->filled('type_id') ? $request->input('type_id') : null;
+        $object->parent_id = $request->filled('parent_id') ? $request->input('parent_id') : null;
         $object->created_by = Auth::id();
         $object->save();
 
@@ -36,6 +37,7 @@ class MasterController extends Controller
         $object = Master::find($request->input('id'));
         $object->name = $request->filled('name') ? $request->input('name') : $object->name;
         $object->description = $request->filled('description') ? $request->input('description') : $object->description;
+        $object->parent_id = $request->filled('parent_id') ? $request->input('parent_id') : null;
         $object->save();
 
         $object = Master::find($request->input('id'));

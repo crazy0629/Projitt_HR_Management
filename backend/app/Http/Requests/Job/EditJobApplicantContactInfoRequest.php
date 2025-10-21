@@ -33,8 +33,8 @@ class EditJobApplicantContactInfoRequest extends FormRequest
             'zip_code' => 'required|string|max:20',
             'country' => 'required|string|max:100',
 
-            'contact_code' => 'required|string|max:10',
-            'contact_no' => 'required|string|max:20',
+            'contact_code'  => 'required|string|max:10',
+            'contact_number'    => 'required|string|max:20',
 
             'job_id' => [
                 'required',

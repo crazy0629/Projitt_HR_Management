@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Job;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Job\AddJobDetailRequest;
 use App\Http\Requests\Job\ChangeStatusRequest;
+use App\Http\Requests\Job\DeleteJobRequest;
+use App\Http\Requests\Job\DuplicateJobRequest;
 use App\Http\Requests\Job\EditJobDescriptionRequest;
 use App\Http\Requests\Job\EditJobDetailRequest;
 use App\Http\Requests\Job\EditJobMediaRequest;
@@ -183,14 +185,55 @@ class JobController extends Controller
     public function changeStatus(ChangeStatusRequest $request)
     {
 
-        $job = Job::findOrFail($request->input('id'));
-        $job->status = $request->input('status');
-        $job->updated_by = Auth::id();
+        $ids = $request->input('ids');
+
+        Job::whereIn('id', $ids)
+            ->whereNull('deleted_at')
+            ->update([
+                'status' => $request->input('status'),
+                'updated_by' => Auth::id(),
+                'updated_at' => now(),
+            ]);
+
+        // $job = Job::singleObject($job->id);
+        return $this->sendSuccess(null, config('messages.success'));
+
+    }
+
+    public function duplicateJob($id)
+    {
+        // Get the existing job
+        $existingJob = Job::findOrFail($id);
+    
+        if (!$existingJob) {
+            return $this->sendError('Job not found', []);
+        }
+
+        // Create a duplicate
+        $job = $existingJob->replicate();
+    
+        // Reset any fields you want different in the new copy
+        $job->status = 'open';
+        $job->created_by = Auth::id();
+        $job->created_at = now();
+        $job->updated_at = now();
+    
+        // Save the new job
         $job->save();
-
+    
+        // Fetch the full object (if you have relationships to load)
         $job = Job::singleObject($job->id);
-
+    
         return $this->sendSuccess($job, config('messages.success'));
+    }
 
+    public function delete(DeleteJobRequest $request): JsonResponse {
+
+        $object = Job::whereIn('id', $request->input('ids'))->update([
+            'deleted_by' => Auth::id(),
+            'deleted_at' => now(),
+        ]);
+
+        return successResponse(config('messages.success'), $object, 200);
     }
 }

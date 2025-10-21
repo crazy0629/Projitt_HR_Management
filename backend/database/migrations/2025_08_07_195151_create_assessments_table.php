@@ -20,6 +20,7 @@ return new class extends Migration
             $table->integer('time_duration')->comment('Time duration in minutes');
             $table->unsignedTinyInteger('type_id')->comment('1 = Psychometric, 2 = Coding');
             $table->integer('points')->default(0);
+            $table->enum('status', ['draft', 'open', 'closed', 'hold'])->default('draft');
 
             $table->foreignId('created_by')->nullable()->constrained('users')->onUpdate('restrict')->onDelete('cascade');
             $table->foreignId('updated_by')->nullable()->constrained('users')->onUpdate('restrict')->onDelete('cascade');

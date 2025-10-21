@@ -20,6 +20,7 @@ class Assessment extends Model
         'created_by',
         'updated_by',
         'deleted_by',
+        'status'
     ];
 
     protected $casts = [

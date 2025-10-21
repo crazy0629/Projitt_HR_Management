@@ -18,5 +18,8 @@ return function () {
     require base_path('routes/promotions-succession.php');
     Route::prefix('talent')->group(base_path('routes/talent-management.php'));
     require base_path('routes/manager-reviews.php');
-
+    Route::prefix('web-public')->group(base_path('routes/web_public.php'));
+    Route::prefix('employee')->group(base_path('routes/employee.php'));
+    Route::prefix('team')->group(base_path('routes/team.php'));
+    
 };

@@ -42,8 +42,14 @@ class AddInterviewRequest extends FormRequest
             'message' => 'nullable|string',
 
             // Separate date & time (always required per your migration)
-            'date' => 'required_if:schedule_type,propose_time|date',
-            'time' => 'required_if:schedule_type,propose_time|date_format:H:i',
+            'date'                => 'required_if:schedule_type,propose_time|date',
+            'time'                => 'required_if:schedule_type,propose_time|date_format:H:i',
+
+            // ✅ restrict status values
+            'status'              => [
+                'nullable',
+                Rule::in(['review', 'screen', 'test', 'rejected', 'selected', 'hired', 'cancel']),
+            ],
 
         ];
     }
