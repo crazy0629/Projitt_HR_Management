@@ -1,0 +1,10 @@
+{
+  "extends": ["next/core-web-vitals", "plugin:prettier/recommended"],
+  "rules": {
+    "prettier/prettier": ["error"],
+    "quotes": ["error", "single"],
+    "semi": ["error", "always"],
+    "no-unused-vars": "warn",
+    "no-mixed-spaces-and-tabs": "error"
+  }
+}

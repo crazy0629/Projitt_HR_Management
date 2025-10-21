@@ -1,0 +1,19 @@
+/* Tailwind Core */
+@import 'tailwindcss';
+
+/* ReUI Configs */
+@import './config.reui.css';
+
+/** Global Styles **/
+
+/* Metronic Components  */
+@import './components/image-input.css';
+@import './components/apexcharts.css';
+@import './components/leaflet.css';
+@import './components/rating.css';
+@import './components/image-input.css';
+@import './components/scrollable.css';
+@import './components/others.css';
+
+/* Demos */
+@import './demos/demo1.css';
