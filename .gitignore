@@ -1,0 +1,67 @@
+# Laravel core
+/vendor
+/node_modules
+/public/storage
+/storage/*.key
+.env
+.env.*
+.phpunit.result.cache
+Homestead.yaml
+Homestead.json
+/.idea
+/.vscode
+/.phpunit.result.cache
+
+# Laravel specific
+/storage/app/public
+/storage/framework/cache/data
+/storage/logs
+/storage/debugbar
+
+# Laravel Sail
+docker-compose.override.yml
+
+# NPM/Yarn
+npm-debug.log
+yarn-debug.log*
+yarn-error.log*
+
+# Composer
+composer.lock
+
+# OS and IDE junk
+.DS_Store
+Thumbs.db
+*.log
+*.sublime-project
+*.sublime-workspace
+
+# JetBrains / PhpStorm
+.idea/
+
+# VS Code
+.vscode/
+
+# Laravel Telescope
+storage/telescope
+
+# Laravel Horizon
+horizon.log
+
+# PHPUnit coverage
+coverage/
+
+# Laravel Mix
+/public/hot
+/public/mix-manifest.json
+/public/css
+/public/js
+
+# Ignored tests and backups
+tests/_output/
+tests/_support/_generated/
+
+# Misc
+*.bak
+*.tmp
+*.swp
