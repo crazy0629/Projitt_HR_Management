@@ -7,6 +7,9 @@ use App\Http\Requests\Applicant\ChangeApplicantEmail;
 use App\Http\Requests\Job\EditJobApplicantContactInfoRequest;
 use App\Http\Requests\Job\EditJobApplicantCvAndCoverRequest;
 use App\Http\Requests\Job\EditJobApplicantInfoRequest;
+use App\Http\Requests\Job\GetJobApplicantRequest;
+use App\Http\Requests\Job\RejectJobApplicantRequest;
+use App\Http\Requests\Job\UpdateCurrentStage;
 use App\Http\Requests\Job\UpdateJobApplicantStatusRequest;
 use App\Models\Country\Country;
 use App\Models\Job\Job;
@@ -58,7 +61,7 @@ class JobApplicantController extends Controller
                 'zip_code',
                 'country',
                 'contact_code',
-                'contact_no',
+                'contact_number'
             ]);
             $jobApplicantData['updated_by'] = \Illuminate\Support\Facades\Auth::guard('sanctum')->id() ?? auth()->id();
             $jobApplicant->fill($jobApplicantData)->save();
@@ -181,6 +184,35 @@ class JobApplicantController extends Controller
     }
 
     /**
+     * get applicant jobs.
+     */
+    public function getJobsApplicant(GetJobApplicantRequest $request): JsonResponse
+    {
+        $jobId = $request->input('job_id');
+
+        $query = DB::table('job_applicants as ja')
+            ->join('users as u', function ($join) {
+                $join->on('ja.applicant_id', '=', 'u.id')
+                    ->whereNull('u.deleted_at');
+            })
+            ->where('ja.job_id', $jobId)
+            ->whereNull('ja.deleted_at')
+            ->select(
+                'ja.id',
+                'ja.applicant_id',
+                'ja.created_at',
+                'ja.status',
+                'u.first_name',
+                'u.middle_name',
+                'u.last_name',
+                'u.uuid'
+            );
+
+        $result = $this->getData($query, $request->input('pagination'), $request->input('per_page'), $request->input('page'));
+        return $this->sendSuccess($result, config('messages.success'));
+    }
+
+    /**
      * change email address.
      */
     public function changeEmail(ChangeApplicantEmail $request): JsonResponse
@@ -201,4 +233,40 @@ class JobApplicantController extends Controller
 
         return $this->sendSuccess(null, 'Email updated successfully.');
     }
+
+
+    public function rejectJobApplicant(RejectJobApplicantRequest $request): JsonResponse
+    {
+        $ids = $request->input('applicant_ids');
+
+        DB::table('job_applicants')
+            ->whereIn('id', $ids)
+            ->whereNull('deleted_at')
+            ->update([
+                'status' => 'rejected',
+                'updated_at' => now(),
+            ]);
+
+        return $this->sendSuccess(null, 'Applicants rejected successfully.');
+
+    }
+    
+    public function UpdateCurrentStage(UpdateCurrentStage $request): JsonResponse {
+
+        $application = JobApplicant::where('applicant_id', $request->applicant_id)
+            ->where('job_id', $request->job_id)
+            ->whereNull('deleted_at') // keep only if you use soft deletes
+            ->first();
+    
+        if (!$application) {
+            return $this->sendError('Job application not found for this applicant and job.');
+        }
+    
+        $application->current_job_stage_id = $request->current_job_stage_id;
+        $application->save();
+    
+        return $this->sendSuccess($application, 'Current stage updated successfully.');
+    }
+    
+
 }

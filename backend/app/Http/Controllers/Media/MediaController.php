@@ -6,6 +6,7 @@ use App\Helpers\Helper;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Media\AddMediaRequest;
 use App\Http\Requests\Media\DeleteMediaRequest;
+use App\Http\Requests\Media\GetAllMedia;
 use App\Models\Media\Media;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
@@ -84,4 +85,13 @@ class MediaController extends Controller
 
         return successResponse(config('messages.success'), $object, 200);
     }
+
+
+    public function listAllWithFilters(GetAllMedia $request): JsonResponse {
+
+        $data = Media::filterData($request);
+        $data = getData($data, $request->input('pagination'), $request->input('per_page'), $request->input('page'));
+        return successResponse(config('messages.success'), $data, 200);
+    }
+
 }

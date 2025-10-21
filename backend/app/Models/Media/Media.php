@@ -23,4 +23,18 @@ class Media extends Model
 
         return Media::select($keys)->find($mediaId);
     }
+
+    public static function filterData($request){
+
+        $filteredData = self::select('id', 'unique_name', 'thumb_size', 'medium_size', 'base_url', 'original_name', 'title', 'extension', 'size', 'alt_tag', 'folder_path');
+
+        if (!empty($request->input('name'))) {
+            $filteredData = $filteredData->Where('name', 'LIKE', '%' . $request->input('name') . '%');
+        }
+        if (!empty($request->input('parent_id'))) {
+            $filteredData = $filteredData->Where('parent_id', $request->input('parent_id'));
+        }
+        
+        return $filteredData;
+    }
 }

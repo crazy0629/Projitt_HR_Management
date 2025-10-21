@@ -57,6 +57,7 @@ class Job extends Model
         'skills',
         'media',
         'questions',
+        'applicant_count'
     ];
 
     // Relationships
@@ -94,6 +95,11 @@ class Job extends Model
     public function getQuestionsAttribute()
     {
         return Question::whereIn('id', $this->question_ids ?? [])->get();
+    }
+
+    public function getApplicantCountAttribute()
+    {
+        return JobApplicant::where('job_id', $this->id)->count();
     }
 
     /**
@@ -141,7 +147,11 @@ class Job extends Model
             $filteredData->where('state', $request->input('state'));
         }
 
-        if (! empty($request->input('salary_from'))) {
+        if (!empty($request->input('status'))) {
+            $filteredData->where('status', $request->input('status'));
+        }
+
+        if (!empty($request->input('salary_from'))) {
             $filteredData->where('salary_from', '>=', $request->input('salary_from'));
         }
 
@@ -182,10 +192,10 @@ class Job extends Model
      */
     public static function intellisenseSearch($request)
     {
-        $query = self::select('id', 'title');
-
-        if (! empty($request->input('title'))) {
-            $query->where('title', 'LIKE', '%'.$request->input('title').'%');
+        $query = self::select('id', 'title', 'description');
+    
+        if (!empty($request->input('title'))) {
+            $query->where('title', 'LIKE', '%' . $request->input('title') . '%');
         }
 
         return $query->limit(50)->get()->makeHidden(['skills', 'media', 'questions']);

@@ -28,6 +28,7 @@ class JobApplicant extends Model
         'linkedin_link',
         'portfolio_link',
         'cv_media_id',
+        'current_job_stage_id',
         'cover_media_id',
         'skill_ids',
         'other_links',

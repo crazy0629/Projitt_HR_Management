@@ -21,7 +21,8 @@ class ChangeStatusRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'id' => [
+           'ids' => ['required', 'array'],
+            'ids.*' => [
                 'required',
                 Rule::exists('jobs', 'id')->whereNull('deleted_at'),
             ],

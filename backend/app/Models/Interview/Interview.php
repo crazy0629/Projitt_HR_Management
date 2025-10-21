@@ -2,6 +2,8 @@
 
 namespace App\Models\Interview;
 
+use App\Models\Job\Job;
+use App\Models\User\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
@@ -34,12 +36,22 @@ class Interview extends Model
         // keep 'time' as string; cast to datetime with a format if you prefer
     ];
 
+    public function applicant()
+    {
+        return $this->belongsTo(User::class, 'applicant_id');
+    }
+
+    public function job()
+    {
+        return $this->belongsTo(Job::class, 'job_id');
+    }
+
     /* -------------------------
      | Filters
      * ------------------------*/
     public static function filterData($request)
     {
-        $filtered = self::query();
+        $filtered = self::with('applicant','job');
 
         if ($request->filled('schedule_type')) {
             $filtered->where('schedule_type', $request->input('schedule_type'));

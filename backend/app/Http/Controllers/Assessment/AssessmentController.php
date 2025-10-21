@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Assessment;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Assessment\AddAssessmentRequest;
+use App\Http\Requests\Assessment\ChangeAssessmentStatusRequest;
+use App\Http\Requests\Assessment\EditAssessmentRequest;
 use App\Http\Requests\Assessment\DeleteAssessmentRequest;
 use App\Http\Requests\Assessment\EditAssessmentRequest;
 use App\Http\Requests\Assessment\ListWithFilterAssessmentRequest;
@@ -130,5 +132,22 @@ class AssessmentController extends Controller
         $object = getData($object, $request->input('pagination'), $request->input('per_page'), $request->input('page'));
 
         return successResponse(config('messages.success'), $object, 200);
+    }
+
+    public function changeStatus(ChangeAssessmentStatusRequest $request){
+
+        $ids = $request->input('ids');
+
+        Assessment::whereIn('id', $ids)
+            ->whereNull('deleted_at')
+            ->update([
+                'status' => $request->input('status'),
+                'updated_by' => Auth::id(),
+                'updated_at' => now(),
+            ]);
+
+        // $job = Job::singleObject($job->id);
+        return $this->sendSuccess(null, config('messages.success'));
+
     }
 }

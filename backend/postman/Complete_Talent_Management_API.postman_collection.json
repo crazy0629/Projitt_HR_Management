@@ -69,6 +69,188 @@
             "name": "Learning Paths",
             "item": [
                 {
+                    "name": "Course Library",
+                    "item": [
+                        {
+                            "name": "List Courses",
+                            "request": {
+                                "method": "GET",
+                                "header": [
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{base_url}}/learning/courses?category=1&status=active",
+                                    "host": ["{{base_url}}"],
+                                    "path": ["learning", "courses"],
+                                    "query": [
+                                        {
+                                            "key": "category",
+                                            "value": "1",
+                                            "description": "Filter by category ID"
+                                        },
+                                        {
+                                            "key": "status",
+                                            "value": "active",
+                                            "description": "Filter by status"
+                                        }
+                                    ]
+                                },
+                                "description": "Get all courses with filtering options"
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "Get Categories",
+                            "request": {
+                                "method": "GET",
+                                "header": [
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{base_url}}/learning/courses/categories",
+                                    "host": ["{{base_url}}"],
+                                    "path": [
+                                        "learning",
+                                        "courses",
+                                        "categories"
+                                    ]
+                                },
+                                "description": "Get all course categories"
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "Create External Course",
+                            "request": {
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n    \"title\": \"React Fundamentals\",\n    \"description\": \"Learn the basics of React development\",\n    \"category_id\": 1,\n    \"url\": \"https://reactjs.org/tutorial\",\n    \"duration_hours\": 8,\n    \"difficulty_level\": \"beginner\",\n    \"tags\": [\"react\", \"javascript\", \"frontend\"]\n}\n"
+                                },
+                                "url": {
+                                    "raw": "{{base_url}}/learning/courses/external",
+                                    "host": ["{{base_url}}"],
+                                    "path": ["learning", "courses", "external"]
+                                },
+                                "description": "Create a new external course with URL link"
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "Create Upload Course",
+                            "request": {
+                                "method": "POST",
+                                "header": [],
+                                "body": {
+                                    "mode": "formdata",
+                                    "formdata": [
+                                        {
+                                            "key": "title",
+                                            "value": "Advanced JavaScript Concepts",
+                                            "type": "text"
+                                        },
+                                        {
+                                            "key": "description",
+                                            "value": "Deep dive into advanced JavaScript concepts",
+                                            "type": "text"
+                                        },
+                                        {
+                                            "key": "category_id",
+                                            "value": "1",
+                                            "type": "text"
+                                        },
+                                        {
+                                            "key": "file",
+                                            "type": "file",
+                                            "src": "/C:/Users/MUmai/Downloads/dev/frontend/public/1.pdf"
+                                        },
+                                        {
+                                            "key": "duration_hours",
+                                            "value": "12",
+                                            "type": "text"
+                                        },
+                                        {
+                                            "key": "difficulty_level",
+                                            "value": "advanced",
+                                            "type": "text"
+                                        }
+                                    ]
+                                },
+                                "url": {
+                                    "raw": "{{base_url}}/learning/courses/upload",
+                                    "host": ["{{base_url}}"],
+                                    "path": ["learning", "courses", "upload"]
+                                },
+                                "description": "Create a new course with file upload"
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "Get Course Details",
+                            "request": {
+                                "method": "GET",
+                                "header": [
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{base_url}}/learning/courses/{{course_id}}",
+                                    "host": ["{{base_url}}"],
+                                    "path": [
+                                        "learning",
+                                        "courses",
+                                        "{{course_id}}"
+                                    ]
+                                },
+                                "description": "Get detailed information about a specific course"
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "Update Course Status",
+                            "request": {
+                                "method": "PATCH",
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n    \"status\": \"active\"\n}"
+                                },
+                                "url": {
+                                    "raw": "{{base_url}}/learning/courses/{{course_id}}/status",
+                                    "host": ["{{base_url}}"],
+                                    "path": [
+                                        "learning",
+                                        "courses",
+                                        "{{course_id}}",
+                                        "status"
+                                    ]
+                                },
+                                "description": "Update course status (active, inactive, archived)"
+                            },
+                            "response": []
+                        }
+                    ]
+                },
+                {
                     "name": "Learning Path Management",
                     "item": [
                         {
@@ -185,7 +367,7 @@
                                 ],
                                 "body": {
                                     "mode": "raw",
-                                    "raw": "{\n    \"courses\": [\n        {\n            \"course_id\": 1,\n            \"order_index\": 1,\n            \"is_required\": true\n        },\n        {\n            \"course_id\": 2,\n            \"order_index\": 2,\n            \"is_required\": true\n        },\n        {\n            \"course_id\": 3,\n            \"order_index\": 3,\n            \"is_required\": true\n        }\n    ]\n}"
+                                    "raw": "{\n    \"courses\": [\n        {\n            \"course_id\": 1,\n            \"order_index\": 1,\n            \"is_required\": true\n        },\n        {\n            \"course_id\": 2,\n            \"order_index\": 2,\n            \"is_required\": true\n        }\n    ]\n}"
                                 },
                                 "url": {
                                     "raw": "{{base_url}}/learning/learning-paths/{{learning_path_id}}/courses",
@@ -309,188 +491,6 @@
                                     ]
                                 },
                                 "description": "Get all assignments for a learning path"
-                            },
-                            "response": []
-                        }
-                    ]
-                },
-                {
-                    "name": "Course Library",
-                    "item": [
-                        {
-                            "name": "List Courses",
-                            "request": {
-                                "method": "GET",
-                                "header": [
-                                    {
-                                        "key": "Accept",
-                                        "value": "application/json"
-                                    }
-                                ],
-                                "url": {
-                                    "raw": "{{base_url}}/learning/courses?category=1&status=active",
-                                    "host": ["{{base_url}}"],
-                                    "path": ["learning", "courses"],
-                                    "query": [
-                                        {
-                                            "key": "category",
-                                            "value": "1",
-                                            "description": "Filter by category ID"
-                                        },
-                                        {
-                                            "key": "status",
-                                            "value": "active",
-                                            "description": "Filter by status"
-                                        }
-                                    ]
-                                },
-                                "description": "Get all courses with filtering options"
-                            },
-                            "response": []
-                        },
-                        {
-                            "name": "Get Categories",
-                            "request": {
-                                "method": "GET",
-                                "header": [
-                                    {
-                                        "key": "Accept",
-                                        "value": "application/json"
-                                    }
-                                ],
-                                "url": {
-                                    "raw": "{{base_url}}/learning/courses/categories",
-                                    "host": ["{{base_url}}"],
-                                    "path": [
-                                        "learning",
-                                        "courses",
-                                        "categories"
-                                    ]
-                                },
-                                "description": "Get all course categories"
-                            },
-                            "response": []
-                        },
-                        {
-                            "name": "Create External Course",
-                            "request": {
-                                "method": "POST",
-                                "header": [
-                                    {
-                                        "key": "Content-Type",
-                                        "value": "application/json"
-                                    }
-                                ],
-                                "body": {
-                                    "mode": "raw",
-                                    "raw": "{\n    \"title\": \"React Fundamentals\",\n    \"description\": \"Learn the basics of React development\",\n    \"category_id\": 1,\n    \"url\": \"https://reactjs.org/tutorial\",\n    \"duration_hours\": 8,\n    \"difficulty_level\": \"beginner\",\n    \"tags\": [\"react\", \"javascript\", \"frontend\"]\n}\n"
-                                },
-                                "url": {
-                                    "raw": "{{base_url}}/learning/courses/external",
-                                    "host": ["{{base_url}}"],
-                                    "path": ["learning", "courses", "external"]
-                                },
-                                "description": "Create a new external course with URL link"
-                            },
-                            "response": []
-                        },
-                        {
-                            "name": "Create Upload Course",
-                            "request": {
-                                "method": "POST",
-                                "header": [],
-                                "body": {
-                                    "mode": "formdata",
-                                    "formdata": [
-                                        {
-                                            "key": "title",
-                                            "value": "Advanced JavaScript Concepts",
-                                            "type": "text"
-                                        },
-                                        {
-                                            "key": "description",
-                                            "value": "Deep dive into advanced JavaScript concepts",
-                                            "type": "text"
-                                        },
-                                        {
-                                            "key": "category_id",
-                                            "value": "1",
-                                            "type": "text"
-                                        },
-                                        {
-                                            "key": "file",
-                                            "type": "file",
-                                            "src": "/C:/Users/MUmai/Downloads/MSCI-2113 Introduction Entrepreneurship - Shafiq.pdf"
-                                        },
-                                        {
-                                            "key": "duration_hours",
-                                            "value": "12",
-                                            "type": "text"
-                                        },
-                                        {
-                                            "key": "difficulty_level",
-                                            "value": "advanced",
-                                            "type": "text"
-                                        }
-                                    ]
-                                },
-                                "url": {
-                                    "raw": "{{base_url}}/learning/courses/upload",
-                                    "host": ["{{base_url}}"],
-                                    "path": ["learning", "courses", "upload"]
-                                },
-                                "description": "Create a new course with file upload"
-                            },
-                            "response": []
-                        },
-                        {
-                            "name": "Get Course Details",
-                            "request": {
-                                "method": "GET",
-                                "header": [
-                                    {
-                                        "key": "Accept",
-                                        "value": "application/json"
-                                    }
-                                ],
-                                "url": {
-                                    "raw": "{{base_url}}/learning/courses/{{course_id}}",
-                                    "host": ["{{base_url}}"],
-                                    "path": [
-                                        "learning",
-                                        "courses",
-                                        "{{course_id}}"
-                                    ]
-                                },
-                                "description": "Get detailed information about a specific course"
-                            },
-                            "response": []
-                        },
-                        {
-                            "name": "Update Course Status",
-                            "request": {
-                                "method": "PATCH",
-                                "header": [
-                                    {
-                                        "key": "Content-Type",
-                                        "value": "application/json"
-                                    }
-                                ],
-                                "body": {
-                                    "mode": "raw",
-                                    "raw": "{\n    \"status\": \"active\"\n}"
-                                },
-                                "url": {
-                                    "raw": "{{base_url}}/learning/courses/{{course_id}}/status",
-                                    "host": ["{{base_url}}"],
-                                    "path": [
-                                        "learning",
-                                        "courses",
-                                        "{{course_id}}",
-                                        "status"
-                                    ]
-                                },
-                                "description": "Update course status (active, inactive, archived)"
                             },
                             "response": []
                         }

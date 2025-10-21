@@ -20,9 +20,9 @@ return new class extends Migration
             $table->foreignId('job_id')->nullable()->constrained('jobs')->onUpdate('restrict')->onDelete('cascade');
             $table->foreignId('applicant_id')->nullable()->constrained('users')->onUpdate('restrict')->onDelete('cascade');
             $table->text('message')->nullable();
-            $table->enum('status', ['review', 'screen', 'test', 'rejected', 'selected', 'hired'])->default('review');
-            $table->date('date')->comment('Scheduled date');
-            $table->time('time')->comment('Scheduled time');
+            $table->enum('status', ['review', 'screen', 'test', 'rejected', 'selected', 'hired', 'cancel'])->default('review');
+            $table->date('date')->nullable()->comment('Scheduled date');
+            $table->time('time')->nullable()->comment('Scheduled time');
 
             $table->foreignId('created_by')->nullable()->constrained('users')->onDelete('cascade');
             $table->foreignId('updated_by')->nullable()->constrained('users')->onDelete('cascade');

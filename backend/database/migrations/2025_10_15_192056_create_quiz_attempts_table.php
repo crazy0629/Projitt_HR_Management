@@ -21,7 +21,7 @@ return new class extends Migration
             $table->json('answers_json'); // Student's answers
             $table->integer('time_taken_seconds')->nullable(); // Time taken for the quiz
             $table->timestamp('started_at')->nullable();
-            $table->timestamp('submitted_at');
+            $table->timestamp('submitted_at')->nullable();
             $table->timestamps();
 
             // Unique constraint for each attempt
