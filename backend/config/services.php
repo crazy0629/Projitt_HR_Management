@@ -42,4 +42,17 @@ return [
         ],
     ],
 
+    'code_executor' => [
+        'base_url' => env('CODE_EXECUTOR_BASE_URL'),
+        'api_key' => env('CODE_EXECUTOR_API_KEY'),
+        'timeout' => env('CODE_EXECUTOR_TIMEOUT', 20),
+    ],
+
+    'openai' => [
+        'base_url' => env('OPENAI_BASE_URL', 'https://api.openai.com/v1'),
+        'api_key' => env('OPENAI_API_KEY'),
+        'assessment_model' => env('OPENAI_ASSESSMENT_MODEL', 'gpt-4o-mini'),
+        'timeout' => env('OPENAI_TIMEOUT', 30),
+    ],
+
 ];

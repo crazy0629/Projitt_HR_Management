@@ -1,11 +1,14 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\VideoCall\MeetingController;
-use App\Http\Controllers\VideoCall\InvitationController;
-use App\Http\Controllers\VideoCall\RecordingController;
+use App\Http\Controllers\Coding\CodingAssessmentAssignmentController;
+use App\Http\Controllers\Coding\CodingAssessmentController;
+use App\Http\Controllers\Coding\CodingSubmissionController;
 use App\Http\Controllers\VideoCall\AiNotesController;
+use App\Http\Controllers\VideoCall\InvitationController;
+use App\Http\Controllers\VideoCall\MeetingController;
 use App\Http\Controllers\VideoCall\PresenceController;
+use App\Http\Controllers\VideoCall\RecordingController;
 use App\Http\Controllers\VideoCall\RtcSignalController;
 use App\Http\Controllers\VideoCall\TokenController;
 
@@ -45,4 +48,21 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/meetings/{meeting}/rtc/ack', [RtcSignalController::class, 'ack']);
 
     Route::post('/video/token', TokenController::class);
+
+    Route::prefix('coding')->group(function () {
+        Route::get('/assessments', [CodingAssessmentController::class, 'index']);
+        Route::post('/assessments', [CodingAssessmentController::class, 'store']);
+        Route::get('/assessments/{assessment}', [CodingAssessmentController::class, 'show']);
+        Route::put('/assessments/{assessment}', [CodingAssessmentController::class, 'update']);
+        Route::delete('/assessments/{assessment}', [CodingAssessmentController::class, 'destroy']);
+
+        Route::get('/assignments', [CodingAssessmentAssignmentController::class, 'index']);
+        Route::post('/assessments/{assessment}/assign', [CodingAssessmentAssignmentController::class, 'store']);
+        Route::get('/assignments/{assignment}', [CodingAssessmentAssignmentController::class, 'show']);
+
+        Route::get('/submissions', [CodingSubmissionController::class, 'index']);
+        Route::post('/assignments/{assignment}/submissions', [CodingSubmissionController::class, 'store']);
+        Route::get('/submissions/{submission}', [CodingSubmissionController::class, 'show']);
+        Route::post('/submissions/{submission}/review', [CodingSubmissionController::class, 'review']);
+    });
 });
