@@ -1,651 +1,649 @@
 {
-  "info": {
-    "_postman_id": "24125aec-3240-40aa-ae45-250e478970e7",
-    "name": "Coding Platform",
-    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-    "_exporter_id": "41082104"
-  },
-  "item": [
-    {
-      "name": "Assessments",
-      "item": [
+    "info": {
+        "_postman_id": "7886dead-7d58-4d72-afbc-cdd53be1474b",
+        "name": "Coding Platform",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+        "_exporter_id": "49241238",
+        "_collection_link": "https://projitt-hrm-team.postman.co/workspace/Projitt-HRM~c1cfe415-9afb-4456-a05d-791794799430/collection/49241238-7886dead-7d58-4d72-afbc-cdd53be1474b?action=share&source=collection_link&creator=49241238"
+    },
+    "item": [
         {
-          "name": "List Coding Assessments",
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "Accept",
-                "value": "application/json"
-              }
-            ],
-            "url": {
-              "raw": "{{base_url}}/coding/assessments?pagination=true&per_page=10",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "coding",
-                "assessments"
-              ],
-              "query": [
+            "name": "Assessments",
+            "item": [
                 {
-                  "key": "pagination",
-                  "value": "true"
+                    "name": "List Coding Assessments",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}coding/assessments?pagination=true&per_page=10",
+                            "host": [
+                                "{{base_url}}coding"
+                            ],
+                            "path": [
+                                "assessments"
+                            ],
+                            "query": [
+                                {
+                                    "key": "pagination",
+                                    "value": "true"
+                                },
+                                {
+                                    "key": "per_page",
+                                    "value": "10"
+                                }
+                            ]
+                        },
+                        "description": "Retrieve coding assessments with optional pagination filters."
+                    },
+                    "response": []
                 },
                 {
-                  "key": "per_page",
-                  "value": "10"
-                }
-              ]
-            },
-            "description": "Retrieve coding assessments with optional pagination filters."
-          },
-          "response": []
-        },
-        {
-          "name": "Create Coding Assessment",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test(\"Status code is 201\", function () {",
-                  "    pm.response.to.have.status(201);",
-                  "});",
-                  "",
-                  "const body = pm.response.json();",
-                  "const assessment = body?.data;",
-                  "",
-                  "pm.test(\"Assessment id is present\", function () {",
-                  "    pm.expect(assessment?.id, 'coding assessment id').to.exist;",
-                  "});",
-                  "",
-                  "if (assessment?.id) {",
-                  "    pm.environment.set('coding_assessment_id', assessment.id);",
-                  "    console.log('\u2705 Stored coding_assessment_id:', assessment.id);",
-                  "}",
-                  "",
-                  "const languages = Array.isArray(assessment?.languages) ? assessment.languages : [];",
-                  "const fallbackLanguage = 'python';",
-                  "let selectedLanguage = languages[0];",
-                  "if (typeof selectedLanguage !== 'string' || !selectedLanguage.trim()) {",
-                  "    selectedLanguage = fallbackLanguage;",
-                  "    console.warn('No languages returned; defaulting to', fallbackLanguage);",
-                  "}",
-                  "pm.environment.set('coding_submission_language', selectedLanguage);",
-                  "console.log('\u2705 Stored coding_submission_language:', selectedLanguage);",
-                  "",
-                  "const snippets = {",
-                  "    php: '<?php\\nfunction solution($input) {\\n    if (is_string($input)) {\\n        $decoded = json_decode($input, true);\\n        if (json_last_error() === JSON_ERROR_NONE) {\\n            $input = $decoded;\\n        }\\n    }\\n    if (!is_array($input)) {\\n        return 0;\\n    }\\n    return array_sum($input);\\n}\\n',",
-                  "    python: 'import json\\n\\ndef solution(input_data):\\n    if isinstance(input_data, str):\\n        try:\\n            input_data = json.loads(input_data)\\n        except json.JSONDecodeError:\\n            return 0\\n    if not isinstance(input_data, list):\\n        return 0\\n    return sum(input_data)\\n',",
-                  "    javascript: 'function solution(input) {\\n  if (typeof input === \\'string\\') {\\n    try {\\n      input = JSON.parse(input);\\n    } catch (error) {\\n      return 0;\\n    }\\n  }\\n  if (!Array.isArray(input)) {\\n    return 0;\\n  }\\n  return input.reduce((total, value) => total + Number(value || 0), 0);\\n}\\n'",
-                  "};",
-                  "const chosenLanguage = (pm.environment.get('coding_submission_language') || fallbackLanguage).toLowerCase();",
-                  "const snippet = snippets[chosenLanguage] || snippets[fallbackLanguage];",
-                  "pm.environment.set('coding_submission_source_code', snippet);",
-                  "console.log('\u2705 Stored coding_submission_source_code for', chosenLanguage);",
-                  ""
-                ]
-              }
-            }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n    \"title\": \"Backend Algorithm Challenge\",\n    \"description\": \"Assess algorithmic thinking with array tasks.\",\n    \"languages\": [\"php\", \"python\", \"javascript\"],\n    \"difficulty\": \"intermediate\",\n    \"time_limit_minutes\": 60,\n    \"max_score\": 100,\n    \"generate_with_ai\": false,\n    \"rubric\": {\n        \"correctness\": 0.7,\n        \"efficiency\": 0.2,\n        \"style\": 0.1\n    },\n    \"metadata\": {\n        \"tags\": [\"data_structures\", \"arrays\"],\n        \"source\": \"Recruitment Pipeline\"\n    },\n    \"test_cases\": [\n        {\n            \"name\": \"Sample Test\",\n            \"input\": \"[1,2,3]\",\n            \"expected_output\": \"6\",\n            \"weight\": 1,\n            \"is_hidden\": false,\n            \"timeout_seconds\": 5\n        },\n        {\n            \"name\": \"Large Input\",\n            \"input\": \"[5,5,5,5]\",\n            \"expected_output\": \"20\",\n            \"weight\": 2,\n            \"is_hidden\": true,\n            \"timeout_seconds\": 10\n        }\n    ]\n}"
-            },
-            "url": {
-              "raw": "{{base_url}}/coding/assessments",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "coding",
-                "assessments"
-              ]
-            },
-            "description": "Create a coding assessment with rubric, manual test cases, and optional AI generation toggles."
-          },
-          "response": []
-        },
-        {
-          "name": "Create Coding Assessment (AI Generated)",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test(\"Status code is 201\", function () {",
-                  "    pm.response.to.have.status(201);",
-                  "});",
-                  "",
-                  "const body = pm.response.json();",
-                  "const assessment = body?.data;",
-                  "",
-                  "pm.test(\"Assessment id is present\", function () {",
-                  "    pm.expect(assessment?.id, 'coding assessment id').to.exist;",
-                  "});",
-                  "",
-                  "if (assessment?.id) {",
-                  "    pm.environment.set('coding_assessment_id', assessment.id);",
-                  "    console.log('\u2705 Stored coding_assessment_id:', assessment.id);",
-                  "}",
-                  "",
-                  "const languages = Array.isArray(assessment?.languages) ? assessment.languages : [];",
-                  "const fallbackLanguage = 'python';",
-                  "let selectedLanguage = languages[0];",
-                  "if (typeof selectedLanguage !== 'string' || !selectedLanguage.trim()) {",
-                  "    selectedLanguage = fallbackLanguage;",
-                  "    console.warn('No languages returned; defaulting to', fallbackLanguage);",
-                  "}",
-                  "pm.environment.set('coding_submission_language', selectedLanguage);",
-                  "console.log('\u2705 Stored coding_submission_language:', selectedLanguage);",
-                  "",
-                  "const snippets = {",
-                  "    php: '<?php\\nfunction solution($input) {\\n    if (is_string($input)) {\\n        $decoded = json_decode($input, true);\\n        if (json_last_error() === JSON_ERROR_NONE) {\\n            $input = $decoded;\\n        }\\n    }\\n    if (!is_array($input)) {\\n        return 0;\\n    }\\n    return array_sum($input);\\n}\\n',",
-                  "    python: 'import json\\n\\ndef solution(input_data):\\n    if isinstance(input_data, str):\\n        try:\\n            input_data = json.loads(input_data)\\n        except json.JSONDecodeError:\\n            return 0\\n    if not isinstance(input_data, list):\\n        return 0\\n    return sum(input_data)\\n',",
-                  "    javascript: 'function solution(input) {\\n  if (typeof input === \\'string\\') {\\n    try {\\n      input = JSON.parse(input);\\n    } catch (error) {\\n      return 0;\\n    }\\n  }\\n  if (!Array.isArray(input)) {\\n    return 0;\\n  }\\n  return input.reduce((total, value) => total + Number(value || 0), 0);\\n}\\n'",
-                  "};",
-                  "const chosenLanguage = (pm.environment.get('coding_submission_language') || fallbackLanguage).toLowerCase();",
-                  "const snippet = snippets[chosenLanguage] || snippets[fallbackLanguage];",
-                  "pm.environment.set('coding_submission_source_code', snippet);",
-                  "console.log('\u2705 Stored coding_submission_source_code for', chosenLanguage);",
-                  ""
-                ]
-              }
-            }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n    \"title\": \"Graph Traversal Challenge\",\n    \"description\": \"Use AI to craft a graph traversal assessment with nuanced edge cases.\",\n    \"languages\": [\"python\"],\n    \"difficulty\": \"advanced\",\n    \"time_limit_minutes\": 90,\n    \"max_score\": 120,\n    \"generate_with_ai\": true,\n    \"generation_prompt\": \"Design a problem requiring BFS versus DFS analysis with tricky edge cases, weighted decisions, and at least one hidden stress test.\",\n    \"metadata\": {\n        \"tags\": [\"graphs\", \"search\"],\n        \"hiring_campaign\": \"Campus Hiring 2025\"\n    }\n}"
-            },
-            "url": {
-              "raw": "{{base_url}}/coding/assessments",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "coding",
-                "assessments"
-              ]
-            },
-            "description": "Create a coding assessment letting the platform request AI-generated test cases from the configured OpenAI model."
-          },
-          "response": []
-        },
-        {
-          "name": "Get Coding Assessment",
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "Accept",
-                "value": "application/json"
-              }
-            ],
-            "url": {
-              "raw": "{{base_url}}/coding/assessments/{{coding_assessment_id}}",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "coding",
-                "assessments",
-                "{{coding_assessment_id}}"
-              ]
-            },
-            "description": "Fetch a single coding assessment with its configured test cases."
-          },
-          "response": []
-        },
-        {
-          "name": "Update Coding Assessment",
-          "request": {
-            "method": "PUT",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n    \"difficulty\": \"advanced\",\n    \"time_limit_minutes\": 75,\n    \"max_score\": 120\n}"
-            },
-            "url": {
-              "raw": "{{base_url}}/coding/assessments/{{coding_assessment_id}}",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "coding",
-                "assessments",
-                "{{coding_assessment_id}}"
-              ]
-            },
-            "description": "Update key properties of a coding assessment."
-          },
-          "response": []
-        },
-        {
-          "name": "Delete Coding Assessment",
-          "request": {
-            "method": "DELETE",
-            "header": [
-              {
-                "key": "Accept",
-                "value": "application/json"
-              }
-            ],
-            "url": {
-              "raw": "{{base_url}}/coding/assessments/{{coding_assessment_id}}",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "coding",
-                "assessments",
-                "{{coding_assessment_id}}"
-              ]
-            },
-            "description": "Soft delete a coding assessment and its related test cases."
-          },
-          "response": []
-        }
-      ]
-    },
-    {
-      "name": "Assignments",
-      "item": [
-        {
-          "name": "List Coding Assignments",
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "Accept",
-                "value": "application/json"
-              }
-            ],
-            "url": {
-              "raw": "{{base_url}}/coding/assignments?status=pending",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "coding",
-                "assignments"
-              ],
-              "query": [
+                    "name": "Create Coding Assessment",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test(\"Status code is 201\", function () {",
+                                    "    pm.response.to.have.status(201);",
+                                    "});",
+                                    "",
+                                    "const body = pm.response.json();",
+                                    "const assessment = body?.data;",
+                                    "",
+                                    "pm.test(\"Assessment id is present\", function () {",
+                                    "    pm.expect(assessment?.id, 'coding assessment id').to.exist;",
+                                    "});",
+                                    "",
+                                    "if (assessment?.id) {",
+                                    "    pm.environment.set('coding_assessment_id', assessment.id);",
+                                    "    console.log('✅ Stored coding_assessment_id:', assessment.id);",
+                                    "}",
+                                    "",
+                                    "const languages = Array.isArray(assessment?.languages) ? assessment.languages : [];",
+                                    "const fallbackLanguage = 'python';",
+                                    "let selectedLanguage = languages[0];",
+                                    "if (typeof selectedLanguage !== 'string' || !selectedLanguage.trim()) {",
+                                    "    selectedLanguage = fallbackLanguage;",
+                                    "    console.warn('No languages returned; defaulting to', fallbackLanguage);",
+                                    "}",
+                                    "pm.environment.set('coding_submission_language', selectedLanguage);",
+                                    "console.log('✅ Stored coding_submission_language:', selectedLanguage);",
+                                    "",
+                                    "const snippets = {",
+                                    "    php: '<?php\\nfunction solution($input) {\\n    if (is_string($input)) {\\n        $decoded = json_decode($input, true);\\n        if (json_last_error() === JSON_ERROR_NONE) {\\n            $input = $decoded;\\n        }\\n    }\\n    if (!is_array($input)) {\\n        return 0;\\n    }\\n    return array_sum($input);\\n}\\n',",
+                                    "    python: 'import json\\n\\ndef solution(input_data):\\n    if isinstance(input_data, str):\\n        try:\\n            input_data = json.loads(input_data)\\n        except json.JSONDecodeError:\\n            return 0\\n    if not isinstance(input_data, list):\\n        return 0\\n    return sum(input_data)\\n',",
+                                    "    javascript: 'function solution(input) {\\n  if (typeof input === \\'string\\') {\\n    try {\\n      input = JSON.parse(input);\\n    } catch (error) {\\n      return 0;\\n    }\\n  }\\n  if (!Array.isArray(input)) {\\n    return 0;\\n  }\\n  return input.reduce((total, value) => total + Number(value || 0), 0);\\n}\\n'",
+                                    "};",
+                                    "const chosenLanguage = (pm.environment.get('coding_submission_language') || fallbackLanguage).toLowerCase();",
+                                    "const snippet = snippets[chosenLanguage] || snippets[fallbackLanguage];",
+                                    "pm.environment.set('coding_submission_source_code', snippet);",
+                                    "console.log('✅ Stored coding_submission_source_code for', chosenLanguage);",
+                                    ""
+                                ],
+                                "type": "text/javascript",
+                                "packages": {},
+                                "requests": {}
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"title\": \"Backend Algorithm Challenge\",\n    \"description\": \"Assess algorithmic thinking with array tasks.\",\n    \"languages\": [\"php\", \"python\", \"javascript\"],\n    \"difficulty\": \"intermediate\",\n    \"time_limit_minutes\": 60,\n    \"max_score\": 100,\n    \"generate_with_ai\": false,\n    \"rubric\": {\n        \"correctness\": 0.7,\n        \"efficiency\": 0.2,\n        \"style\": 0.1\n    },\n    \"metadata\": {\n        \"tags\": [\"data_structures\", \"arrays\"],\n        \"source\": \"Recruitment Pipeline\"\n    },\n    \"test_cases\": [\n        {\n            \"name\": \"Sample Test\",\n            \"input\": \"[1,2,3]\",\n            \"expected_output\": \"6\",\n            \"weight\": 1,\n            \"is_hidden\": false,\n            \"timeout_seconds\": 5\n        },\n        {\n            \"name\": \"Large Input\",\n            \"input\": \"[5,5,5,5]\",\n            \"expected_output\": \"20\",\n            \"weight\": 2,\n            \"is_hidden\": true,\n            \"timeout_seconds\": 10\n        }\n    ]\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}coding/assessments",
+                            "host": [
+                                "{{base_url}}coding"
+                            ],
+                            "path": [
+                                "assessments"
+                            ]
+                        },
+                        "description": "Create a coding assessment with rubric, manual test cases, and optional AI generation toggles."
+                    },
+                    "response": []
+                },
                 {
-                  "key": "status",
-                  "value": "pending"
-                }
-              ]
-            },
-            "description": "List coding assessment assignments with filter support."
-          },
-          "response": []
-        },
-        {
-          "name": "Assign Coding Assessment",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test(\"Status code is 201\", function () {",
-                  "    pm.response.to.have.status(201);",
-                  "});",
-                  "",
-                  "const body = pm.response.json();",
-                  "const assignments = Array.isArray(body?.data) ? body.data : [];",
-                  "const first = assignments[0];",
-                  "",
-                  "pm.test(\"Assignment id is present\", function () {",
-                  "    pm.expect(first?.id, 'coding assignment id').to.exist;",
-                  "});",
-                  "",
-                  "if (first?.id) {",
-                  "    pm.environment.set('coding_assignment_id', first.id);",
-                  "    console.log('\u2705 Stored coding_assignment_id:', first.id);",
-                  "}",
-                  "",
-                  "if (first?.coding_assessment_id) {",
-                  "    pm.environment.set('coding_assessment_id', first.coding_assessment_id);",
-                  "}",
-                  "",
-                  "const assessment = first?.assessment || {};",
-                  "const languages = Array.isArray(assessment.languages) ? assessment.languages : [];",
-                  "const fallbackLanguage = pm.environment.get('coding_submission_language') || 'python';",
-                  "let selectedLanguage = languages[0];",
-                  "if (typeof selectedLanguage !== 'string' || !selectedLanguage.trim()) {",
-                  "    selectedLanguage = fallbackLanguage;",
-                  "    console.warn('No languages returned; defaulting to', fallbackLanguage);",
-                  "}",
-                  "pm.environment.set('coding_submission_language', selectedLanguage);",
-                  "console.log('\u2705 Updated coding_submission_language:', selectedLanguage);",
-                  "",
-                  "const snippets = {",
-                  "    php: '<?php\\nfunction solution($input) {\\n    if (is_string($input)) {\\n        $decoded = json_decode($input, true);\\n        if (json_last_error() === JSON_ERROR_NONE) {\\n            $input = $decoded;\\n        }\\n    }\\n    if (!is_array($input)) {\\n        return 0;\\n    }\\n    return array_sum($input);\\n}\\n',",
-                  "    python: 'import json\\n\\ndef solution(input_data):\\n    if isinstance(input_data, str):\\n        try:\\n            input_data = json.loads(input_data)\\n        except json.JSONDecodeError:\\n            return 0\\n    if not isinstance(input_data, list):\\n        return 0\\n    return sum(input_data)\\n',",
-                  "    javascript: 'function solution(input) {\\n  if (typeof input === \\'string\\') {\\n    try {\\n      input = JSON.parse(input);\\n    } catch (error) {\\n      return 0;\\n    }\\n  }\\n  if (!Array.isArray(input)) {\\n    return 0;\\n  }\\n  return input.reduce((total, value) => total + Number(value || 0), 0);\\n}\\n'",
-                  "};",
-                  "const chosenLanguage = (pm.environment.get('coding_submission_language') || fallbackLanguage).toLowerCase();",
-                  "const snippet = snippets[chosenLanguage] || snippets[fallbackLanguage];",
-                  "pm.environment.set('coding_submission_source_code', snippet);",
-                  "console.log('\u2705 Stored coding_submission_source_code for', chosenLanguage);",
-                  ""
-                ]
-              }
-            }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n    \"candidate_ids\": [{{candidate_id}}],\n    \"talentable_type\": \"App\\\\Models\\\\Talent\\\\SuccessionCandidate\",\n    \"talentable_id\": 1,\n    \"expires_at\": \"2025-12-31T23:59:59Z\",\n    \"invitation_message\": \"Complete this coding assignment within the week.\",\n    \"metadata\": {\n        \"source\": \"Recruitment Drive\"\n    }\n}"
-            },
-            "url": {
-              "raw": "{{base_url}}/coding/assessments/{{coding_assessment_id}}/assign",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "coding",
-                "assessments",
-                "{{coding_assessment_id}}",
-                "assign"
-              ]
-            },
-            "description": "Assign a coding assessment to one or more candidates."
-          },
-          "response": []
-        },
-        {
-          "name": "Get Assignment Details",
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "Accept",
-                "value": "application/json"
-              }
-            ],
-            "url": {
-              "raw": "{{base_url}}/coding/assignments/{{coding_assignment_id}}",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "coding",
-                "assignments",
-                "{{coding_assignment_id}}"
-              ]
-            },
-            "description": "Retrieve an assignment along with submissions and associated results."
-          },
-          "response": []
-        }
-      ]
-    },
-    {
-      "name": "Submissions",
-      "item": [
-        {
-          "name": "List Coding Submissions",
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "Accept",
-                "value": "application/json"
-              }
-            ],
-            "url": {
-              "raw": "{{base_url}}/coding/submissions?status=completed",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "coding",
-                "submissions"
-              ],
-              "query": [
+                    "name": "Create Coding Assessment (AI Generated)",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test(\"Status code is 201\", function () {",
+                                    "    pm.response.to.have.status(201);",
+                                    "});",
+                                    "",
+                                    "const body = pm.response.json();",
+                                    "const assessment = body?.data;",
+                                    "",
+                                    "pm.test(\"Assessment id is present\", function () {",
+                                    "    pm.expect(assessment?.id, 'coding assessment id').to.exist;",
+                                    "});",
+                                    "",
+                                    "if (assessment?.id) {",
+                                    "    pm.environment.set('coding_assessment_id', assessment.id);",
+                                    "    console.log('✅ Stored coding_assessment_id:', assessment.id);",
+                                    "}",
+                                    "",
+                                    "const languages = Array.isArray(assessment?.languages) ? assessment.languages : [];",
+                                    "const fallbackLanguage = 'python';",
+                                    "let selectedLanguage = languages[0];",
+                                    "if (typeof selectedLanguage !== 'string' || !selectedLanguage.trim()) {",
+                                    "    selectedLanguage = fallbackLanguage;",
+                                    "    console.warn('No languages returned; defaulting to', fallbackLanguage);",
+                                    "}",
+                                    "pm.environment.set('coding_submission_language', selectedLanguage);",
+                                    "console.log('✅ Stored coding_submission_language:', selectedLanguage);",
+                                    "",
+                                    "const snippets = {",
+                                    "    php: '<?php\\nfunction solution($input) {\\n    if (is_string($input)) {\\n        $decoded = json_decode($input, true);\\n        if (json_last_error() === JSON_ERROR_NONE) {\\n            $input = $decoded;\\n        }\\n    }\\n    if (!is_array($input)) {\\n        return 0;\\n    }\\n    return array_sum($input);\\n}\\n',",
+                                    "    python: 'import json\\n\\ndef solution(input_data):\\n    if isinstance(input_data, str):\\n        try:\\n            input_data = json.loads(input_data)\\n        except json.JSONDecodeError:\\n            return 0\\n    if not isinstance(input_data, list):\\n        return 0\\n    return sum(input_data)\\n',",
+                                    "    javascript: 'function solution(input) {\\n  if (typeof input === \\'string\\') {\\n    try {\\n      input = JSON.parse(input);\\n    } catch (error) {\\n      return 0;\\n    }\\n  }\\n  if (!Array.isArray(input)) {\\n    return 0;\\n  }\\n  return input.reduce((total, value) => total + Number(value || 0), 0);\\n}\\n'",
+                                    "};",
+                                    "const chosenLanguage = (pm.environment.get('coding_submission_language') || fallbackLanguage).toLowerCase();",
+                                    "const snippet = snippets[chosenLanguage] || snippets[fallbackLanguage];",
+                                    "pm.environment.set('coding_submission_source_code', snippet);",
+                                    "console.log('✅ Stored coding_submission_source_code for', chosenLanguage);",
+                                    ""
+                                ],
+                                "type": "text/javascript",
+                                "packages": {},
+                                "requests": {}
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"title\": \"Graph Traversal Challenge\",\n    \"description\": \"Use AI to craft a graph traversal assessment with nuanced edge cases.\",\n    \"languages\": [\"python\"],\n    \"difficulty\": \"advanced\",\n    \"time_limit_minutes\": 90,\n    \"max_score\": 120,\n    \"generate_with_ai\": true,\n    \"generation_prompt\": \"Design a problem requiring BFS versus DFS analysis with tricky edge cases, weighted decisions, and at least one hidden stress test.\",\n    \"metadata\": {\n        \"tags\": [\"graphs\", \"search\"],\n        \"hiring_campaign\": \"Campus Hiring 2025\"\n    }\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}coding/assessments",
+                            "host": [
+                                "{{base_url}}coding"
+                            ],
+                            "path": [
+                                "assessments"
+                            ]
+                        },
+                        "description": "Create a coding assessment letting the platform request AI-generated test cases from the configured OpenAI model."
+                    },
+                    "response": []
+                },
                 {
-                  "key": "status",
-                  "value": "completed"
+                    "name": "Get Coding Assessment",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}coding/assessments/{{coding_assessment_id}}",
+                            "host": [
+                                "{{base_url}}coding"
+                            ],
+                            "path": [
+                                "assessments",
+                                "{{coding_assessment_id}}"
+                            ]
+                        },
+                        "description": "Fetch a single coding assessment with its configured test cases."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Update Coding Assessment",
+                    "request": {
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"difficulty\": \"advanced\",\n    \"time_limit_minutes\": 75,\n    \"max_score\": 120\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}coding/assessments/{{coding_assessment_id}}",
+                            "host": [
+                                "{{base_url}}coding"
+                            ],
+                            "path": [
+                                "assessments",
+                                "{{coding_assessment_id}}"
+                            ]
+                        },
+                        "description": "Update key properties of a coding assessment."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Delete Coding Assessment",
+                    "request": {
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}coding/assessments/{{coding_assessment_id}}",
+                            "host": [
+                                "{{base_url}}coding"
+                            ],
+                            "path": [
+                                "assessments",
+                                "{{coding_assessment_id}}"
+                            ]
+                        },
+                        "description": "Soft delete a coding assessment and its related test cases."
+                    },
+                    "response": []
                 }
-              ]
-            },
-            "description": "List coding submissions filtered by status."
-          },
-          "response": []
+            ]
         },
         {
-          "name": "Submit Coding Solution",
-          "event": [
-            {
-              "listen": "prerequest",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "const fallbackLanguage = 'python';",
-                  "let language = pm.environment.get('coding_submission_language');",
-                  "if (typeof language !== 'string' || !language.trim()) {",
-                  "    language = fallbackLanguage;",
-                  "    pm.environment.set('coding_submission_language', language);",
-                  "    console.warn('No language found; defaulting to', language);",
-                  "}",
-                  "",
-                  "const defaultSnippets = {",
-                  "    php: '<?php\\nfunction solution($input) {\\n    if (is_string($input)) {\\n        $decoded = json_decode($input, true);\\n        if (json_last_error() === JSON_ERROR_NONE) {\\n            $input = $decoded;\\n        }\\n    }\\n    if (!is_array($input)) {\\n        return 0;\\n    }\\n    return array_sum($input);\\n}\\n',",
-                  "    python: 'import json\\n\\ndef solution(input_data):\\n    if isinstance(input_data, str):\\n        try:\\n            input_data = json.loads(input_data)\\n        except json.JSONDecodeError:\\n            return 0\\n    if not isinstance(input_data, list):\\n        return 0\\n    return sum(input_data)\\n',",
-                  "    javascript: 'function solution(input) {\\n  if (typeof input === \\'string\\') {\\n    try {\\n      input = JSON.parse(input);\\n    } catch (error) {\\n      return 0;\\n    }\\n  }\\n  if (!Array.isArray(input)) {\\n    return 0;\\n  }\\n  return input.reduce((total, value) => total + Number(value || 0), 0);\\n}\\n'",
-                  "};",
-                  "",
-                  "const snippetKey = language.toLowerCase();",
-                  "let sourceCode = pm.environment.get('coding_submission_source_code');",
-                  "if (typeof sourceCode !== 'string' || !sourceCode.length) {",
-                  "    sourceCode = defaultSnippets[snippetKey] || defaultSnippets[fallbackLanguage];",
-                  "    pm.environment.set('coding_submission_source_code', sourceCode);",
-                  "    console.warn('No source code found; defaulting snippet for', snippetKey);",
-                  "}",
-                  "",
-                  "const payload = {",
-                  "    language: language,",
-                  "    source_code: sourceCode,",
-                  "    metadata: { notes: 'Initial attempt from Postman' }",
-                  "};",
-                  "pm.request.body.update(JSON.stringify(payload, null, 2));",
-                  "console.log('\ud83d\udd01 Prepared submission payload for language', language);"
-                ]
-              }
-            },
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test(\"Status code is 201\", function () {",
-                  "    pm.response.to.have.status(201);",
-                  "});",
-                  "",
-                  "const body = pm.response.json();",
-                  "const submission = body?.data;",
-                  "",
-                  "pm.test(\"Submission id is present\", function () {",
-                  "    pm.expect(submission?.id, 'coding submission id').to.exist;",
-                  "});",
-                  "",
-                  "if (submission?.id) {",
-                  "    pm.environment.set('coding_submission_id', submission.id);",
-                  "    console.log('\u2705 Stored coding_submission_id:', submission.id);",
-                  "}",
-                  "",
-                  "if (submission?.status) {",
-                  "    pm.environment.set('coding_submission_status', submission.status);",
-                  "}",
-                  ""
-                ]
-              }
-            }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n    \"language\": \"{{coding_submission_language}}\",\n    \"source_code\": \"{{coding_submission_source_code}}\",\n    \"metadata\": {\n        \"notes\": \"Initial attempt from Postman\"\n    }\n}"
-            },
-            "url": {
-              "raw": "{{base_url}}/coding/assignments/{{coding_assignment_id}}/submissions",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "coding",
-                "assignments",
-                "{{coding_assignment_id}}",
-                "submissions"
-              ]
-            },
-            "description": "Submit source code for evaluation against assessment test cases."
-          },
-          "response": []
+            "name": "Assignments",
+            "item": [
+                {
+                    "name": "List Coding Assignments",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}coding/assignments?status=pending",
+                            "host": [
+                                "{{base_url}}coding"
+                            ],
+                            "path": [
+                                "assignments"
+                            ],
+                            "query": [
+                                {
+                                    "key": "status",
+                                    "value": "pending"
+                                }
+                            ]
+                        },
+                        "description": "List coding assessment assignments with filter support."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Assign Coding Assessment",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test(\"Status code is 201\", function () {",
+                                    "    pm.response.to.have.status(201);",
+                                    "});",
+                                    "",
+                                    "const body = pm.response.json();",
+                                    "const assignments = Array.isArray(body?.data) ? body.data : [];",
+                                    "const first = assignments[0];",
+                                    "",
+                                    "pm.test(\"Assignment id is present\", function () {",
+                                    "    pm.expect(first?.id, 'coding assignment id').to.exist;",
+                                    "});",
+                                    "",
+                                    "if (first?.id) {",
+                                    "    pm.environment.set('coding_assignment_id', first.id);",
+                                    "    console.log('✅ Stored coding_assignment_id:', first.id);",
+                                    "}",
+                                    "",
+                                    "if (first?.coding_assessment_id) {",
+                                    "    pm.environment.set('coding_assessment_id', first.coding_assessment_id);",
+                                    "}",
+                                    "",
+                                    "const assessment = first?.assessment || {};",
+                                    "const languages = Array.isArray(assessment.languages) ? assessment.languages : [];",
+                                    "const fallbackLanguage = pm.environment.get('coding_submission_language') || 'python';",
+                                    "let selectedLanguage = languages[0];",
+                                    "if (typeof selectedLanguage !== 'string' || !selectedLanguage.trim()) {",
+                                    "    selectedLanguage = fallbackLanguage;",
+                                    "    console.warn('No languages returned; defaulting to', fallbackLanguage);",
+                                    "}",
+                                    "pm.environment.set('coding_submission_language', selectedLanguage);",
+                                    "console.log('✅ Updated coding_submission_language:', selectedLanguage);",
+                                    "",
+                                    "const snippets = {",
+                                    "    php: '<?php\\nfunction solution($input) {\\n    if (is_string($input)) {\\n        $decoded = json_decode($input, true);\\n        if (json_last_error() === JSON_ERROR_NONE) {\\n            $input = $decoded;\\n        }\\n    }\\n    if (!is_array($input)) {\\n        return 0;\\n    }\\n    return array_sum($input);\\n}\\n',",
+                                    "    python: 'import json\\n\\ndef solution(input_data):\\n    if isinstance(input_data, str):\\n        try:\\n            input_data = json.loads(input_data)\\n        except json.JSONDecodeError:\\n            return 0\\n    if not isinstance(input_data, list):\\n        return 0\\n    return sum(input_data)\\n',",
+                                    "    javascript: 'function solution(input) {\\n  if (typeof input === \\'string\\') {\\n    try {\\n      input = JSON.parse(input);\\n    } catch (error) {\\n      return 0;\\n    }\\n  }\\n  if (!Array.isArray(input)) {\\n    return 0;\\n  }\\n  return input.reduce((total, value) => total + Number(value || 0), 0);\\n}\\n'",
+                                    "};",
+                                    "const chosenLanguage = (pm.environment.get('coding_submission_language') || fallbackLanguage).toLowerCase();",
+                                    "const snippet = snippets[chosenLanguage] || snippets[fallbackLanguage];",
+                                    "pm.environment.set('coding_submission_source_code', snippet);",
+                                    "console.log('✅ Stored coding_submission_source_code for', chosenLanguage);",
+                                    ""
+                                ],
+                                "type": "text/javascript",
+                                "packages": {},
+                                "requests": {}
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"candidate_ids\": [{{candidate_id}}],\n    \"talentable_type\": \"App\\\\Models\\\\Talent\\\\SuccessionCandidate\",\n    \"talentable_id\": 1,\n    \"expires_at\": \"2025-12-31T23:59:59Z\",\n    \"invitation_message\": \"Complete this coding assignment within the week.\",\n    \"metadata\": {\n        \"source\": \"Recruitment Drive\"\n    }\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}coding/assessments/{{coding_assessment_id}}/assign",
+                            "host": [
+                                "{{base_url}}coding"
+                            ],
+                            "path": [
+                                "assessments",
+                                "{{coding_assessment_id}}",
+                                "assign"
+                            ]
+                        },
+                        "description": "Assign a coding assessment to one or more candidates."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Get Assignment Details",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}coding/assignments/{{coding_assignment_id}}",
+                            "host": [
+                                "{{base_url}}coding"
+                            ],
+                            "path": [
+                                "assignments",
+                                "{{coding_assignment_id}}"
+                            ]
+                        },
+                        "description": "Retrieve an assignment along with submissions and associated results."
+                    },
+                    "response": []
+                }
+            ]
         },
         {
-          "name": "Get Submission Details",
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "Accept",
-                "value": "application/json"
-              }
-            ],
-            "url": {
-              "raw": "{{base_url}}/coding/submissions/{{coding_submission_id}}",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "coding",
-                "submissions",
-                "{{coding_submission_id}}"
-              ]
-            },
-            "description": "Fetch a submission with test case results and reviews."
-          },
-          "response": []
-        },
-        {
-          "name": "Review Coding Submission",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n    \"score_adjustment\": 5,\n    \"comment\": \"Great work, minor optimization suggestions.\",\n    \"rubric_scores\": {\n        \"correctness\": 0.9,\n        \"efficiency\": 0.8,\n        \"style\": 0.7\n    }\n}"
-            },
-            "url": {
-              "raw": "{{base_url}}/coding/submissions/{{coding_submission_id}}/review",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "coding",
-                "submissions",
-                "{{coding_submission_id}}",
-                "review"
-              ]
-            },
-            "description": "Record a manual review with optional score adjustment."
-          },
-          "response": []
+            "name": "Submissions",
+            "item": [
+                {
+                    "name": "List Coding Submissions",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}coding/submissions?status=completed",
+                            "host": [
+                                "{{base_url}}coding"
+                            ],
+                            "path": [
+                                "submissions"
+                            ],
+                            "query": [
+                                {
+                                    "key": "status",
+                                    "value": "completed"
+                                }
+                            ]
+                        },
+                        "description": "List coding submissions filtered by status."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Submit Coding Solution",
+                    "event": [
+                        {
+                            "listen": "prerequest",
+                            "script": {
+                                "exec": [
+                                    "const fallbackLanguage = 'python';",
+                                    "let language = pm.environment.get('coding_submission_language');",
+                                    "if (typeof language !== 'string' || !language.trim()) {",
+                                    "    language = fallbackLanguage;",
+                                    "    pm.environment.set('coding_submission_language', language);",
+                                    "    console.warn('No language found; defaulting to', language);",
+                                    "}",
+                                    "",
+                                    "const defaultSnippets = {",
+                                    "    php: '<?php\\nfunction solution($input) {\\n    if (is_string($input)) {\\n        $decoded = json_decode($input, true);\\n        if (json_last_error() === JSON_ERROR_NONE) {\\n            $input = $decoded;\\n        }\\n    }\\n    if (!is_array($input)) {\\n        return 0;\\n    }\\n    return array_sum($input);\\n}\\n',",
+                                    "    python: 'import json\\n\\ndef solution(input_data):\\n    if isinstance(input_data, str):\\n        try:\\n            input_data = json.loads(input_data)\\n        except json.JSONDecodeError:\\n            return 0\\n    if not isinstance(input_data, list):\\n        return 0\\n    return sum(input_data)\\n',",
+                                    "    javascript: 'function solution(input) {\\n  if (typeof input === \\'string\\') {\\n    try {\\n      input = JSON.parse(input);\\n    } catch (error) {\\n      return 0;\\n    }\\n  }\\n  if (!Array.isArray(input)) {\\n    return 0;\\n  }\\n  return input.reduce((total, value) => total + Number(value || 0), 0);\\n}\\n'",
+                                    "};",
+                                    "",
+                                    "const snippetKey = language.toLowerCase();",
+                                    "let sourceCode = pm.environment.get('coding_submission_source_code');",
+                                    "if (typeof sourceCode !== 'string' || !sourceCode.length) {",
+                                    "    sourceCode = defaultSnippets[snippetKey] || defaultSnippets[fallbackLanguage];",
+                                    "    pm.environment.set('coding_submission_source_code', sourceCode);",
+                                    "    console.warn('No source code found; defaulting snippet for', snippetKey);",
+                                    "}",
+                                    "",
+                                    "const payload = {",
+                                    "    language: language,",
+                                    "    source_code: sourceCode,",
+                                    "    metadata: { notes: 'Initial attempt from Postman' }",
+                                    "};",
+                                    "pm.request.body.update(JSON.stringify(payload, null, 2));",
+                                    "console.log('🔁 Prepared submission payload for language', language);"
+                                ],
+                                "type": "text/javascript",
+                                "packages": {},
+                                "requests": {}
+                            }
+                        },
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test(\"Status code is 201\", function () {",
+                                    "    pm.response.to.have.status(201);",
+                                    "});",
+                                    "",
+                                    "const body = pm.response.json();",
+                                    "const submission = body?.data;",
+                                    "",
+                                    "pm.test(\"Submission id is present\", function () {",
+                                    "    pm.expect(submission?.id, 'coding submission id').to.exist;",
+                                    "});",
+                                    "",
+                                    "if (submission?.id) {",
+                                    "    pm.environment.set('coding_submission_id', submission.id);",
+                                    "    console.log('✅ Stored coding_submission_id:', submission.id);",
+                                    "}",
+                                    "",
+                                    "if (submission?.status) {",
+                                    "    pm.environment.set('coding_submission_status', submission.status);",
+                                    "}",
+                                    ""
+                                ],
+                                "type": "text/javascript",
+                                "packages": {},
+                                "requests": {}
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"language\": \"{{coding_submission_language}}\",\n    \"source_code\": \"{{coding_submission_source_code}}\",\n    \"metadata\": {\n        \"notes\": \"Initial attempt from Postman\"\n    }\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}coding/assignments/{{coding_assignment_id}}/submissions",
+                            "host": [
+                                "{{base_url}}coding"
+                            ],
+                            "path": [
+                                "assignments",
+                                "{{coding_assignment_id}}",
+                                "submissions"
+                            ]
+                        },
+                        "description": "Submit source code for evaluation against assessment test cases."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Get Submission Details",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}coding/submissions/{{coding_submission_id}}",
+                            "host": [
+                                "{{base_url}}coding"
+                            ],
+                            "path": [
+                                "submissions",
+                                "{{coding_submission_id}}"
+                            ]
+                        },
+                        "description": "Fetch a submission with test case results and reviews."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Review Coding Submission",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"score_adjustment\": 5,\n    \"comment\": \"Great work, minor optimization suggestions.\",\n    \"rubric_scores\": {\n        \"correctness\": 0.9,\n        \"efficiency\": 0.8,\n        \"style\": 0.7\n    }\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}coding/submissions/{{coding_submission_id}}/review",
+                            "host": [
+                                "{{base_url}}coding"
+                            ],
+                            "path": [
+                                "submissions",
+                                "{{coding_submission_id}}",
+                                "review"
+                            ]
+                        },
+                        "description": "Record a manual review with optional score adjustment."
+                    },
+                    "response": []
+                }
+            ]
         }
-      ]
-    }
-  ],
-  "auth": {
-    "type": "bearer",
-    "bearer": [
-      {
-        "key": "token",
-        "value": "{{auth_token}}",
-        "type": "string"
-      }
+    ],
+    "auth": {
+        "type": "bearer",
+        "bearer": [
+            {
+                "key": "token",
+                "value": "{{auth_token}}",
+                "type": "string"
+            }
+        ]
+    },
+    "event": [
+        {
+            "listen": "prerequest",
+            "script": {
+                "type": "text/javascript",
+                "requests": {},
+                "exec": [
+                    "const token = pm.environment.get('auth_token');",
+                    "",
+                    "if (token) {",
+                    "    pm.variables.set('auth_token', token);",
+                    "    console.log(\"✅ Using updated auth token:\", token);",
+                    "} else {",
+                    "    console.warn(\"⚠️ No stored token found!\");",
+                    "}",
+                    "",
+                    "// Ensure base URL exists",
+                    "if (!pm.variables.get('base_url')) {",
+                    "    pm.variables.set('base_url', 'http://localhost:8000/');",
+                    "}",
+                    ""
+                ]
+            }
+        },
+        {
+            "listen": "test",
+            "script": {
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {},
+                "exec": [
+                    ""
+                ]
+            }
+        }
     ]
-  },
-  "event": [
-    {
-      "listen": "prerequest",
-      "script": {
-        "type": "text/javascript",
-        "requests": {},
-        "exec": [
-          "const token = pm.environment.get('auth_token');",
-          "",
-          "if (token) {",
-          "    pm.variables.set('auth_token', token);",
-          "    console.log(\"\u2705 Using updated auth token:\", token);",
-          "} else {",
-          "    console.warn(\"\u26a0\ufe0f No stored token found!\");",
-          "}",
-          "",
-          "// Ensure base URL exists",
-          "if (!pm.variables.get('base_url')) {",
-          "    pm.variables.set('base_url', 'http://localhost:8000');",
-          "}",
-          ""
-        ]
-      }
-    },
-    {
-      "listen": "test",
-      "script": {
-        "type": "text/javascript",
-        "packages": {},
-        "requests": {},
-        "exec": [
-          ""
-        ]
-      }
-    }
-  ]
 }

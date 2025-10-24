@@ -1,685 +1,668 @@
 {
-  "info": {
-    "_postman_id": "93811d63-5d8b-4655-9ddf-1883754331db",
-    "name": "Meetings & Video Calls",
-    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-    "_exporter_id": "41082104"
-  },
-  "item": [
-    {
-      "name": "Meetings",
-      "item": [
-        {
-          "name": "List",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{base_url}}/meetings",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "meetings"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Create",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test(\"Status code is 201\", function () {",
-                  "    pm.response.to.have.status(201);",
-                  "});",
-                  "",
-                  "const meeting = pm.response.json();",
-                  "",
-                  "pm.test(\"Meeting id is returned\", function () {",
-                  "    pm.expect(meeting?.id, 'meeting id').to.exist;",
-                  "});",
-                  "",
-                  "if (meeting?.id) {",
-                  "    pm.environment.set(\"meeting_id\", meeting.id);",
-                  "    console.log(\"\u2705 Stored meeting_id:\", meeting.id);",
-                  "} else {",
-                  "    console.warn(\"No meeting id found in response\");",
-                  "}"
-                ]
-              }
-            }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"title\": \"Demo Meeting\",\n  \"scheduled_at\": \"2025-10-01T10:00:00\",\n  \"duration_minutes\": 60\n}"
-            },
-            "url": {
-              "raw": "{{base_url}}/meetings",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "meetings"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Show",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{base_url}}/meetings/{{meeting_id}}",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "meetings",
-                "{{meeting_id}}"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Update",
-          "request": {
-            "method": "PUT",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"title\": \"Updated Meeting Title\"\n}"
-            },
-            "url": {
-              "raw": "{{base_url}}/meetings/{{meeting_id}}",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "meetings",
-                "{{meeting_id}}"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Start",
-          "request": {
-            "method": "POST",
-            "header": [],
-            "url": {
-              "raw": "{{base_url}}/meetings/{{meeting_id}}/start",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "meetings",
-                "{{meeting_id}}",
-                "start"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "End",
-          "request": {
-            "method": "POST",
-            "header": [],
-            "url": {
-              "raw": "{{base_url}}/meetings/{{meeting_id}}/end",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "meetings",
-                "{{meeting_id}}",
-                "end"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Generate WebRTC Token",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test(\"Status code is 200\", function () {",
-                  "    pm.response.to.have.status(200);",
-                  "});",
-                  "",
-                  "const payload = pm.response.json();",
-                  "",
-                  "pm.test(\"Token returned\", function () {",
-                  "    pm.expect(payload?.token, 'video token').to.exist;",
-                  "});",
-                  "",
-                  "if (payload?.token) {",
-                  "    pm.environment.set(\"video_token\", payload.token);",
-                  "    console.log(\"\u2705 Stored video token\");",
-                  "} else {",
-                  "    console.warn(\"Video token missing in response\");",
-                  "}"
-                ]
-              }
-            }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [],
-            "url": {
-              "raw": "{{base_url}}/video/token",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "video",
-                "token"
-              ]
-            }
-          },
-          "response": []
-        }
-      ]
+    "info": {
+        "_postman_id": "4601dcba-a7e8-4241-a9e5-1b8840c408d4",
+        "name": "Meetings & Video Calls",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+        "_exporter_id": "49241238",
+        "_collection_link": "https://projitt-hrm-team.postman.co/workspace/Projitt-HRM~c1cfe415-9afb-4456-a05d-791794799430/collection/49241238-4601dcba-a7e8-4241-a9e5-1b8840c408d4?action=share&source=collection_link&creator=49241238"
     },
-    {
-      "name": "Invitations",
-      "item": [
+    "item": [
         {
-          "name": "Invite User",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test(\"Status code is 201\", function () {",
-                  "    pm.response.to.have.status(201);",
-                  "});",
-                  "",
-                  "const invitation = pm.response.json();",
-                  "",
-                  "if (invitation?.id) {",
-                  "    pm.environment.set(\"invitation_id\", invitation.id);",
-                  "}",
-                  "if (invitation?.invitee_user_id) {",
-                  "    pm.environment.set(\"invitee_user_id\", invitation.invitee_user_id);",
-                  "}",
-                  "console.log(\"\u2705 Invitation stored\");"
-                ]
-              }
-            }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"invitee_email\": \"{{invitee_email}}\"\n}"
-            },
-            "url": {
-              "raw": "{{base_url}}/meetings/{{meeting_id}}/invite",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "meetings",
-                "{{meeting_id}}",
-                "invite"
-              ]
-            }
-          },
-          "response": []
+            "name": "Meetings",
+            "item": [
+                {
+                    "name": "List",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}meetings",
+                            "host": [
+                                "{{base_url}}meetings"
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Create",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test(\"Status code is 201\", function () {",
+                                    "    pm.response.to.have.status(201);",
+                                    "});",
+                                    "",
+                                    "const meeting = pm.response.json();",
+                                    "",
+                                    "pm.test(\"Meeting id is returned\", function () {",
+                                    "    pm.expect(meeting?.id, 'meeting id').to.exist;",
+                                    "});",
+                                    "",
+                                    "if (meeting?.id) {",
+                                    "    pm.environment.set(\"meeting_id\", meeting.id);",
+                                    "    console.log(\"✅ Stored meeting_id:\", meeting.id);",
+                                    "} else {",
+                                    "    console.warn(\"No meeting id found in response\");",
+                                    "}"
+                                ],
+                                "type": "text/javascript",
+                                "packages": {},
+                                "requests": {}
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"title\": \"Demo Meeting\",\n  \"scheduled_at\": \"2025-10-01T10:00:00\",\n  \"duration_minutes\": 60\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}meetings",
+                            "host": [
+                                "{{base_url}}meetings"
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Show",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}meetings/{{meeting_id}}",
+                            "host": [
+                                "{{base_url}}meetings"
+                            ],
+                            "path": [
+                                "{{meeting_id}}"
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Update",
+                    "request": {
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"title\": \"Updated Meeting Title\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}meetings/{{meeting_id}}",
+                            "host": [
+                                "{{base_url}}meetings"
+                            ],
+                            "path": [
+                                "{{meeting_id}}"
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Start",
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}meetings/{{meeting_id}}/start",
+                            "host": [
+                                "{{base_url}}meetings"
+                            ],
+                            "path": [
+                                "{{meeting_id}}",
+                                "start"
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "End",
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}meetings/{{meeting_id}}/end",
+                            "host": [
+                                "{{base_url}}meetings"
+                            ],
+                            "path": [
+                                "{{meeting_id}}",
+                                "end"
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Generate WebRTC Token",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test(\"Status code is 200\", function () {",
+                                    "    pm.response.to.have.status(200);",
+                                    "});",
+                                    "",
+                                    "const payload = pm.response.json();",
+                                    "",
+                                    "pm.test(\"Token returned\", function () {",
+                                    "    pm.expect(payload?.token, 'video token').to.exist;",
+                                    "});",
+                                    "",
+                                    "if (payload?.token) {",
+                                    "    pm.environment.set(\"video_token\", payload.token);",
+                                    "    console.log(\"✅ Stored video token\");",
+                                    "} else {",
+                                    "    console.warn(\"Video token missing in response\");",
+                                    "}"
+                                ],
+                                "type": "text/javascript",
+                                "packages": {},
+                                "requests": {}
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}video/token",
+                            "host": [
+                                "{{base_url}}video"
+                            ],
+                            "path": [
+                                "token"
+                            ]
+                        }
+                    },
+                    "response": []
+                }
+            ]
         },
         {
-          "name": "Accept",
-          "request": {
-            "method": "POST",
-            "header": [],
-            "url": {
-              "raw": "{{base_url}}/invitations/{{invitation_id}}/accept",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "invitations",
-                "{{invitation_id}}",
-                "accept"
-              ]
-            }
-          },
-          "response": []
+            "name": "Invitations",
+            "item": [
+                {
+                    "name": "Invite User",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test(\"Status code is 201\", function () {",
+                                    "    pm.response.to.have.status(201);",
+                                    "});",
+                                    "",
+                                    "const invitation = pm.response.json();",
+                                    "",
+                                    "if (invitation?.id) {",
+                                    "    pm.environment.set(\"invitation_id\", invitation.id);",
+                                    "}",
+                                    "if (invitation?.invitee_user_id) {",
+                                    "    pm.environment.set(\"invitee_user_id\", invitation.invitee_user_id);",
+                                    "}",
+                                    "console.log(\"✅ Invitation stored\");"
+                                ],
+                                "type": "text/javascript",
+                                "packages": {},
+                                "requests": {}
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"invitee_email\": \"{{invitee_email}}\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}meetings/{{meeting_id}}/invite",
+                            "host": [
+                                "{{base_url}}meetings"
+                            ],
+                            "path": [
+                                "{{meeting_id}}",
+                                "invite"
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Accept",
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}invitations/{{invitation_id}}/accept",
+                            "host": [
+                                "{{base_url}}invitations"
+                            ],
+                            "path": [
+                                "{{invitation_id}}",
+                                "accept"
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Reject",
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}invitations/{{invitation_id}}/reject",
+                            "host": [
+                                "{{base_url}}invitations"
+                            ],
+                            "path": [
+                                "{{invitation_id}}",
+                                "reject"
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Propose New Time",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"proposed_time\": \"2025-10-02T11:00:00\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}invitations/{{invitation_id}}/propose",
+                            "host": [
+                                "{{base_url}}invitations"
+                            ],
+                            "path": [
+                                "{{invitation_id}}",
+                                "propose"
+                            ]
+                        }
+                    },
+                    "response": []
+                }
+            ]
         },
         {
-          "name": "Reject",
-          "request": {
-            "method": "POST",
-            "header": [],
-            "url": {
-              "raw": "{{base_url}}/invitations/{{invitation_id}}/reject",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "invitations",
-                "{{invitation_id}}",
-                "reject"
-              ]
-            }
-          },
-          "response": []
+            "name": "Recordings",
+            "item": [
+                {
+                    "name": "List",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}meetings/{{meeting_id}}/recordings",
+                            "host": [
+                                "{{base_url}}meetings"
+                            ],
+                            "path": [
+                                "{{meeting_id}}",
+                                "recordings"
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Start",
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}meetings/{{meeting_id}}/recordings/start",
+                            "host": [
+                                "{{base_url}}meetings"
+                            ],
+                            "path": [
+                                "{{meeting_id}}",
+                                "recordings",
+                                "start"
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "End",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test(\"Status code is 200\", function () {\r",
+                                    "    pm.response.to.have.status(200);\r",
+                                    "});\r",
+                                    "\r",
+                                    "const recording = pm.response.json();\r",
+                                    "\r",
+                                    "if (recording?.id) {\r",
+                                    "    pm.environment.set(\"recording_id\", recording.id);\r",
+                                    "}\r",
+                                    "console.log(\"✅ recording stored\");"
+                                ],
+                                "type": "text/javascript",
+                                "packages": {},
+                                "requests": {}
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}meetings/{{meeting_id}}/recordings/end",
+                            "host": [
+                                "{{base_url}}meetings"
+                            ],
+                            "path": [
+                                "{{meeting_id}}",
+                                "recordings",
+                                "end"
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Download",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}recordings/{{recording_id}}/download",
+                            "host": [
+                                "{{base_url}}recordings"
+                            ],
+                            "path": [
+                                "{{recording_id}}",
+                                "download"
+                            ]
+                        }
+                    },
+                    "response": []
+                }
+            ]
         },
         {
-          "name": "Propose New Time",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"proposed_time\": \"2025-10-02T11:00:00\"\n}"
-            },
-            "url": {
-              "raw": "{{base_url}}/invitations/{{invitation_id}}/propose",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "invitations",
-                "{{invitation_id}}",
-                "propose"
-              ]
-            }
-          },
-          "response": []
+            "name": "AI Notes",
+            "item": [
+                {
+                    "name": "Generate Notes",
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}meetings/{{meeting_id}}/notes",
+                            "host": [
+                                "{{base_url}}meetings"
+                            ],
+                            "path": [
+                                "{{meeting_id}}",
+                                "notes"
+                            ]
+                        }
+                    },
+                    "response": []
+                }
+            ]
+        },
+        {
+            "name": "Presence",
+            "item": [
+                {
+                    "name": "Join",
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}meetings/{{meeting_id}}/presence/join",
+                            "host": [
+                                "{{base_url}}meetings"
+                            ],
+                            "path": [
+                                "{{meeting_id}}",
+                                "presence",
+                                "join"
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Leave",
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}meetings/{{meeting_id}}/presence/leave",
+                            "host": [
+                                "{{base_url}}meetings"
+                            ],
+                            "path": [
+                                "{{meeting_id}}",
+                                "presence",
+                                "leave"
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Participants",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}meetings/{{meeting_id}}/participants",
+                            "host": [
+                                "{{base_url}}meetings"
+                            ],
+                            "path": [
+                                "{{meeting_id}}",
+                                "participants"
+                            ]
+                        }
+                    },
+                    "response": []
+                }
+            ]
+        },
+        {
+            "name": "RTC Signaling",
+            "item": [
+                {
+                    "name": "Send Signal",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test(\"Status code is 201\", function () {",
+                                    "    pm.response.to.have.status(201);",
+                                    "});",
+                                    "",
+                                    "const signal = pm.response.json();",
+                                    "",
+                                    "if (signal?.id) {",
+                                    "    pm.environment.set(\"rtc_signal_id\", signal.id);",
+                                    "    pm.environment.set(\"rtc_since_id\", signal.id);",
+                                    "    console.log(\"✅ Stored rtc_signal_id\", signal.id);",
+                                    "}",
+                                    "if (signal?.to_user_id) {",
+                                    "    pm.environment.set(\"invitee_user_id\", signal.to_user_id);",
+                                    "}"
+                                ],
+                                "type": "text/javascript",
+                                "packages": {},
+                                "requests": {}
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"to_user_id\": {{invitee_user_id}},\n  \"type\": \"offer\",\n  \"payload\": {\"sdp\": \"mock_sdp_here\"}\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}meetings/{{meeting_id}}/rtc/send",
+                            "host": [
+                                "{{base_url}}meetings"
+                            ],
+                            "path": [
+                                "{{meeting_id}}",
+                                "rtc",
+                                "send"
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Inbox",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}meetings/{{meeting_id}}/rtc/inbox?since_id={{rtc_since_id}}",
+                            "host": [
+                                "{{base_url}}meetings"
+                            ],
+                            "path": [
+                                "{{meeting_id}}",
+                                "rtc",
+                                "inbox"
+                            ],
+                            "query": [
+                                {
+                                    "key": "since_id",
+                                    "value": "{{rtc_since_id}}"
+                                }
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Acknowledge",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"ids\": [{{rtc_signal_id}}]\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}meetings/{{meeting_id}}/rtc/ack",
+                            "host": [
+                                "{{base_url}}meetings"
+                            ],
+                            "path": [
+                                "{{meeting_id}}",
+                                "rtc",
+                                "ack"
+                            ]
+                        }
+                    },
+                    "response": []
+                }
+            ]
         }
-      ]
-    },
-    {
-      "name": "Recordings",
-      "item": [
-        {
-          "name": "List",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{base_url}}/meetings/{{meeting_id}}/recordings",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "meetings",
-                "{{meeting_id}}",
-                "recordings"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Start",
-          "request": {
-            "method": "POST",
-            "header": [],
-            "url": {
-              "raw": "{{base_url}}/meetings/{{meeting_id}}/recordings/start",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "meetings",
-                "{{meeting_id}}",
-                "recordings",
-                "start"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "End",
-          "event": [
+    ],
+    "auth": {
+        "type": "bearer",
+        "bearer": [
             {
-              "listen": "test",
-              "script": {
+                "key": "token",
+                "value": "{{auth_token}}",
+                "type": "string"
+            }
+        ]
+    },
+    "event": [
+        {
+            "listen": "prerequest",
+            "script": {
+                "type": "text/javascript",
+                "requests": {},
                 "exec": [
-                  "pm.test(\"Status code is 200\", function () {\r",
-                  "    pm.response.to.have.status(200);\r",
-                  "});\r",
-                  "\r",
-                  "const recording = pm.response.json();\r",
-                  "\r",
-                  "if (recording?.id) {\r",
-                  "    pm.environment.set(\"recording_id\", recording.id);\r",
-                  "}\r",
-                  "console.log(\"\u2705 recording stored\");"
-                ],
+                    "const token = pm.environment.get('auth_token');",
+                    "",
+                    "if (token) {",
+                    "    pm.variables.set('auth_token', token);",
+                    "    console.log(\"✅ Using updated auth token:\", token);",
+                    "} else {",
+                    "    console.warn(\"⚠️ No stored token found!\");",
+                    "}",
+                    "",
+                    "// Ensure base URL exists",
+                    "if (!pm.variables.get('base_url')) {",
+                    "    pm.variables.set('base_url', 'http://localhost:8000/');",
+                    "}",
+                    ""
+                ]
+            }
+        },
+        {
+            "listen": "test",
+            "script": {
                 "type": "text/javascript",
                 "packages": {},
-                "requests": {}
-              }
-            }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [],
-            "url": {
-              "raw": "{{base_url}}/meetings/{{meeting_id}}/recordings/end",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "meetings",
-                "{{meeting_id}}",
-                "recordings",
-                "end"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Download",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{base_url}}/recordings/{{recording_id}}/download",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "recordings",
-                "{{recording_id}}",
-                "download"
-              ]
-            }
-          },
-          "response": []
-        }
-      ]
-    },
-    {
-      "name": "AI Notes",
-      "item": [
-        {
-          "name": "Generate Notes",
-          "request": {
-            "method": "POST",
-            "header": [],
-            "url": {
-              "raw": "{{base_url}}/meetings/{{meeting_id}}/notes",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "meetings",
-                "{{meeting_id}}",
-                "notes"
-              ]
-            }
-          },
-          "response": []
-        }
-      ]
-    },
-    {
-      "name": "Presence",
-      "item": [
-        {
-          "name": "Join",
-          "request": {
-            "method": "POST",
-            "header": [],
-            "url": {
-              "raw": "{{base_url}}/meetings/{{meeting_id}}/presence/join",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "meetings",
-                "{{meeting_id}}",
-                "presence",
-                "join"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Leave",
-          "request": {
-            "method": "POST",
-            "header": [],
-            "url": {
-              "raw": "{{base_url}}/meetings/{{meeting_id}}/presence/leave",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "meetings",
-                "{{meeting_id}}",
-                "presence",
-                "leave"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Participants",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{base_url}}/meetings/{{meeting_id}}/participants",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "meetings",
-                "{{meeting_id}}",
-                "participants"
-              ]
-            }
-          },
-          "response": []
-        }
-      ]
-    },
-    {
-      "name": "RTC Signaling",
-      "item": [
-        {
-          "name": "Send Signal",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
+                "requests": {},
                 "exec": [
-                  "pm.test(\"Status code is 201\", function () {",
-                  "    pm.response.to.have.status(201);",
-                  "});",
-                  "",
-                  "const signal = pm.response.json();",
-                  "",
-                  "if (signal?.id) {",
-                  "    pm.environment.set(\"rtc_signal_id\", signal.id);",
-                  "    pm.environment.set(\"rtc_since_id\", signal.id);",
-                  "    console.log(\"\u2705 Stored rtc_signal_id\", signal.id);",
-                  "}",
-                  "if (signal?.to_user_id) {",
-                  "    pm.environment.set(\"invitee_user_id\", signal.to_user_id);",
-                  "}"
+                    ""
                 ]
-              }
             }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"to_user_id\": {{invitee_user_id}},\n  \"type\": \"offer\",\n  \"payload\": {\"sdp\": \"mock_sdp_here\"}\n}"
-            },
-            "url": {
-              "raw": "{{base_url}}/meetings/{{meeting_id}}/rtc/send",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "meetings",
-                "{{meeting_id}}",
-                "rtc",
-                "send"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Inbox",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{base_url}}/meetings/{{meeting_id}}/rtc/inbox?since_id={{rtc_since_id}}",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "meetings",
-                "{{meeting_id}}",
-                "rtc",
-                "inbox"
-              ],
-              "query": [
-                {
-                  "key": "since_id",
-                  "value": "{{rtc_since_id}}"
-                }
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Acknowledge",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"ids\": [{{rtc_signal_id}}]\n}"
-            },
-            "url": {
-              "raw": "{{base_url}}/meetings/{{meeting_id}}/rtc/ack",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "meetings",
-                "{{meeting_id}}",
-                "rtc",
-                "ack"
-              ]
-            }
-          },
-          "response": []
         }
-      ]
-    }
-  ],
-  "auth": {
-    "type": "bearer",
-    "bearer": [
-      {
-        "key": "token",
-        "value": "{{auth_token}}",
-        "type": "string"
-      }
     ]
-  },
-  "event": [
-    {
-      "listen": "prerequest",
-      "script": {
-        "type": "text/javascript",
-        "requests": {},
-        "exec": [
-          "const token = pm.environment.get('auth_token');",
-          "",
-          "if (token) {",
-          "    pm.variables.set('auth_token', token);",
-          "    console.log(\"\u2705 Using updated auth token:\", token);",
-          "} else {",
-          "    console.warn(\"\u26a0\ufe0f No stored token found!\");",
-          "}",
-          "",
-          "// Ensure base URL exists",
-          "if (!pm.variables.get('base_url')) {",
-          "    pm.variables.set('base_url', 'http://localhost:8000');",
-          "}",
-          ""
-        ]
-      }
-    },
-    {
-      "listen": "test",
-      "script": {
-        "type": "text/javascript",
-        "packages": {},
-        "requests": {},
-        "exec": [
-          ""
-        ]
-      }
-    }
-  ]
 }
