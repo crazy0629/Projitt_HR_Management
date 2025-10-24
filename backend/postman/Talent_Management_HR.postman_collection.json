@@ -1,0 +1,812 @@
+{
+  "info": {
+    "_postman_id": "f5ae48a5-88d8-4b6c-8369-de4760416aa6",
+    "name": "Talent Management (HR)",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "41082104",
+    "description": "Complete talent management ecosystem for career advancement, succession planning, and employee development"
+  },
+  "item": [
+    {
+      "name": "Promotions",
+      "item": [
+        {
+          "name": "List Promotion Requests",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/talent/promotions?status=submitted&page=1",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "talent",
+                "promotions"
+              ],
+              "query": [
+                {
+                  "key": "status",
+                  "value": "submitted",
+                  "description": "Filter by status: draft, submitted, in_review, approved, rejected"
+                },
+                {
+                  "key": "page",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "Get all promotion requests with optional filtering"
+          },
+          "response": []
+        },
+        {
+          "name": "Create Promotion Request",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"employee_id\": 1,\n    \"current_role_id\": 2,\n    \"proposed_role_id\": 3,\n    \"workflow_id\": 1,\n    \"current_salary\": 85000,\n    \"proposed_salary\": 95000,\n    \"justification\": \"Excellent performance over the past year with consistent delivery of high-quality results.\",\n    \"skills\": [\"Leadership\", \"Project Management\", \"Technical Excellence\"],\n    \"achievements\": [\"Led team of 5 developers\", \"Delivered 3 major projects on time\", \"Mentored 2 junior developers\"]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/talent/promotions",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "talent",
+                "promotions"
+              ]
+            },
+            "description": "Create a new promotion request"
+          },
+          "response": []
+        },
+        {
+          "name": "Create Second Promotion Request",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"employee_id\": 1,\n    \"current_role_id\": 2,\n    \"proposed_role_id\": 3,\n    \"workflow_id\": 1,\n    \"current_salary\": 85000,\n    \"proposed_salary\": 95000,\n    \"justification\": \"Excellent performance over the past year with consistent delivery of high-quality results.\",\n    \"skills\": [\"Leadership\", \"Project Management\", \"Technical Excellence\"],\n    \"achievements\": [\"Led team of 5 developers\", \"Delivered 3 major projects on time\", \"Mentored 2 junior developers\"]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/talent/promotions",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "talent",
+                "promotions"
+              ]
+            },
+            "description": "Create a new promotion request"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Promotion Details",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/talent/promotions/{{promotion_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "talent",
+                "promotions",
+                "{{promotion_id}}"
+              ]
+            },
+            "description": "Get detailed information about a specific promotion"
+          },
+          "response": []
+        },
+        {
+          "name": "Submit Promotion for Approval",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/talent/promotions/{{promotion_id}}/submit",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "talent",
+                "promotions",
+                "{{promotion_id}}",
+                "submit"
+              ]
+            },
+            "description": "Submit promotion request for approval workflow"
+          },
+          "response": []
+        },
+        {
+          "name": "Submit Second Promotion for Approval",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/talent/promotions/2/submit",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "talent",
+                "promotions",
+                "2",
+                "submit"
+              ]
+            },
+            "description": "Submit promotion request for approval workflow"
+          },
+          "response": []
+        },
+        {
+          "name": "Withdraw Promotion",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"reason\": \"Employee has decided to explore other opportunities\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/talent/promotions/{{promotion_id}}/withdraw",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "talent",
+                "promotions",
+                "{{promotion_id}}",
+                "withdraw"
+              ]
+            },
+            "description": "Withdraw a promotion request"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Promotion Timeline",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/talent/promotions/{{promotion_id}}/timeline",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "talent",
+                "promotions",
+                "{{promotion_id}}",
+                "timeline"
+              ]
+            },
+            "description": "Get approval timeline and history for a promotion"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Available Workflows",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/talent/promotions/workflows",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "talent",
+                "promotions",
+                "workflows"
+              ]
+            },
+            "description": "Get available promotion workflows"
+          },
+          "response": []
+        },
+        {
+          "name": "Process Approval",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"decision\": \"approved\",\n    \"comments\": \"Excellent candidate, well deserved promotion\",\n    \"conditions\": []\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/talent/promotions/approvals/2",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "talent",
+                "promotions",
+                "approvals",
+                "2"
+              ]
+            },
+            "description": "Process a promotion approval"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Succession Planning",
+      "item": [
+        {
+          "name": "Get Succession Overview",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/talent/succession",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "talent",
+                "succession"
+              ]
+            },
+            "description": "Get succession planning overview and metrics"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Succession Metrics",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/talent/succession/metrics",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "talent",
+                "succession",
+                "metrics"
+              ]
+            },
+            "description": "Get detailed succession planning metrics"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Critical Gaps",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/talent/succession/critical-gaps",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "talent",
+                "succession",
+                "critical-gaps"
+              ]
+            },
+            "description": "Get critical role gaps in succession planning"
+          },
+          "response": []
+        },
+        {
+          "name": "Create Succession Role",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"role_id\": 3,\n  \"criticality\": \"high\",\n  \"risk_level\": \"medium\",\n  \"replacement_timeline\": \"short\",\n  \"required_successors\": 2,\n  \"description\": \"Senior leadership position requiring strategic thinking and team management\"\n}\n"
+            },
+            "url": {
+              "raw": "{{base_url}}/talent/succession/roles",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "talent",
+                "succession",
+                "roles"
+              ]
+            },
+            "description": "Create a new succession role"
+          },
+          "response": []
+        },
+        {
+          "name": "Add Succession Candidate",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"succession_role_id\": 1,\n    \"employee_id\": 2,\n    \"target_role_id\": 3,\n    \"readiness\": \"developing\",\n    \"development_plan\": {\n        \"actions\": [\"Complete leadership training\", \"Shadow senior manager\"]\n    },\n    \"learning_path_id\": 1,\n    \"target_ready_date\": \"2025-12-31\",\n    \"strengths\": [\"Team Leadership\", \"Technical Skills\"],\n    \"development_areas\": [\"Strategic Planning\", \"Budget Management\"],\n    \"source\": \"hr_action\",\n    \"is_active\": true\n}\n"
+            },
+            "url": {
+              "raw": "{{base_url}}/talent/succession/candidates",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "talent",
+                "succession",
+                "candidates"
+              ]
+            },
+            "description": "Add an employee as a succession candidate"
+          },
+          "response": []
+        },
+        {
+          "name": "Update Candidate Readiness",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"readiness\": \"ready\",\n    \"readiness_score\": 92,\n    \"assessment_notes\": \"Completed leadership development program successfully\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/talent/succession/candidates/1/readiness",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "talent",
+                "succession",
+                "candidates",
+                "1",
+                "readiness"
+              ]
+            },
+            "description": "Update succession candidate readiness level"
+          },
+          "response": []
+        },
+        {
+          "name": "Assign Learning Path",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"learning_path_id\": 1,\n    \"priority\": \"high\",\n    \"target_completion_date\": \"2024-06-30\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/talent/succession/candidates/1/learning-path",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "talent",
+                "succession",
+                "candidates",
+                "1",
+                "learning-path"
+              ]
+            },
+            "description": "Assign learning path to succession candidate"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Performance Improvement Plans",
+      "item": [
+        {
+          "name": "List PIPs",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/talent/pips?status=active&page=1",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "talent",
+                "pips"
+              ],
+              "query": [
+                {
+                  "key": "status",
+                  "value": "active",
+                  "description": "Filter by status: active, completed, terminated"
+                },
+                {
+                  "key": "page",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "Get all PIPs with filtering options"
+          },
+          "response": []
+        },
+        {
+          "name": "Create PIP",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"employee_id\": 1,\n    \"manager_id\": 2,\n    \"title\": \"Performance Improvement Plan - Q4 2024\",\n    \"description\": \"Focused improvement plan for meeting delivery deadlines\",\n    \"start_date\": \"2024-10-01\",\n    \"end_date\": \"2024-12-31\",\n    \"goals\": [\n        {\n            \"title\": \"Improve Delivery Timeliness\",\n            \"description\": \"Complete all assigned tasks within agreed deadlines\",\n            \"target_metric\": \"95% on-time delivery\",\n            \"due_date\": \"2024-11-30\"\n        }\n    ],\n    \"success_criteria\": \"Meeting all goals with satisfactory performance\"\n}\n"
+            },
+            "url": {
+              "raw": "{{base_url}}/talent/pips",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "talent",
+                "pips"
+              ]
+            },
+            "description": "Create a new Performance Improvement Plan"
+          },
+          "response": []
+        },
+        {
+          "name": "Get PIP Details",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/talent/pips/1",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "talent",
+                "pips",
+                "1"
+              ]
+            },
+            "description": "Get detailed information about a specific PIP"
+          },
+          "response": []
+        },
+        {
+          "name": "Add PIP Check-in",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"checkin_date\": \"2024-10-15\",\n  \"summary\": \"Employee has shown noticeable improvement in delivery timeliness and proactive updates.\",\n  \"status\": \"improving\",\n  \"rating\": 4,\n  \"goals_progress\": [\n    {\n      \"goal_id\": 1,\n      \"title\": \"Improve Delivery Timeliness\",\n      \"status\": \"on_track\",\n      \"notes\": \"90% of deliverables met on time this cycle\",\n      \"metric\": \"90%\"\n    },\n    {\n      \"goal_id\": 2,\n      \"title\": \"Enhance Communication\",\n      \"status\": \"improving\",\n      \"notes\": \"Regular progress updates shared via Slack\"\n    }\n  ],\n  \"manager_notes\": \"Keep focusing on time management and proactive updates. Great improvement overall.\",\n  \"next_steps\": \"Work on consistent reporting of blockers during sprint planning.\",\n  \"next_checkin_date\": \"2024-11-01\"\n}\n"
+            },
+            "url": {
+              "raw": "{{base_url}}/talent/pips/1/checkins",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "talent",
+                "pips",
+                "1",
+                "checkins"
+              ]
+            },
+            "description": "Add a check-in to a PIP"
+          },
+          "response": []
+        },
+        {
+          "name": "Update PIP Status",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"status\": \"completed\",\n    \"completion_notes\": \"All goals achieved successfully\",\n    \"outcome\": \"successful\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/talent/pips/1/status",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "talent",
+                "pips",
+                "1",
+                "status"
+              ]
+            },
+            "description": "Update PIP status and outcome"
+          },
+          "response": []
+        },
+        {
+          "name": "Get PIP Metrics",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/talent/pips/metrics",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "talent",
+                "pips",
+                "metrics"
+              ]
+            },
+            "description": "Get PIP metrics and analytics"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Employee Notes",
+      "item": [
+        {
+          "name": "List Employee Notes",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/talent/notes?employee_id=1&visibility=manager_chain",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "talent",
+                "notes"
+              ],
+              "query": [
+                {
+                  "key": "employee_id",
+                  "value": "1",
+                  "description": "Filter by employee ID"
+                },
+                {
+                  "key": "visibility",
+                  "value": "manager_chain",
+                  "description": "Filter by visibility level"
+                }
+              ]
+            },
+            "description": "Get employee notes with filtering"
+          },
+          "response": []
+        },
+        {
+          "name": "Create Employee Note",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"employee_id\": 1,\n    \"title\": \"Quarterly Performance Check-in\",\n    \"body\": \"Employee demonstrated excellent leadership skills during the project delivery phase.\",\n    \"note_type\": \"performance\",\n    \"visibility\": \"manager_chain\",\n    \"is_sensitive\": false\n}\n"
+            },
+            "url": {
+              "raw": "{{base_url}}/talent/notes",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "talent",
+                "notes"
+              ]
+            },
+            "description": "Create a new employee note"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Note Details",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/talent/notes/1",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "talent",
+                "notes",
+                "1"
+              ]
+            },
+            "description": "Get detailed information about a specific note"
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{auth_token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "requests": {},
+        "exec": [
+          "const token = pm.environment.get('auth_token');",
+          "",
+          "if (token) {",
+          "    pm.variables.set('auth_token', token);",
+          "    console.log(\"\u2705 Using updated auth token:\", token);",
+          "} else {",
+          "    console.warn(\"\u26a0\ufe0f No stored token found!\");",
+          "}",
+          "",
+          "// Ensure base URL exists",
+          "if (!pm.variables.get('base_url')) {",
+          "    pm.variables.set('base_url', 'http://localhost:8000');",
+          "}",
+          ""
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,331 @@
+{
+  "info": {
+    "_postman_id": "aaefe4ba-ad03-44d6-8ae7-fe511275a420",
+    "name": "Performance Reviews",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "41082104",
+    "description": "Comprehensive performance review system with cycles, competencies, and feedback management"
+  },
+  "item": [
+    {
+      "name": "Review Cycles",
+      "item": [
+        {
+          "name": "List Review Cycles",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/performance-reviews/cycles?status=active",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "performance-reviews",
+                "cycles"
+              ],
+              "query": [
+                {
+                  "key": "status",
+                  "value": "active",
+                  "description": "Filter by status: draft, active, completed"
+                }
+              ]
+            },
+            "description": "Get all performance review cycles"
+          },
+          "response": []
+        },
+        {
+          "name": "Create Review Cycle",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Q1 2024 Review\",\n  \"description\": \"Quarterly performance review\",\n  \"period_start\": \"2024-10-01\",\n  \"period_end\": \"2024-12-31\",\n  \"frequency\": \"quarterly\",\n  \"competencies\": [\"Leadership\", \"Teamwork\"],\n  \"assignments\": [\"self_review\", \"manager_review\"],\n  \"employee_ids\": [1, 2]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/performance-reviews/cycles",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "performance-reviews",
+                "cycles"
+              ]
+            },
+            "description": "Create a new performance review cycle"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Cycle Details",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/performance-reviews/cycles/{{cycle_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "performance-reviews",
+                "cycles",
+                "{{cycle_id}}"
+              ]
+            },
+            "description": "Get detailed information about a specific cycle"
+          },
+          "response": []
+        },
+        {
+          "name": "Activate Cycle",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/performance-reviews/cycles/{{cycle_id}}/activate",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "performance-reviews",
+                "cycles",
+                "{{cycle_id}}",
+                "activate"
+              ]
+            },
+            "description": "Activate a review cycle"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Setup Status",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/performance-reviews/cycles/{{cycle_id}}/setup/status",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "performance-reviews",
+                "cycles",
+                "{{cycle_id}}",
+                "setup",
+                "status"
+              ]
+            },
+            "description": "Get setup wizard status for a cycle"
+          },
+          "response": []
+        },
+        {
+          "name": "Create Default Competencies",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"template\": \"standard\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/performance-reviews/cycles/{{cycle_id}}/setup/default-competencies",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "performance-reviews",
+                "cycles",
+                "{{cycle_id}}",
+                "setup",
+                "default-competencies"
+              ]
+            },
+            "description": "Create default competencies for the cycle"
+          },
+          "response": []
+        },
+        {
+          "name": "Upload CSV Import",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": "/C:/Users/MUmai/OneDrive/Documents/Webpages/React/Logico/node_modules/jquery/AUTHORS.txt"
+                },
+                {
+                  "key": "import_type",
+                  "value": "questions",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/performance-reviews/cycles/{{cycle_id}}/import/csv",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "performance-reviews",
+                "cycles",
+                "{{cycle_id}}",
+                "import",
+                "csv"
+              ]
+            },
+            "description": "Upload CSV file for bulk import"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Reviews Management",
+      "item": [
+        {
+          "name": "List Reviews",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/performance-reviews/reviews?cycle_id={{cycle_id}}&status=in_progress",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "performance-reviews",
+                "reviews"
+              ],
+              "query": [
+                {
+                  "key": "cycle_id",
+                  "value": "{{cycle_id}}"
+                },
+                {
+                  "key": "status",
+                  "value": "in_progress"
+                }
+              ]
+            },
+            "description": "Get all reviews with filtering"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Review Details",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/performance-reviews/reviews/1",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "performance-reviews",
+                "reviews",
+                "1"
+              ]
+            },
+            "description": "Get detailed information about a specific review"
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{auth_token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "requests": {},
+        "exec": [
+          "const token = pm.environment.get('auth_token');",
+          "",
+          "if (token) {",
+          "    pm.variables.set('auth_token', token);",
+          "    console.log(\"\u2705 Using updated auth token:\", token);",
+          "} else {",
+          "    console.warn(\"\u26a0\ufe0f No stored token found!\");",
+          "}",
+          "",
+          "// Ensure base URL exists",
+          "if (!pm.variables.get('base_url')) {",
+          "    pm.variables.set('base_url', 'http://localhost:8000');",
+          "}",
+          ""
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    }
+  ]
+}
