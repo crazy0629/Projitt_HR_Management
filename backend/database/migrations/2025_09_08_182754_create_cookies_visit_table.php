@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('cookies_visits', function (Blueprint $table) {
 
             $table->bigIncrements('id');
-            $table->string('session_id', 255)->index('idx_session_id');
+            $table->string('session_id', 255)->index('cookies_visit_session_id_index');
             $table->text('page_url');
             $table->string('page_title', 500)->nullable();
             $table->text('referrer')->nullable();

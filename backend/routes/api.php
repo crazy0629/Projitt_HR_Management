@@ -4,6 +4,9 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Coding\CodingAssessmentAssignmentController;
 use App\Http\Controllers\Coding\CodingAssessmentController;
 use App\Http\Controllers\Coding\CodingSubmissionController;
+use App\Http\Controllers\Psychometric\PsychometricAssignmentController;
+use App\Http\Controllers\Psychometric\PsychometricReportController;
+use App\Http\Controllers\Psychometric\PsychometricTestController;
 use App\Http\Controllers\VideoCall\AiNotesController;
 use App\Http\Controllers\VideoCall\InvitationController;
 use App\Http\Controllers\VideoCall\MeetingController;
@@ -64,5 +67,21 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/assignments/{assignment}/submissions', [CodingSubmissionController::class, 'store']);
         Route::get('/submissions/{submission}', [CodingSubmissionController::class, 'show']);
         Route::post('/submissions/{submission}/review', [CodingSubmissionController::class, 'review']);
+    });
+
+    Route::prefix('psychometric')->group(function () {
+        Route::get('/tests', [PsychometricTestController::class, 'index']);
+        Route::post('/tests', [PsychometricTestController::class, 'store']);
+        Route::get('/tests/{psychometricTest}', [PsychometricTestController::class, 'show']);
+        Route::put('/tests/{psychometricTest}', [PsychometricTestController::class, 'update']);
+        Route::delete('/tests/{psychometricTest}', [PsychometricTestController::class, 'destroy']);
+        Route::post('/tests/{psychometricTest}/assign', [PsychometricAssignmentController::class, 'assign']);
+
+        Route::get('/assignments', [PsychometricAssignmentController::class, 'index']);
+        Route::get('/assignments/{psychometricAssignment}', [PsychometricAssignmentController::class, 'show']);
+        Route::post('/assignments/{psychometricAssignment}/start', [PsychometricAssignmentController::class, 'start']);
+        Route::post('/assignments/{psychometricAssignment}/submit', [PsychometricAssignmentController::class, 'submit']);
+
+        Route::get('/reports/summary', [PsychometricReportController::class, 'summary']);
     });
 });

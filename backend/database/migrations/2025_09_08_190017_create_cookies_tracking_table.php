@@ -20,7 +20,7 @@ return new class extends Migration
             $table->string('ip_address', 45)->nullable();
             $table->timestamp('created_at')->useCurrent();
             $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();
-            $table->index('session_id', 'idx_session_id');
+            $table->index('session_id', 'cookies_tracking_session_id_index');
             $table->index('consent_status', 'idx_consent_status');
             $table->index('created_at', 'idx_created_at');
         });

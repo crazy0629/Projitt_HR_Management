@@ -2729,6 +2729,391 @@
                     ]
                 }
             ]
+        },
+        {
+            "name": "Psychometric Testing",
+            "item": [
+                {
+                    "name": "Tests",
+                    "item": [
+                        {
+                            "name": "List Psychometric Tests",
+                            "request": {
+                                "method": "GET",
+                                "header": [
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{base_url}}/psychometric/tests?category=leadership&pagination=true&per_page=10",
+                                    "host": ["{{base_url}}"],
+                                    "path": [
+                                        "psychometric",
+                                        "tests"
+                                    ],
+                                    "query": [
+                                        {
+                                            "key": "category",
+                                            "value": "leadership",
+                                            "description": "Filter by test category"
+                                        },
+                                        {
+                                            "key": "pagination",
+                                            "value": "true"
+                                        },
+                                        {
+                                            "key": "per_page",
+                                            "value": "10"
+                                        }
+                                    ]
+                                },
+                                "description": "Retrieve configured psychometric tests with optional filters."
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "Create Psychometric Test",
+                            "event": [
+                                {
+                                    "listen": "test",
+                                    "script": {
+                                        "type": "text/javascript",
+                                        "exec": [
+                                            "pm.test(\"Status code is 201\", function () {",
+                                            "    pm.response.to.have.status(201);",
+                                            "});",
+                                            "",
+                                            "const data = pm.response.json()?.data;",
+                                            "if (data?.id) {",
+                                            "    pm.collectionVariables.set(\"psychometric_test_id\", data.id);",
+                                            "    console.log(\"✅ Stored psychometric_test_id\", data.id);",
+                                            "}"
+                                        ]
+                                    }
+                                }
+                            ],
+                            "request": {
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n    \"title\": \"Leadership Potential Assessment\",\n    \"category\": \"leadership\",\n    \"description\": \"Evaluate leadership competencies.\",\n    \"instructions\": \"Answer honestly based on recent experiences.\",\n    \"time_limit_minutes\": 30,\n    \"allowed_attempts\": 1,\n    \"randomize_questions\": false,\n    \"is_published\": true,\n    \"scoring_model\": {\n        \"bands\": {\n            \"high\": {\"min\": 80},\n            \"medium\": {\"min\": 50},\n            \"low\": {\"min\": 20}\n        }\n    },\n    \"dimensions\": [\n        {\n            \"key\": \"communication\",\n            \"name\": \"Communication\",\n            \"weight\": 1.5\n        },\n        {\n            \"key\": \"problem_solving\",\n            \"name\": \"Problem Solving\",\n            \"weight\": 1.2\n        }\n    ],\n    \"questions\": [\n        {\n            \"reference_code\": \"COMM_1\",\n            \"question_text\": \"I proactively communicate with stakeholders.\",\n            \"question_type\": \"likert\",\n            \"dimension_key\": \"communication\",\n            \"weight\": 2,\n            \"options\": [\n                {\"label\": \"Strongly Disagree\", \"score\": 1},\n                {\"label\": \"Disagree\", \"score\": 2},\n                {\"label\": \"Neutral\", \"score\": 3},\n                {\"label\": \"Agree\", \"score\": 4},\n                {\"label\": \"Strongly Agree\", \"score\": 5}\n            ]\n        },\n        {\n            \"reference_code\": \"PROB_1\",\n            \"question_text\": \"How comfortable are you solving ambiguous problems?\",\n            \"question_type\": \"multiple_choice\",\n            \"dimension_key\": \"problem_solving\",\n            \"weight\": 3,\n            \"options\": [\n                {\"label\": \"Low\", \"score\": 1},\n                {\"label\": \"Moderate\", \"score\": 3},\n                {\"label\": \"High\", \"score\": 5}\n            ]\n        },\n        {\n            \"reference_code\": \"COMM_2\",\n            \"question_text\": \"Select the behaviors you rely on for conflict resolution.\",\n            \"question_type\": \"multi_select\",\n            \"dimension_key\": \"communication\",\n            \"weight\": 1,\n            \"options\": [\n                {\"label\": \"Active listening\", \"score\": 3},\n                {\"label\": \"Escalate immediately\", \"score\": -1},\n                {\"label\": \"Collaborative solutioning\", \"score\": 4}\n            ]\n        }\n    ]\n}"
+                                },
+                                "url": {
+                                    "raw": "{{base_url}}/psychometric/tests",
+                                    "host": ["{{base_url}}"],
+                                    "path": [
+                                        "psychometric",
+                                        "tests"
+                                    ]
+                                },
+                                "description": "Create a new psychometric test with dimensions, questions, and scoring."
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "Get Psychometric Test",
+                            "event": [
+                                {
+                                    "listen": "test",
+                                    "script": {
+                                        "type": "text/javascript",
+                                        "exec": [
+                                            "pm.test(\"Status code is 200\", function () {",
+                                            "    pm.response.to.have.status(200);",
+                                            "});",
+                                            "",
+                                            "const data = pm.response.json()?.data;",
+                                            "if (data?.id) {",
+                                            "    pm.collectionVariables.set(\"psychometric_test_id\", data.id);",
+                                            "}",
+                                            "if (Array.isArray(data?.dimensions)) {",
+                                            "    data.dimensions.forEach((dimension, index) => {",
+                                            "        const idx = index + 1;",
+                                            "        pm.collectionVariables.set('psychometric_dimension_id_' + idx, dimension.id);",
+                                            "    });",
+                                            "}",
+                                            "if (Array.isArray(data?.questions)) {",
+                                            "    data.questions.forEach((question, index) => {",
+                                            "        const idx = index + 1;",
+                                            "        pm.collectionVariables.set('psychometric_question_id_' + idx, question.id);",
+                                            "        if (Array.isArray(question.options) && question.options.length) {",
+                                            "            pm.collectionVariables.set('psychometric_option_id_' + idx, question.options[0].id);",
+                                            "        }",
+                                            "    });",
+                                            "}"
+                                        ]
+                                    }
+                                }
+                            ],
+                            "request": {
+                                "method": "GET",
+                                "header": [
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{base_url}}/psychometric/tests/{{psychometric_test_id}}",
+                                    "host": ["{{base_url}}"],
+                                    "path": [
+                                        "psychometric",
+                                        "tests",
+                                        "{{psychometric_test_id}}"
+                                    ]
+                                },
+                                "description": "Fetch a psychometric test along with configured dimensions and questions."
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "Update Psychometric Test",
+                            "request": {
+                                "method": "PUT",
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n    \"description\": \"Updated leadership assessment with refined questions.\",\n    \"instructions\": \"Complete in a distraction-free environment.\",\n    \"dimensions\": [\n        {\n            \"id\": {{psychometric_dimension_id_1}},\n            \"weight\": 1.6,\n            \"_action\": \"update\"\n        }\n    ]\n}"
+                                },
+                                "url": {
+                                    "raw": "{{base_url}}/psychometric/tests/{{psychometric_test_id}}",
+                                    "host": ["{{base_url}}"],
+                                    "path": [
+                                        "psychometric",
+                                        "tests",
+                                        "{{psychometric_test_id}}"
+                                    ]
+                                },
+                                "description": "Update test metadata or adjust dimensions/questions. Replace {{psychometric_dimension_id_1}} with an actual dimension id."
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "Delete Psychometric Test",
+                            "request": {
+                                "method": "DELETE",
+                                "header": [],
+                                "url": {
+                                    "raw": "{{base_url}}/psychometric/tests/{{psychometric_test_id}}",
+                                    "host": ["{{base_url}}"],
+                                    "path": [
+                                        "psychometric",
+                                        "tests",
+                                        "{{psychometric_test_id}}"
+                                    ]
+                                },
+                                "description": "Soft delete a psychometric test."
+                            },
+                            "response": []
+                        }
+                    ]
+                },
+                {
+                    "name": "Assignments",
+                    "item": [
+                        {
+                            "name": "List Psychometric Assignments",
+                            "request": {
+                                "method": "GET",
+                                "header": [
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{base_url}}/psychometric/assignments?status=pending&target_role=Engineering%20Manager",
+                                    "host": ["{{base_url}}"],
+                                    "path": [
+                                        "psychometric",
+                                        "assignments"
+                                    ],
+                                    "query": [
+                                        {
+                                            "key": "status",
+                                            "value": "pending"
+                                        },
+                                        {
+                                            "key": "target_role",
+                                            "value": "Engineering Manager"
+                                        }
+                                    ]
+                                },
+                                "description": "Browse psychometric assignments with filtering by status and role."
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "Assign Psychometric Test",
+                            "event": [
+                                {
+                                    "listen": "test",
+                                    "script": {
+                                        "type": "text/javascript",
+                                        "exec": [
+                                            "pm.test(\"Status code is 201\", function () {",
+                                            "    pm.response.to.have.status(201);",
+                                            "});",
+                                            "",
+                                            "const firstAssignment = pm.response.json()?.data?.[0];",
+                                            "if (firstAssignment?.id) {",
+                                            "    pm.collectionVariables.set(\"psychometric_assignment_id\", firstAssignment.id);",
+                                            "    console.log(\"✅ Stored psychometric_assignment_id\", firstAssignment.id);",
+                                            "}"
+                                        ]
+                                    }
+                                }
+                            ],
+                            "request": {
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n    \"candidate_ids\": [{{candidate_id}}],\n    \"target_role\": \"Engineering Manager\",\n    \"time_limit_minutes\": 25,\n    \"metadata\": {\n        \"source\": \"Leadership pipeline\"\n    }\n}"
+                                },
+                                "url": {
+                                    "raw": "{{base_url}}/psychometric/tests/{{psychometric_test_id}}/assign",
+                                    "host": ["{{base_url}}"],
+                                    "path": [
+                                        "psychometric",
+                                        "tests",
+                                        "{{psychometric_test_id}}",
+                                        "assign"
+                                    ]
+                                },
+                                "description": "Assign a psychometric test to one or more candidates."
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "Start Psychometric Assignment",
+                            "request": {
+                                "method": "POST",
+                                "header": [],
+                                "url": {
+                                    "raw": "{{base_url}}/psychometric/assignments/{{psychometric_assignment_id}}/start",
+                                    "host": ["{{base_url}}"],
+                                    "path": [
+                                        "psychometric",
+                                        "assignments",
+                                        "{{psychometric_assignment_id}}",
+                                        "start"
+                                    ]
+                                },
+                                "description": "Mark an assignment as in progress and receive randomized question order."
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "Get Psychometric Assignment",
+                            "request": {
+                                "method": "GET",
+                                "header": [
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{base_url}}/psychometric/assignments/{{psychometric_assignment_id}}",
+                                    "host": ["{{base_url}}"],
+                                    "path": [
+                                        "psychometric",
+                                        "assignments",
+                                        "{{psychometric_assignment_id}}"
+                                    ]
+                                },
+                                "description": "Retrieve assignment details, responses, and scoring snapshot."
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "Submit Psychometric Assignment",
+                            "request": {
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n    \"responses\": [\n        {\n            \"question_id\": {{psychometric_question_id_1}},\n            \"option_id\": {{psychometric_option_id_1}},\n            \"time_spent_seconds\": 45\n        },\n        {\n            \"question_id\": {{psychometric_question_id_2}},\n            \"option_id\": {{psychometric_option_id_2}},\n            \"time_spent_seconds\": 40\n        },\n        {\n            \"question_id\": {{psychometric_question_id_3}},\n            \"selected_option_ids\": [{{psychometric_option_id_3}}],\n            \"time_spent_seconds\": 35\n        }\n    ],\n    \"metadata\": {\n        \"notes\": \"Submitted via Postman collection\"\n    }\n}"
+                                },
+                                "url": {
+                                    "raw": "{{base_url}}/psychometric/assignments/{{psychometric_assignment_id}}/submit",
+                                    "host": ["{{base_url}}"],
+                                    "path": [
+                                        "psychometric",
+                                        "assignments",
+                                        "{{psychometric_assignment_id}}",
+                                        "submit"
+                                    ]
+                                },
+                                "description": "Submit candidate responses for scoring. Ensure question and option variables are populated from the test details call."
+                            },
+                            "response": []
+                        }
+                    ]
+                },
+                {
+                    "name": "Reports",
+                    "item": [
+                        {
+                            "name": "Psychometric Summary Report",
+                            "request": {
+                                "method": "GET",
+                                "header": [
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{base_url}}/psychometric/reports/summary?from=2025-01-01&to=2025-12-31",
+                                    "host": ["{{base_url}}"],
+                                    "path": [
+                                        "psychometric",
+                                        "reports",
+                                        "summary"
+                                    ],
+                                    "query": [
+                                        {
+                                            "key": "from",
+                                            "value": "2025-01-01"
+                                        },
+                                        {
+                                            "key": "to",
+                                            "value": "2025-12-31"
+                                        }
+                                    ]
+                                },
+                                "description": "Aggregate psychometric outcomes by test, candidate, and target role."
+                            },
+                            "response": []
+                        }
+                    ]
+                }
+            ]
         }
     ],
     "auth": {
@@ -2834,6 +3219,46 @@
         },
         {
             "key": "coding_submission_status",
+            "value": ""
+        },
+        {
+            "key": "psychometric_test_id",
+            "value": ""
+        },
+        {
+            "key": "psychometric_assignment_id",
+            "value": ""
+        },
+        {
+            "key": "psychometric_dimension_id_1",
+            "value": ""
+        },
+        {
+            "key": "psychometric_dimension_id_2",
+            "value": ""
+        },
+        {
+            "key": "psychometric_question_id_1",
+            "value": ""
+        },
+        {
+            "key": "psychometric_question_id_2",
+            "value": ""
+        },
+        {
+            "key": "psychometric_question_id_3",
+            "value": ""
+        },
+        {
+            "key": "psychometric_option_id_1",
+            "value": ""
+        },
+        {
+            "key": "psychometric_option_id_2",
+            "value": ""
+        },
+        {
+            "key": "psychometric_option_id_3",
             "value": ""
         },
         {
