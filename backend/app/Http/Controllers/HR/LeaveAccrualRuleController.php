@@ -33,8 +33,9 @@ class LeaveAccrualRuleController extends Controller
         return successResponse(config('messages.success'), $rule, 201);
     }
 
-    public function show(LeaveAccrualRule $leaveAccrualRule): JsonResponse
+    public function show($leaveAccrualRuleId): JsonResponse
     {
+        $leaveAccrualRule = LeaveAccrualRule::findOrFail($leaveAccrualRuleId);
         $leaveAccrualRule->load('leaveType');
 
         return successResponse(config('messages.success'), $leaveAccrualRule, 200);

@@ -33,8 +33,9 @@ class LeaveTypeController extends Controller
         return successResponse(config('messages.success'), $leaveType, 201);
     }
 
-    public function show(LeaveType $leaveType): JsonResponse
+    public function show($leaveTypeId): JsonResponse
     {
+        $leaveType = LeaveType::findOrFail($leaveTypeId);
         $leaveType->load('accrualRules');
 
         return successResponse(config('messages.success'), $leaveType, 200);

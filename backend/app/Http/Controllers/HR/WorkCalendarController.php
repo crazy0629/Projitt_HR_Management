@@ -33,8 +33,9 @@ class WorkCalendarController extends Controller
         return successResponse(config('messages.success'), $calendar, 201);
     }
 
-    public function show(WorkCalendar $workCalendar): JsonResponse
+    public function show($workCalendarId): JsonResponse
     {
+        $workCalendar = WorkCalendar::findOrFail($workCalendarId);
         $workCalendar->load('holidays');
 
         return successResponse(config('messages.success'), $workCalendar, 200);
