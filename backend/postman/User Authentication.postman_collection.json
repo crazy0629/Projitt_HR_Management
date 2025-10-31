@@ -1,0 +1,292 @@
+{
+	"info": {
+		"_postman_id": "086a1e47-f6e4-408b-9c15-e8e026fd3081",
+		"name": "User Authentication",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "49241238",
+		"_collection_link": "https://projitt-hrm-team.postman.co/workspace/Projitt-HRM~c1cfe415-9afb-4456-a05d-791794799430/collection/46364514-086a1e47-f6e4-408b-9c15-e8e026fd3081?action=share&source=collection_link&creator=49241238"
+	},
+	"item": [
+		{
+			"name": "register",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Successful POST request\", function () {\r",
+							"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202]);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Content-Type is present\", function () {\r",
+							"    pm.response.to.have.header(\"Content-Type\");\r",
+							"    pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json');\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Response body is valid JSON\", function () {\r",
+							"    pm.response.to.be.json;\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Status is true\", function () {\r",
+							"    const responseJson = pm.response.json();\r",
+							"    pm.expect(responseJson.status).to.be.true;\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Token exists and is a string\", function () {\r",
+							"    const responseJson = pm.response.json();\r",
+							"    pm.expect(responseJson.data.token).to.be.a('string');\r",
+							"    pm.expect(responseJson.data.token).to.have.lengthOf.at.least(1); // Optional: ensure token is not empty\r",
+							"});\r",
+							"\r",
+							"const jsonData = pm.response.json();\r",
+							"const token = jsonData?.data?.token;\r",
+							"\r",
+							"pm.test(\"Response contains auth token\", function () {\r",
+							"    pm.expect(token, \"Auth token should exist in response\").to.exist;\r",
+							"});\r",
+							"\r",
+							"// Save token to the collection variable (modern Postman)\r",
+							"if (token) {\r",
+							"    pm.environment.set(\"auth_token\", token);\r",
+							"    console.log(\"✅ Token saved successfully:\", token);\r",
+							"} else {\r",
+							"    console.error(\"❌ Token not found in response!\");\r",
+							"}\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"first_name\" : \"Backend\",\n    \"last_name\" : \"Dev\",\n    \"email\" : \"backend.dev@example.com\",\n    \"password\" : \"Dev*&1122\",\n    \"password_confirmation\" : \"Dev*&1122\",\n    \"first_login\" : 1,\n    \"role_id\" : 1\n}\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}user/register",
+					"host": [
+						"{{base_url}}user"
+					],
+					"path": [
+						"register"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "login",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Successful POST request\", function () {\r",
+							"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202]);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Content-Type is present\", function () {\r",
+							"    pm.response.to.have.header(\"Content-Type\");\r",
+							"    pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json');\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Response body is valid JSON\", function () {\r",
+							"    pm.response.to.be.json;\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Status is true\", function () {\r",
+							"    const responseJson = pm.response.json();\r",
+							"    pm.expect(responseJson.status).to.be.true;\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Token exists and is a string\", function () {\r",
+							"    const responseJson = pm.response.json();\r",
+							"    pm.expect(responseJson.data.token).to.be.a('string');\r",
+							"    pm.expect(responseJson.data.token).to.have.lengthOf.at.least(1); // Optional: ensure token is not empty\r",
+							"});\r",
+							"\r",
+							"const jsonData = pm.response.json();\r",
+							"const token = jsonData?.data?.token;\r",
+							"\r",
+							"pm.test(\"Response contains auth token\", function () {\r",
+							"    pm.expect(token, \"Auth token should exist in response\").to.exist;\r",
+							"});\r",
+							"\r",
+							"// Save token to the collection variable (modern Postman)\r",
+							"if (token) {\r",
+							"    pm.environment.set(\"auth_token\", token);\r",
+							"    console.log(\"✅ Token saved successfully:\", token);\r",
+							"} else {\r",
+							"    console.error(\"❌ Token not found in response!\");\r",
+							"}\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"email\": \"backend.dev@example.com\",\n    \"password\": \"Dev*&1122\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}user/login",
+					"host": [
+						"{{base_url}}user"
+					],
+					"path": [
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "forgot password",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\n    \"email\": \"joy.anurioha@projitt.com\",\n    \"type_id\" : 2 // 1= reset by admin, 2= reset by user\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}user/forgot-password",
+					"host": [
+						"{{base_url}}user"
+					],
+					"path": [
+						"forgot-password"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "logout",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{auth_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}user/logout",
+					"host": [
+						"{{base_url}}user"
+					],
+					"path": [
+						"logout"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "refresh token",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{auth_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "refresh-token",
+						"value": "{{token}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}user/refresh-token",
+					"host": [
+						"{{base_url}}user"
+					],
+					"path": [
+						"refresh-token"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"requests": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"requests": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}

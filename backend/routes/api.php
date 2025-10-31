@@ -4,6 +4,10 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Coding\CodingAssessmentAssignmentController;
 use App\Http\Controllers\Coding\CodingAssessmentController;
 use App\Http\Controllers\Coding\CodingSubmissionController;
+use App\Http\Controllers\HR\LeaveAccrualRuleController;
+use App\Http\Controllers\HR\LeaveTypeController;
+use App\Http\Controllers\HR\WorkCalendarController;
+use App\Http\Controllers\HR\WorkCalendarHolidayController;
 use App\Http\Controllers\Psychometric\PsychometricAssignmentController;
 use App\Http\Controllers\Psychometric\PsychometricReportController;
 use App\Http\Controllers\Psychometric\PsychometricTestController;
@@ -51,6 +55,28 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/meetings/{meeting}/rtc/ack', [RtcSignalController::class, 'ack']);
 
     Route::post('/video/token', TokenController::class);
+
+    Route::prefix('hr')->group(function () {
+        Route::get('/leave-types', [LeaveTypeController::class, 'index']);
+        Route::post('/leave-types', [LeaveTypeController::class, 'store']);
+        Route::get('/leave-types/{leaveType}', [LeaveTypeController::class, 'show']);
+        Route::put('/leave-types/{leaveType}', [LeaveTypeController::class, 'update']);
+
+        Route::get('/leave-accrual-rules', [LeaveAccrualRuleController::class, 'index']);
+        Route::post('/leave-accrual-rules', [LeaveAccrualRuleController::class, 'store']);
+        Route::get('/leave-accrual-rules/{leaveAccrualRule}', [LeaveAccrualRuleController::class, 'show']);
+        Route::put('/leave-accrual-rules/{leaveAccrualRule}', [LeaveAccrualRuleController::class, 'update']);
+
+        Route::get('/work-calendars', [WorkCalendarController::class, 'index']);
+        Route::post('/work-calendars', [WorkCalendarController::class, 'store']);
+        Route::get('/work-calendars/{workCalendar}', [WorkCalendarController::class, 'show']);
+        Route::put('/work-calendars/{workCalendar}', [WorkCalendarController::class, 'update']);
+
+        Route::get('/work-calendar-holidays', [WorkCalendarHolidayController::class, 'index']);
+        Route::post('/work-calendar-holidays', [WorkCalendarHolidayController::class, 'store']);
+        Route::get('/work-calendar-holidays/{workCalendarHoliday}', [WorkCalendarHolidayController::class, 'show']);
+        Route::put('/work-calendar-holidays/{workCalendarHoliday}', [WorkCalendarHolidayController::class, 'update']);
+    });
 
     Route::prefix('coding')->group(function () {
         Route::get('/assessments', [CodingAssessmentController::class, 'index']);
