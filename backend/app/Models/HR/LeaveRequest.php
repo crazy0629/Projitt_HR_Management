@@ -2,6 +2,7 @@
 
 namespace App\Models\HR;
 
+use App\Models\HR\AttendanceRecord;
 use App\Models\HR\LeaveApprovalLog;
 use App\Models\HR\LeaveRequestApprovalStep;
 use App\Models\User\User;
@@ -76,5 +77,10 @@ class LeaveRequest extends Model
     public function currentApprovalStep()
     {
         return $this->hasOne(LeaveRequestApprovalStep::class, 'leave_request_id')->where('status', 'pending')->orderBy('level');
+    }
+
+    public function attendanceRecords()
+    {
+        return $this->hasMany(AttendanceRecord::class, 'leave_request_id');
     }
 }

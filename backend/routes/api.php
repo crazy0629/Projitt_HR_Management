@@ -5,6 +5,7 @@ use App\Http\Controllers\Coding\CodingAssessmentAssignmentController;
 use App\Http\Controllers\Coding\CodingAssessmentController;
 use App\Http\Controllers\Coding\CodingSubmissionController;
 use App\Http\Controllers\HR\LeaveAccrualRuleController;
+use App\Http\Controllers\HR\AttendanceController;
 use App\Http\Controllers\HR\LeaveRequestController;
 use App\Http\Controllers\HR\LeaveTypeController;
 use App\Http\Controllers\HR\WorkCalendarController;
@@ -88,6 +89,11 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/leave-requests/{leaveRequestId}/reject', [LeaveRequestController::class, 'reject']);
         Route::post('/leave-requests/{leaveRequestId}/delegate', [LeaveRequestController::class, 'delegate']);
         Route::post('/leave-requests/escalations/run', [LeaveRequestController::class, 'runEscalations']);
+
+        Route::get('/attendance', [AttendanceController::class, 'index']);
+        Route::post('/attendance/check-in', [AttendanceController::class, 'checkIn']);
+        Route::post('/attendance/check-out', [AttendanceController::class, 'checkOut']);
+        Route::post('/attendance/logs', [AttendanceController::class, 'store']);
     });
 
     Route::prefix('coding')->group(function () {
