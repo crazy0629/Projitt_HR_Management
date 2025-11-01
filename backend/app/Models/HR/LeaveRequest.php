@@ -2,6 +2,8 @@
 
 namespace App\Models\HR;
 
+use App\Models\HR\LeaveApprovalLog;
+use App\Models\HR\LeaveRequestApprovalStep;
 use App\Models\User\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -26,6 +28,10 @@ class LeaveRequest extends Model
         'metadata',
         'created_by',
         'updated_by',
+        'current_step_level',
+        'workflow_completed_at',
+        'escalation_count',
+        'latest_escalated_at',
     ];
 
     protected $casts = [
@@ -33,6 +39,8 @@ class LeaveRequest extends Model
         'end_date' => 'date',
         'decided_at' => 'datetime',
         'metadata' => 'array',
+        'workflow_completed_at' => 'datetime',
+        'latest_escalated_at' => 'datetime',
     ];
 
     public function employee(): BelongsTo
@@ -53,5 +61,20 @@ class LeaveRequest extends Model
     public function canceledBy(): BelongsTo
     {
         return $this->belongsTo(User::class, 'canceled_by');
+    }
+
+    public function approvalSteps()
+    {
+        return $this->hasMany(LeaveRequestApprovalStep::class, 'leave_request_id')->orderBy('level');
+    }
+
+    public function approvalLogs()
+    {
+        return $this->hasMany(LeaveApprovalLog::class, 'leave_request_id')->latest();
+    }
+
+    public function currentApprovalStep()
+    {
+        return $this->hasOne(LeaveRequestApprovalStep::class, 'leave_request_id')->where('status', 'pending')->orderBy('level');
     }
 }

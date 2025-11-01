@@ -3,6 +3,9 @@
 namespace App\Http\Controllers\HR;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\HR\ApproveLeaveRequestRequest;
+use App\Http\Requests\HR\DelegateLeaveRequestRequest;
+use App\Http\Requests\HR\RejectLeaveRequestRequest;
 use App\Http\Requests\HR\StoreLeaveRequestRequest;
 use App\Http\Requests\HR\UpdateLeaveRequestRequest;
 use App\Http\Requests\HR\UpdateLeaveRequestStatusRequest;
@@ -45,7 +48,7 @@ class LeaveRequestController extends Controller
 
     public function show($leaveRequestId): JsonResponse
     {
-        $leaveRequest = LeaveRequest::with(['employee', 'leaveType', 'approver'])
+        $leaveRequest = LeaveRequest::with(['employee', 'leaveType', 'approver', 'approvalSteps'])
             ->findOrFail($leaveRequestId);
 
         return successResponse(config('messages.success'), $leaveRequest, 200);
@@ -74,5 +77,44 @@ class LeaveRequestController extends Controller
         $updated = $this->service->changeStatus($leaveRequest, $payload['status'], $payload);
 
         return successResponse(config('messages.success'), $updated, 200);
+    }
+
+    public function approve(ApproveLeaveRequestRequest $request, $leaveRequestId): JsonResponse
+    {
+        $leaveRequest = LeaveRequest::findOrFail($leaveRequestId);
+        $updated = $this->service->approve($leaveRequest, $request->validated());
+
+        return successResponse(config('messages.success'), $updated, 200);
+    }
+
+    public function reject(RejectLeaveRequestRequest $request, $leaveRequestId): JsonResponse
+    {
+        $leaveRequest = LeaveRequest::findOrFail($leaveRequestId);
+        $updated = $this->service->reject($leaveRequest, $request->validated());
+
+        return successResponse(config('messages.success'), $updated, 200);
+    }
+
+    public function delegate(DelegateLeaveRequestRequest $request, $leaveRequestId): JsonResponse
+    {
+        $leaveRequest = LeaveRequest::findOrFail($leaveRequestId);
+        $updated = $this->service->delegate($leaveRequest, $request->validated());
+
+        return successResponse(config('messages.success'), $updated, 200);
+    }
+
+    public function runEscalations(Request $request): JsonResponse
+    {
+        $leaveRequest = null;
+
+        if ($request->filled('leave_request_id')) {
+            $leaveRequest = LeaveRequest::findOrFail($request->integer('leave_request_id'));
+        }
+
+        $count = $this->service->processEscalations($leaveRequest);
+
+        return successResponse(config('messages.success'), [
+            'processed_steps' => $count,
+        ], 200);
     }
 }

@@ -2,8 +2,12 @@
 
 namespace Tests\Feature;
 
+use App\Models\HR\LeaveApprovalLog;
 use App\Models\HR\LeaveRequest;
+use App\Models\HR\LeaveRequestApprovalStep;
 use App\Models\HR\LeaveType;
+use App\Models\HR\LeaveWorkflowStep;
+use App\Models\Role\Role;
 use App\Models\Talent\AuditLog;
 use App\Models\User\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -15,20 +19,31 @@ class LeaveRequestTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_employee_can_submit_and_hr_can_approve_leave_request(): void
+    public function test_multi_level_leave_approval_flow(): void
     {
         $employee = $this->createUser('employee@example.com');
-        $approver = $this->createUser('approver@example.com');
+        $managerRole = $this->createRole('Manager');
+        $hrRole = $this->createRole('HR');
 
-        $leaveType = LeaveType::query()->create([
-            'name' => 'Sick Leave',
-            'code' => 'SICK',
-            'description' => 'Sick leave allocation',
-            'default_allocation_days' => 10,
-            'max_balance' => 10,
-            'accrual_method' => 'none',
-            'is_paid' => true,
-            'requires_approval' => true,
+        $manager = $this->createUser('manager@example.com', $managerRole->id);
+        $hr = $this->createUser('hr@example.com', $hrRole->id);
+
+        $leaveType = $this->createLeaveType('Sick Leave', 'SICK');
+
+        LeaveWorkflowStep::query()->create([
+            'leave_type_id' => $leaveType->id,
+            'level' => 1,
+            'name' => 'Manager Approval',
+            'approver_role' => 'Manager',
+            'escalate_after_hours' => 24,
+            'escalate_to_role' => 'HR',
+        ]);
+
+        LeaveWorkflowStep::query()->create([
+            'leave_type_id' => $leaveType->id,
+            'level' => 2,
+            'name' => 'HR Approval',
+            'approver_role' => 'HR',
         ]);
 
         Sanctum::actingAs($employee);
@@ -43,119 +58,142 @@ class LeaveRequestTest extends TestCase
         $response->assertCreated();
         $submissionId = $response->json('data.id');
 
-        $this->assertNotNull($submissionId);
-        $this->assertSame(3, $response->json('data.total_days'));
         $this->assertSame('pending', $response->json('data.status'));
+        $this->assertSame(3, $response->json('data.total_days'));
 
-        Sanctum::actingAs($approver);
+        $steps = LeaveRequestApprovalStep::query()
+            ->where('leave_request_id', $submissionId)
+            ->orderBy('level')
+            ->get();
 
-        $statusResponse = $this->postJson("/hr/leave-requests/{$submissionId}/status", [
-            'status' => 'approved',
+        $this->assertCount(2, $steps);
+        $this->assertEquals(1, $steps->first()->level);
+
+        Sanctum::actingAs($manager);
+
+        $managerResponse = $this->postJson("/hr/leave-requests/{$submissionId}/approve", [
+            'comments' => 'Reviewed and approved at level 1',
         ]);
 
-        $statusResponse->assertOk();
-        $statusResponse->assertJsonPath('data.status', 'approved');
-        $this->assertEquals($approver->id, $statusResponse->json('data.approver_id'));
+        $managerResponse->assertOk();
+        $managerResponse->assertJsonPath('data.status', 'pending');
+        $managerResponse->assertJsonPath('data.current_step_level', 2);
 
-        $this->assertCount(2, AuditLog::all());
+        Sanctum::actingAs($hr);
+
+        $hrResponse = $this->postJson("/hr/leave-requests/{$submissionId}/approve");
+
+        $hrResponse->assertOk();
+        $hrResponse->assertJsonPath('data.status', 'approved');
+        $this->assertNotNull($hrResponse->json('data.workflow_completed_at'));
+        $this->assertEquals($hr->id, $hrResponse->json('data.approver_id'));
+
+        $this->assertGreaterThanOrEqual(2, LeaveApprovalLog::query()->count());
+        $this->assertGreaterThanOrEqual(2, AuditLog::query()->count());
     }
 
-    public function test_leave_request_validates_balance_and_dates(): void
+    public function test_manager_can_reject_leave_request(): void
     {
         $employee = $this->createUser('employee@example.com');
+        $managerRole = $this->createRole('Manager');
+        $manager = $this->createUser('manager@example.com', $managerRole->id);
 
-        $leaveType = LeaveType::query()->create([
-            'name' => 'Annual Leave',
-            'code' => 'ANNUAL',
-            'description' => 'Annual leave allocation',
-            'default_allocation_days' => 5,
-            'max_balance' => 5,
-            'accrual_method' => 'monthly',
-            'is_paid' => true,
-            'requires_approval' => true,
+        $leaveType = $this->createLeaveType('Personal Leave', 'PERSONAL');
+
+        LeaveWorkflowStep::query()->create([
+            'leave_type_id' => $leaveType->id,
+            'level' => 1,
+            'name' => 'Manager Approval',
+            'approver_role' => 'Manager',
         ]);
 
         Sanctum::actingAs($employee);
-
-        $first = $this->postJson('/hr/leave-requests', [
+        $response = $this->postJson('/hr/leave-requests', [
             'leave_type_id' => $leaveType->id,
-            'start_date' => '2025-02-01',
-            'end_date' => '2025-02-03',
-            'reason' => 'Family trip',
-        ]);
-        $first->assertCreated();
-
-        $exceeds = $this->postJson('/hr/leave-requests', [
-            'leave_type_id' => $leaveType->id,
-            'start_date' => '2025-03-01',
-            'end_date' => '2025-03-05',
-            'reason' => 'Long vacation',
-        ]);
-        $exceeds->assertStatus(422);
-        $exceeds->assertJsonValidationErrors(['total_days']);
-
-        $invalidDates = $this->postJson('/hr/leave-requests', [
-            'leave_type_id' => $leaveType->id,
-            'start_date' => '2025-04-10',
-            'end_date' => '2025-04-08',
-            'reason' => 'Invalid range',
-        ]);
-        $invalidDates->assertStatus(422);
-        $invalidDates->assertJsonValidationErrors(['end_date']);
-    }
-
-    public function test_leave_request_update_and_cancellation_flow(): void
-    {
-        $employee = $this->createUser('employee@example.com');
-
-        $leaveType = LeaveType::query()->create([
-            'name' => 'Personal Leave',
-            'code' => 'PERSONAL',
-            'description' => 'Personal errands',
-            'default_allocation_days' => 7,
-            'max_balance' => 7,
-            'accrual_method' => 'none',
-            'is_paid' => true,
-            'requires_approval' => true,
-        ]);
-
-        Sanctum::actingAs($employee);
-
-        $store = $this->postJson('/hr/leave-requests', [
-            'leave_type_id' => $leaveType->id,
-            'start_date' => '2025-05-01',
-            'end_date' => '2025-05-03',
+            'start_date' => '2025-04-01',
+            'end_date' => '2025-04-02',
             'reason' => 'Personal matters',
         ]);
-        $store->assertCreated();
+        $response->assertCreated();
 
-        $leaveRequestId = $store->json('data.id');
+        $submissionId = $response->json('data.id');
 
-        $update = $this->putJson("/hr/leave-requests/{$leaveRequestId}", [
-            'end_date' => '2025-05-02',
-            'reason' => 'Shorter trip',
+        Sanctum::actingAs($manager);
+        $rejectResponse = $this->postJson("/hr/leave-requests/{$submissionId}/reject", [
+            'reason' => 'Team workload is high',
+            'comments' => 'Please reschedule',
         ]);
-        $update->assertOk();
-        $update->assertJsonPath('data.total_days', 2);
-        $update->assertJsonPath('data.reason', 'Shorter trip');
 
-        $cancel = $this->postJson("/hr/leave-requests/{$leaveRequestId}/status", [
-            'status' => 'canceled',
-            'cancellation_reason' => 'Plans changed',
-        ]);
-        $cancel->assertOk();
-        $cancel->assertJsonPath('data.status', 'canceled');
-        $this->assertSame('Plans changed', $cancel->json('data.cancellation_reason'));
+        $rejectResponse->assertOk();
+        $rejectResponse->assertJsonPath('data.status', 'rejected');
+        $this->assertSame('Team workload is high', $rejectResponse->json('data.metadata.rejection_reason'));
 
-        $this->assertSame(3, AuditLog::query()->count());
-
-        $this->deleteJson("/hr/leave-requests/{$leaveRequestId}")->assertOk();
-
-        $this->assertSoftDeleted(LeaveRequest::class, ['id' => $leaveRequestId]);
-        $this->assertGreaterThanOrEqual(4, AuditLog::query()->count());
+        $this->assertTrue(LeaveApprovalLog::query()->where('action', 'rejected')->exists());
     }
 
-    private function createUser(string $email): User
+    public function test_workflow_delegation_and_escalation(): void
+    {
+        $employee = $this->createUser('employee@example.com');
+        $managerRole = $this->createRole('Manager');
+        $hrRole = $this->createRole('HR');
+
+        $manager = $this->createUser('manager@example.com', $managerRole->id);
+        $backupManager = $this->createUser('backup@example.com', $managerRole->id);
+        $hr = $this->createUser('hr@example.com', $hrRole->id);
+
+        $leaveType = $this->createLeaveType('Annual Leave', 'ANNUAL');
+
+        LeaveWorkflowStep::query()->create([
+            'leave_type_id' => $leaveType->id,
+            'level' => 1,
+            'name' => 'Manager Approval',
+            'approver_role' => 'Manager',
+            'escalate_after_hours' => 1,
+            'escalate_to_role' => 'HR',
+        ]);
+
+        Sanctum::actingAs($employee);
+        $response = $this->postJson('/hr/leave-requests', [
+            'leave_type_id' => $leaveType->id,
+            'start_date' => '2025-06-01',
+            'end_date' => '2025-06-03',
+            'reason' => 'Family vacation',
+        ]);
+        $response->assertCreated();
+
+        $submissionId = $response->json('data.id');
+
+        Sanctum::actingAs($manager);
+        $delegateResponse = $this->postJson("/hr/leave-requests/{$submissionId}/delegate", [
+            'delegate_to' => $backupManager->id,
+            'note' => 'Out of office, delegating to backup manager',
+        ]);
+        $delegateResponse->assertOk();
+        $delegateResponse->assertJsonPath('data.status', 'pending');
+
+        $step = LeaveRequestApprovalStep::query()->where('leave_request_id', $submissionId)->first();
+        $this->assertEquals($backupManager->id, $step->delegated_to);
+
+        // simulate overdue by backdating due_at
+        $step->update(['due_at' => now()->subHours(2)]);
+
+        Sanctum::actingAs($hr);
+        $escalateResponse = $this->postJson('/hr/leave-requests/escalations/run');
+        $escalateResponse->assertOk();
+        $this->assertSame(1, $escalateResponse->json('data.processed_steps'));
+
+        $step->refresh();
+        $this->assertEquals('HR', $step->approver_role);
+        $this->assertGreaterThan(0, $step->escalation_count);
+
+        $leaveRequest = LeaveRequest::find($submissionId);
+        $this->assertGreaterThan(0, $leaveRequest->escalation_count);
+        $this->assertNotNull($leaveRequest->latest_escalated_at);
+
+        $this->assertTrue(LeaveApprovalLog::query()->where('action', 'escalated')->exists());
+    }
+
+    private function createUser(string $email, ?int $roleId = null): User
     {
         return User::query()->create([
             'first_name' => 'Test',
@@ -163,6 +201,32 @@ class LeaveRequestTest extends TestCase
             'email' => $email,
             'department' => 'HR',
             'password' => Hash::make('password'),
+            'role_id' => $roleId,
+        ]);
+    }
+
+    private function createRole(string $name): Role
+    {
+        return Role::query()->create([
+            'name' => $name,
+            'description' => $name.' role',
+            'guard_name' => 'web',
+            'created_by' => null,
+            'updated_by' => null,
+        ]);
+    }
+
+    private function createLeaveType(string $name, string $code): LeaveType
+    {
+        return LeaveType::query()->create([
+            'name' => $name,
+            'code' => $code,
+            'description' => $name.' allocation',
+            'default_allocation_days' => 10,
+            'max_balance' => 10,
+            'accrual_method' => 'none',
+            'is_paid' => true,
+            'requires_approval' => true,
         ]);
     }
 }

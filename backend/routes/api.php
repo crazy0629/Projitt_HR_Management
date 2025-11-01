@@ -84,6 +84,10 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('/leave-requests/{leaveRequestId}', [LeaveRequestController::class, 'update']);
         Route::delete('/leave-requests/{leaveRequestId}', [LeaveRequestController::class, 'destroy']);
         Route::post('/leave-requests/{leaveRequestId}/status', [LeaveRequestController::class, 'updateStatus']);
+        Route::post('/leave-requests/{leaveRequestId}/approve', [LeaveRequestController::class, 'approve']);
+        Route::post('/leave-requests/{leaveRequestId}/reject', [LeaveRequestController::class, 'reject']);
+        Route::post('/leave-requests/{leaveRequestId}/delegate', [LeaveRequestController::class, 'delegate']);
+        Route::post('/leave-requests/escalations/run', [LeaveRequestController::class, 'runEscalations']);
     });
 
     Route::prefix('coding')->group(function () {

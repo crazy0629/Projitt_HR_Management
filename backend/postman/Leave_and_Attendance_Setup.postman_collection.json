@@ -845,6 +845,127 @@
 					"response": []
 				}
 			]
+		},
+		{
+			"name": "Leave Approval Workflow",
+			"item": [
+				{
+					"name": "Approve Leave Request",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"comments\": \"Reviewed and approved\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}hr/leave-requests/{{leave_request_id}}/approve",
+							"host": [
+								"{{base_url}}hr"
+							],
+							"path": [
+								"leave-requests",
+								"{{leave_request_id}}",
+								"approve"
+							]
+						},
+						"description": "Approve the current workflow step for a leave request."
+					},
+					"response": []
+				},
+				{
+					"name": "Reject Leave Request",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"reason\": \"Project deliverable due\",\n    \"comments\": \"Please reschedule\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}hr/leave-requests/{{leave_request_id}}/reject",
+							"host": [
+								"{{base_url}}hr"
+							],
+							"path": [
+								"leave-requests",
+								"{{leave_request_id}}",
+								"reject"
+							]
+						},
+						"description": "Reject the active approval step with a required reason."
+					},
+					"response": []
+				},
+				{
+					"name": "Delegate Leave Request",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"delegate_to\": {{delegate_user_id}},\n    \"note\": \"Reassigning to backup approver\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}hr/leave-requests/{{leave_request_id}}/delegate",
+							"host": [
+								"{{base_url}}hr"
+							],
+							"path": [
+								"leave-requests",
+								"{{leave_request_id}}",
+								"delegate"
+							]
+						},
+						"description": "Delegate the active approval step to another approver."
+					},
+					"response": []
+				},
+				{
+					"name": "Run Leave Escalations",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"leave_request_id\": {{leave_request_id}}\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}hr/leave-requests/escalations/run",
+							"host": [
+								"{{base_url}}hr"
+							],
+							"path": [
+								"leave-requests",
+								"escalations",
+								"run"
+							]
+						},
+						"description": "Trigger escalation processing for overdue approval steps."
+					},
+					"response": []
+				}
+			]
 		}
 	],
 	"auth": {
@@ -873,8 +994,11 @@
 					"    console.warn(\"⚠️ No auth token found in environment\");",
 					"}",
 					"",
-					"if (!pm.variables.get('base_url')) {",
-					"    pm.variables.set('base_url', 'http://localhost:8000/');",
+					"const baseUrl = pm.environment.get('base_url');",
+					"if (baseUrl) {",
+					"    pm.variables.set('base_url', baseUrl);",
+					"} else {",
+					"    console.warn(\"⚠️ No base_url found in Dev Server environment\");",
 					"}"
 				]
 			}
