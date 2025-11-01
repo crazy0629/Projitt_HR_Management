@@ -41,8 +41,9 @@ class WorkCalendarController extends Controller
         return successResponse(config('messages.success'), $workCalendar, 200);
     }
 
-    public function update(UpdateWorkCalendarRequest $request, WorkCalendar $workCalendar): JsonResponse
+    public function update(UpdateWorkCalendarRequest $request, $workCalendarId): JsonResponse
     {
+        $workCalendar = WorkCalendar::findOrFail($workCalendarId);
         $updated = $this->service->updateWorkCalendar($workCalendar, $request->validated());
 
         return successResponse(config('messages.success'), $updated, 200);

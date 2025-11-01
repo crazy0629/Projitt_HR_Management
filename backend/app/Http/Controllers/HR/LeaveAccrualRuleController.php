@@ -41,8 +41,9 @@ class LeaveAccrualRuleController extends Controller
         return successResponse(config('messages.success'), $leaveAccrualRule, 200);
     }
 
-    public function update(UpdateLeaveAccrualRuleRequest $request, LeaveAccrualRule $leaveAccrualRule): JsonResponse
+    public function update(UpdateLeaveAccrualRuleRequest $request, $leaveAccrualRuleId): JsonResponse
     {
+        $leaveAccrualRule = LeaveAccrualRule::findOrFail($leaveAccrualRuleId);
         $updated = $this->service->updateAccrualRule($leaveAccrualRule, $request->validated());
 
         return successResponse(config('messages.success'), $updated, 200);

@@ -41,8 +41,9 @@ class LeaveTypeController extends Controller
         return successResponse(config('messages.success'), $leaveType, 200);
     }
 
-    public function update(UpdateLeaveTypeRequest $request, LeaveType $leaveType): JsonResponse
+    public function update(UpdateLeaveTypeRequest $request, $leaveTypeId): JsonResponse
     {
+        $leaveType = LeaveType::findOrFail($leaveTypeId);
         $updated = $this->service->updateLeaveType($leaveType, $request->validated());
 
         return successResponse(config('messages.success'), $updated, 200);

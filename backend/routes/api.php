@@ -5,6 +5,7 @@ use App\Http\Controllers\Coding\CodingAssessmentAssignmentController;
 use App\Http\Controllers\Coding\CodingAssessmentController;
 use App\Http\Controllers\Coding\CodingSubmissionController;
 use App\Http\Controllers\HR\LeaveAccrualRuleController;
+use App\Http\Controllers\HR\LeaveRequestController;
 use App\Http\Controllers\HR\LeaveTypeController;
 use App\Http\Controllers\HR\WorkCalendarController;
 use App\Http\Controllers\HR\WorkCalendarHolidayController;
@@ -59,23 +60,30 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::prefix('hr')->group(function () {
         Route::get('/leave-types', [LeaveTypeController::class, 'index']);
         Route::post('/leave-types', [LeaveTypeController::class, 'store']);
-        Route::get('/leave-types/{leaveType}', [LeaveTypeController::class, 'show']);
-        Route::put('/leave-types/{leaveType}', [LeaveTypeController::class, 'update']);
+        Route::get('/leave-types/{leaveTypeId}', [LeaveTypeController::class, 'show']);
+        Route::put('/leave-types/{leaveTypeId}', [LeaveTypeController::class, 'update']);
 
         Route::get('/leave-accrual-rules', [LeaveAccrualRuleController::class, 'index']);
         Route::post('/leave-accrual-rules', [LeaveAccrualRuleController::class, 'store']);
-        Route::get('/leave-accrual-rules/{leaveAccrualRule}', [LeaveAccrualRuleController::class, 'show']);
-        Route::put('/leave-accrual-rules/{leaveAccrualRule}', [LeaveAccrualRuleController::class, 'update']);
+        Route::get('/leave-accrual-rules/{leaveAccrualRuleId}', [LeaveAccrualRuleController::class, 'show']);
+        Route::put('/leave-accrual-rules/{leaveAccrualRuleId}', [LeaveAccrualRuleController::class, 'update']);
 
         Route::get('/work-calendars', [WorkCalendarController::class, 'index']);
         Route::post('/work-calendars', [WorkCalendarController::class, 'store']);
-        Route::get('/work-calendars/{workCalendar}', [WorkCalendarController::class, 'show']);
-        Route::put('/work-calendars/{workCalendar}', [WorkCalendarController::class, 'update']);
+        Route::get('/work-calendars/{workCalendarId}', [WorkCalendarController::class, 'show']);
+        Route::put('/work-calendars/{workCalendarId}', [WorkCalendarController::class, 'update']);
 
         Route::get('/work-calendar-holidays', [WorkCalendarHolidayController::class, 'index']);
         Route::post('/work-calendar-holidays', [WorkCalendarHolidayController::class, 'store']);
-        Route::get('/work-calendar-holidays/{workCalendarHoliday}', [WorkCalendarHolidayController::class, 'show']);
-        Route::put('/work-calendar-holidays/{workCalendarHoliday}', [WorkCalendarHolidayController::class, 'update']);
+        Route::get('/work-calendar-holidays/{workCalendarHolidayId}', [WorkCalendarHolidayController::class, 'show']);
+        Route::put('/work-calendar-holidays/{workCalendarHolidayId}', [WorkCalendarHolidayController::class, 'update']);
+
+        Route::get('/leave-requests', [LeaveRequestController::class, 'index']);
+        Route::post('/leave-requests', [LeaveRequestController::class, 'store']);
+        Route::get('/leave-requests/{leaveRequestId}', [LeaveRequestController::class, 'show']);
+        Route::put('/leave-requests/{leaveRequestId}', [LeaveRequestController::class, 'update']);
+        Route::delete('/leave-requests/{leaveRequestId}', [LeaveRequestController::class, 'destroy']);
+        Route::post('/leave-requests/{leaveRequestId}/status', [LeaveRequestController::class, 'updateStatus']);
     });
 
     Route::prefix('coding')->group(function () {
